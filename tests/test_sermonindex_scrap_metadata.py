@@ -73,7 +73,10 @@ def test_scrap_all_author_main_info_sermoindex():
         browse_by_type,
         overwrite_log=True
     )    
-    ob.download(10)
+    ob.download(50)
+    ob.update_downloaded_and_to_download()
+    ob.write_log_file()
+    
 
 if __name__ == "__main__":
     #print("Elvs")

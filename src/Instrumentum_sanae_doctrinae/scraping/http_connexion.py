@@ -1,11 +1,13 @@
 import datetime
 import os 
 import urllib
+import pathlib
 
 import requests
 from bs4 import BeautifulSoup
 
 from ..scraping import my_constants
+from . import my_errors
 from ..scraping import _my_tools
 
 
@@ -67,6 +69,10 @@ class ScrapDataFromURL():
 
         for url in self.url_list:
             response = requests.get(url=url,timeout=my_constants.HTTP_REQUEST_TIMEOUT)
+            
+            if response.status_code == 404:
+                raise my_errors.HTTP404Error(url)
+            
             self.url_informations[url]["request"] = response
             self.url_informations[url]["request_datetime"] = _my_tools.datetimeToGoogleFormat(datetime.datetime.now()),
             # Create a bs4 object with the html text of the last request 
@@ -150,7 +156,7 @@ class ScrapDataFromURL():
             }
         
 
-    def write_html_page_content(self):
+    def write_html_page_content(self,intermediate_folders = None):
         """
         Write the content of the html files 
         """
@@ -168,7 +174,7 @@ class ScrapDataFromURL():
         Write the json files 
         """
         for url in self.url_informations:
-            print(self.url_informations[url]["json_filepath"])
+            #print(self.url_informations[url]["json_filepath"])
             _my_tools.write_json(self.url_informations[url]["json_filepath"],
                                  self.url_informations[url]["json_file_content"])
             self.url_informations[url]['is_json_file_locally_saved'] = True
@@ -208,23 +214,51 @@ class ScrapDataFromURL():
 
 
 class ParallelHttpConnexionWithLogManagement():
-    def __init__(self,log_filepath,element_list,overwrite_log = False,update_log = True):
+    def __init__(self,log_filepath,element_list,overwrite_log = False,update_log = True,input_root_folder = ""):
         """
         :param log_filepath: The path of the log file used to store and manage the downloaded, undownloaded, not found etc 
-        :element_list: The list of the element to download 
+        :param element_list: The list of the element to download 
+        :param input_root_folder: The folder from which all the json files are searched from to be used as input files 
         """
         self.log_filepath = log_filepath
         self.element_dict = {}
+        self.input_root_folder = input_root_folder
 
         self.meta_informations = {}
-        self.meta_informations["input_files"] = list(element_list.keys())
+        
+        # The information of the json input files 
+        self.meta_informations["input_files_information"] = {}
 
+
+        self.meta_informations["input_files_information"]["input_files"] = list(element_list.keys())
+
+
+        # Add download log the element each element 
         for file_path in element_list:
+            
+            file_path_from_root_folder = _my_tools.get_uncommon_part_of_two_path(
+                                                    self.input_root_folder,file_path)[1]
+            
+            file_path_from_root_folder = pathlib.Path(file_path_from_root_folder).parent
+            
+            # The subfolder from the root folder where the scraped data must be stored
+            #  (the information of the author, topic, scripture, etc)
+            intermediate_folders = list(file_path_from_root_folder.parts[1:])
+
             file_content  =  element_list[file_path]
+
+            #print(self.meta_informations)
+
             for element in file_content.get("data"):
-                self.element_dict[element.get("name")] = {**element,
-                                                         **{"download_log":{
-                                                             "input_file_index":self.meta_informations["input_files"].index(file_path)}}}
+                self.element_dict[element.get("name")] = {
+                    **element,
+
+                    **{"download_log":{
+                        "input_file_index":self.meta_informations["input_files_information"]\
+                                                                ["input_files"].index(file_path),
+                        "intermediate_folders":intermediate_folders}
+                      }
+                        }
 
         self.log_file_content = {}
 
@@ -253,7 +287,44 @@ class ParallelHttpConnexionWithLogManagement():
                             pass 
                     else: # If the link is already downlaed. There is no need of modification of anything 
                         pass 
+    
 
+    def update_downloaded_and_to_download(self):
+        """
+        This function verify if the data of the links in "downloaded" list are truly downloaded. 
+        If not this link is put back in the "to_download" list. 
+        If a link data is downloaded but is in to_download list, it is put in the downloaded list
+        """
+
+        # Remove from link_list the link whoes data are already downloaded 
+        downloaded = {}
+        to_download = {}
+
+        element_dict = {**self.log_file_content["to_download"],
+                     ** self.log_file_content["downloaded"]}
+
+        for key in element_dict:
+            if self.is_element_data_downloaded(element_dict[key]):
+                #print(key,True)
+                downloaded[key] = element_dict[key]
+            else:
+                #print(key,element_dict[key])
+                to_download[key] = element_dict[key]
+        
+        
+        self.log_file_content["to_download"] = to_download
+        self.log_file_content["downloaded"] = downloaded
+
+
+
+    def write_log_file(self):
+        return _my_tools.write_json(self.log_filepath,self.log_file_content)
+        
+    def is_element_data_downloaded(self,element):
+        """
+        Check if the element data was downloaded 
+        """
+            
 
     def create_default_log_file_content(self):
 
@@ -263,19 +334,6 @@ class ParallelHttpConnexionWithLogManagement():
                 "downloaded":{},
                 "not_found_404":{}
                 }
-
-
-    def update_downloaded_and_to_download(self):
-        """
-        Update the downloaded and to_download in the log file  
-        """
-    
-
-    def is_element_data_downloaded(self):
-        """
-        This method must be implemented by the child class to  check if the element data was downloaded 
-        """
-
 
     def download_element_data(self,element):
         """This element take an element ( for example the information of an author or topic) 

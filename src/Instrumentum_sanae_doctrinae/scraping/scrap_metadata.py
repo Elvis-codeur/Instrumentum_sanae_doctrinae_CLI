@@ -93,9 +93,12 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
         """
         :param name: The name of the author,topic, and more 
         """
+        self.name = name 
+
+
         if intermdiate_folders:
-            intermdiate_folders = [browse_by_type,my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
-                                   name,"main_information"] + intermdiate_folders
+            intermdiate_folders = [browse_by_type,my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,]\
+                                 + intermdiate_folders +[name,"main_information"] 
         else:
             intermdiate_folders = [browse_by_type,my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER
                                    ,name,"main_information"]
@@ -104,18 +107,55 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
     
 
 
-    def scrap_and_write(self,save_html_file= True):
+    def is_data_downloaded(self):
+
+        for url in self.url_informations:
+            file_path = self.url_informations[url].get("json_filepath")
+            if not os.path.exists(file_path):
+                return False
+            
+            
+            file_content = _my_tools.read_json(file_path)
+
+            if not file_content:
+                return False
+            
+            # Check mandatory information in the json file 
+
+            if not file_content.get("url"):
+                return False
+            
+            if not file_content.get("data").get("name"):
+                return False
+            
+        return True
+
+        
+
+    def scrap_and_write(self,save_html_file= True,intermediate_folders = None):
         """
         Connect to the url specified, scrap the right data, save the html content in a file and write the result in an json file 
         
         :param save_html_file: If true, the text of the request is saved as html. 
 
         """
+        print(self.__dict__)
+
+        if intermediate_folders:
+            for url in self.url_informations:
+                json_filepath = pathlib.Path(self.url_informations[url]["json_filepath"])
+                html_filepath = pathlib.Path(self.url_informations[url]["html_filepath"])
+                
+                # Insert the intermediate folders 
+                json_filepath = json_filepath.parent / "/".join(intermediate_folders) / json_filepath.name
+                html_filepath = html_filepath.parent / "/".join(intermediate_folders) / html_filepath.name
+
+                self.url_informations[url]["json_filepath"] = json_filepath
+                self.url_informations[url]["html_filepath"] = html_filepath
 
 
         # The data scrapped from each url 
         url_datascraped_list = self.scrap_url_pages()
-
 
         if save_html_file:
             # Write the content of the html file get from the url
@@ -134,62 +174,9 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
 
 
       
-class ParralelScrapingManyUrl(http_connexion.ParallelHttpConnexionWithLogManagement):
-    def __init__(self, log_filepath, element_list, overwrite_log=False, update_log=True):
-        super().__init__(log_filepath, element_list, overwrite_log, update_log)
 
 
-    def update_downloaded_and_to_download(self):
-        """
-        This function verify if the data of the links in "downloaded" list are truly downloaded. 
-        If not this link is put back in the "to_download" list. 
-        If a link data is downloaded but is in to_download list, it is put in the downloaded list
-        """
-
-        # Remove from link_list the link whoes data are already downloaded 
-        downloaded = []
-        to_download = []
-
-        for link in {**self.log_file_content["to_download"],
-                     ** self.log_file_content["downloaded"]}:
-            
-            if self.is_element_data_downloaded(link):
-                downloaded.append(link)
-            else:
-                to_download.append(link)
-        
-        
-        self.log_file_content["to_download"] = to_download.copy()
-        self.log_file_content["downloaded"] = downloaded.copy()
-        
-    def is_element_data_downloaded(self,link):
-            link_local_file_path = link.get("output_filepath")
-
-            # If the link has an output file path
-            if not link_local_file_path:
-
-                return False
-            
-
-            # If the file exists and is not deleted 
-            if not os.path.exists(link_local_file_path):
-                return False    
-                
-            # If there is a download log in the link object. There is no download log 
-            # in link object when they are first get from the folder of the works of the author 
-            # topic or scripture
-            if link.get("download_log"):
-                # If there is no error in download log 
-                # The download log of a true download does not contain the key "error"
-                if not link.get("download_log").get("error"):
-                    return True
-                else:
-                    return False
-            else:
-                return False
-               
-
-class ScrapWebSiteAllAuthorTopicScriptures(ParralelScrapingManyUrl):
+class ScrapWebSiteAllAuthorTopicScriptures(http_connexion.ParallelHttpConnexionWithLogManagement):
 
     def __init__(self, log_filepath, input_root_folder, overwrite_log=False, update_log=True):
 
@@ -205,11 +192,13 @@ class ScrapWebSiteAllAuthorTopicScriptures(ParralelScrapingManyUrl):
         
         pattern = f"*{my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER}"
 
-        path = pathlib.Path(input_root_folder)
+        input_root_folder = pathlib.Path(input_root_folder)
 
-        matching_subfolders = [i for i  in path.rglob(pattern) if i.is_dir()]
+        matching_subfolders = [i for i  in input_root_folder.rglob(pattern) if i.is_dir()]
 
         #print(input_root_folder)
+        
+
 
         for folder in matching_subfolders:
             for files in [i for i in pathlib.Path(folder).rglob("*.json") if i.is_file()]:
@@ -219,13 +208,13 @@ class ScrapWebSiteAllAuthorTopicScriptures(ParralelScrapingManyUrl):
 
         input_json_files_content = {}
 
+        
         for file in input_json_files:
             input_json_files_content[str(file)] = _my_tools.read_json(file)
        
-        #print(input_json_files)
         
-        super().__init__(log_filepath,input_json_files_content,overwrite_log,update_log)
-
+        
+        super().__init__(log_filepath,input_json_files_content,overwrite_log,update_log,input_root_folder)
 
     def download_element_data(self,element):
         """This element take an element ( for example the information of an author or topic) 
