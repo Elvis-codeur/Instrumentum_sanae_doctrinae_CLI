@@ -173,11 +173,25 @@ class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
         self.other_page_page_list = []
 
 
-    def page_useful_links_validation_method(self,anchor_list):
+    def page_useful_links_validation_method(self,anchor_list,parent_name_for_selection):
+        """"
+        if element.parent.name == parent_name_for_selection, element is added to the list returned 
+        
+        """
+        anchor_list = [i for i  in anchor_list if "view=category&cid="  in i.attrs.get("href")]
 
-        pass 
+        result = [] 
 
-    def scrap_page_useful_links_and_other_page_links(self):
+        for  anchor_object in anchor_list:
+            if anchor_object.parent.name == parent_name_for_selection:
+                result.append(anchor_object)
+        
+        return result
+
+    def scrap_page_useful_links_and_other_page_links(self,parent_name_for_selection):
+        """
+        if element.parent.name == parent_name_for_selection, element is added to the list returned
+        """
         
         
         # Connect to the url and create a beautiful soup object with the html for scraping 
@@ -196,7 +210,8 @@ class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
             # A method to filter the useful links. All the subclasses has to reimplement 
             # this method to their needs
             anchor_list = [i  for i in anchor_list if i.attrs.get("href")]
-            anchor_list = self.page_useful_links_validation_method(anchor_list)
+
+            anchor_list = self.page_useful_links_validation_method(anchor_list,parent_name_for_selection)
         
             for i in anchor_list:
                 if "~" not in i.get_text():
@@ -210,8 +225,8 @@ class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
         return result
     
        
-    def scrap_page_useful_links(self):
-        result = self.scrap_page_useful_links_and_other_page_links()
+    def scrap_page_useful_links(self,parent_name_for_selection):
+        result = self.scrap_page_useful_links_and_other_page_links(parent_name_for_selection)
         self.other_page_page_list = [i[1] for i in result]
         links = [i[0] for i in result]
 
@@ -239,10 +254,8 @@ class GetTextSermonsSpeakerLinks(GetSpeakerLinks):
     def __init__(self, metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders=None) -> None:
         super().__init__(metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders)
 
-    def page_useful_links_validation_method(self,anchor_list):
-        result = [i for i  in anchor_list if "view=category&cid="  in i.attrs.get("href")]
-        return result
-
+    
+    
 class GetVideoSermonsSpeakerLinks(GetSpeakerLinks):
     def __init__(self, metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders=None) -> None:
         super().__init__(metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders)
@@ -382,11 +395,10 @@ class SermonIndexAudioSermonScrapAuthorTopicScripturePage(SermonIndexScrapAuthor
         """
 
 
-class SermonIndexAudioSermonScrapAuthorTopicScriptureMainInformation(SermonIndexScrapAuthorTopicScripturePage):
-    def __init__(self, name, root_folder,browse_by_type, url_list,intermdiate_folders=None):
+class SermonIndexScrapAuthorTopicScriptureMainInformation(SermonIndexScrapAuthorTopicScripturePage):
+    def __init__(self, name, root_folder,browse_by_type, url_list,material_root_folder,intermdiate_folders=None):
         
-        super().__init__(name, root_folder, url_list,browse_by_type,
-                        material_root_folder =  my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER,intermdiate_folders = intermdiate_folders)
+        super().__init__(name, root_folder, url_list,browse_by_type,material_root_folder = material_root_folder,intermdiate_folders = intermdiate_folders)
         
     def scrap_url_pages(self):
         """
@@ -472,9 +484,34 @@ class SermonIndexAudioSermonScrapAuthorTopicScriptureMainInformation(SermonIndex
         return final_result
     
 
-class SermonIndexAudioSermonScrapAuthorMainInformation(SermonIndexAudioSermonScrapAuthorTopicScriptureMainInformation):
+# Text sermon main information 
+
+class SermonIndexAudioSermonScrapAuthorMainInformation(SermonIndexScrapAuthorTopicScriptureMainInformation):
     def __init__(self, name, root_folder, url_list,intermdiate_folders):
-        super().__init__(name, root_folder, "speaker", url_list,intermdiate_folders)
+        super().__init__(name, root_folder, "speaker", url_list,
+                        material_root_folder =  my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER,
+                         intermdiate_folders = intermdiate_folders)
+
+
+class SermonIndexAudioSermonScrapTopicMainInformation(SermonIndexScrapAuthorTopicScriptureMainInformation):
+    def __init__(self, name, root_folder, url_list,intermdiate_folders):
+        super().__init__(name, root_folder, "topic", url_list,
+                        material_root_folder =  my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER,
+                         intermdiate_folders = intermdiate_folders)
+
+
+class SermonIndexAudioSermonScrapScriptureMainInformation(SermonIndexScrapAuthorTopicScriptureMainInformation):
+    def __init__(self, name, root_folder, url_list,intermdiate_folders):
+        super().__init__(name, root_folder, "scripture", url_list,
+                        material_root_folder =  my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER,
+                         intermdiate_folders = intermdiate_folders)
+
+# For text Sermon 
+class SermonIndexTextSermonScrapSpeakerMainInformation(SermonIndexScrapAuthorTopicScriptureMainInformation):
+    def __init__(self, name, root_folder, url_list,intermdiate_folders):
+        super().__init__(name, root_folder, "speaker", url_list,
+                        material_root_folder =  my_constants.SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER,
+                         intermdiate_folders = intermdiate_folders)
 
 
 
@@ -528,23 +565,27 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation(scrap_metad
 
         # Update before the begining of downloads
         self.update_downloaded_and_to_download() 
-        to_download_len = len(self.log_file_content["to_download"].values())
+         
+        element_to_download = list(self.log_file_content["to_download"].values())
+        
+        print(f"to_download = {len(element_to_download)} Download batch size = {download_batch_size}")
+        # Split it by size download_batch_size to download
+        #  them in parralel 
+        element_to_download_splitted = _my_tools.sample_list(element_to_download,
+                                                      download_batch_size)
 
-        for key in self.log_file_content["to_download"]:
-            element = self.log_file_content["to_download"][key]
-            
-            element["download_log"]["intermediate_folders"] = ["Elvis est un enfant de Dieu"]
-            print(self.is_element_data_downloaded(element))
-
-            self.download_element_data(element)
-            break
+        with ThreadPoolExecutor() as executor:
+            for download_batch in element_to_download_splitted:
+                result_list = executor.map(
+                                self.download_element_data,download_batch)    
+            self.update_downloaded_and_to_download()
       
 
 
 
      
 
-class SermonIndexScrapWebSiteAudioSermonAllAuthorMainInformation(SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation):
+class SermonIndexAudioSermonAllAuthorMainInformation(SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation):
     def __init__(self, root_folder, material_root_folder, browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
         super().__init__(root_folder, material_root_folder, browse_by_type, overwrite_log, update_log,intermdiate_folders)
 
@@ -566,5 +607,82 @@ class SermonIndexScrapWebSiteAudioSermonAllAuthorMainInformation(SermonIndexScra
             element.get("download_log").get("intermediate_folders")
         )
         #print(ob)
+        return ob.is_data_downloaded()
+        
+
+
+
+class SermonIndexAudioSermonAllTopicMainInformation(SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation):
+    def __init__(self, root_folder, material_root_folder, browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
+        super().__init__(root_folder, material_root_folder, browse_by_type, overwrite_log, update_log,intermdiate_folders)
+
+
+    def download_element_data(self,element):
+        """This element take an element ( for example the information of an author or topic) 
+        and download the data that must be downloaded from it """
+
+        ob = SermonIndexAudioSermonScrapTopicMainInformation(
+            element.get("name"),self.root_folder,element.get("url_list"),
+            element.get("download_log").get("intermediate_folders")
+        )
+
+        ob.scrap_and_write()
+
+    def is_element_data_downloaded(self,element):
+        ob = SermonIndexAudioSermonScrapTopicMainInformation(
+            element.get("name"),self.root_folder,element.get("url_list"),
+            element.get("download_log").get("intermediate_folders")
+        )
+        return ob.is_data_downloaded()
+        
+
+
+
+class SermonIndexAudioSermonAllScriptureMainInformation(SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation):
+    def __init__(self, root_folder, material_root_folder, browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
+        super().__init__(root_folder, material_root_folder, browse_by_type, overwrite_log, update_log,intermdiate_folders)
+
+
+    def download_element_data(self,element):
+        """This element take an element ( for example the information of an author or topic) 
+        and download the data that must be downloaded from it """
+
+        ob = SermonIndexAudioSermonScrapScriptureMainInformation(
+            element.get("name"),self.root_folder,element.get("url_list"),
+            element.get("download_log").get("intermediate_folders")
+        )
+
+        ob.scrap_and_write()
+
+    def is_element_data_downloaded(self,element):
+        ob = SermonIndexAudioSermonScrapScriptureMainInformation(
+            element.get("name"),self.root_folder,element.get("url_list"),
+            element.get("download_log").get("intermediate_folders")
+        )
+        return ob.is_data_downloaded()
+        
+
+
+class SermonIndexTextSermonAllSpeakerMainInformation(SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation):
+    def __init__(self, root_folder, material_root_folder, browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
+        super().__init__(root_folder, material_root_folder, browse_by_type, overwrite_log, update_log,intermdiate_folders)
+
+
+    def download_element_data(self,element):
+        """This element take an element ( for example the information of an author or topic) 
+        and download the data that must be downloaded from it """
+
+        ob = SermonIndexAudioSermonScrapScriptureMainInformation(
+            element.get("name"),self.root_folder,element.get("url_list"),
+            element.get("download_log").get("intermediate_folders")
+        )
+
+        ob.scrap_and_write()
+
+    def is_element_data_downloaded(self,element):
+        ob = SermonIndexAudioSermonScrapScriptureMainInformation(
+            element.get("name"),self.root_folder,element.get("url_list"),
+            element.get("download_log").get("intermediate_folders")
+        )
         return ob.is_data_downloaded()
         

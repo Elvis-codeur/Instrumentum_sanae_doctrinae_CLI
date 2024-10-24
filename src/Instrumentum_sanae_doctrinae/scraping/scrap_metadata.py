@@ -41,7 +41,7 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
         super().__init__(metadata_root_folder, log_root_folder, url_list, browse_by_type, intermdiate_folders)
 
        
-    def scrap_page_useful_links(self):
+    def scrap_page_useful_links(self,**kwargs):
 
         """
         html_text : The text of the html page retrieved from the url. This method does the main work. 
@@ -58,7 +58,7 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
         self.connect_to_url()
 
     
-    def scrap_and_write(self,save_html_file= True):
+    def scrap_and_write(self,save_html_file= True,):
         """
         Connect to the url specified, scrap the right data, save the html content in a file and write the result in an json file 
         
@@ -139,7 +139,7 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
         :param save_html_file: If true, the text of the request is saved as html. 
 
         """
-        print(self.__dict__)
+        #print(self.__dict__)
 
         if intermediate_folders:
             for url in self.url_informations:

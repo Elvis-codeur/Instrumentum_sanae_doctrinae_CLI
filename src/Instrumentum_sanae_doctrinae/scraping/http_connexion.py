@@ -62,7 +62,7 @@ class ScrapDataFromURL():
 
         
 
-    def connect_to_url(self):
+    def connect_to_url(self,**kwargs):
         """
         Connect to an html page whose url has been given 
         """
@@ -80,7 +80,7 @@ class ScrapDataFromURL():
 
         #print(self.url_informations)
 
-    def next_page(self):
+    def next_page(self,**kwargs):
         """
         This method is meant to return the next page if there is an url to a next page. 
         For example this page of CH Spurgeon from  monergism ( https://www.monergism.com/search?f[0]=author:34468)
@@ -89,7 +89,7 @@ class ScrapDataFromURL():
 
 
 
-    def scrap_url_pages(self):
+    def scrap_url_pages(self,**kwargs):
 
         """
         Scrap the web page 
@@ -99,7 +99,7 @@ class ScrapDataFromURL():
     
 
 
-    def anchor_object_list_to_dict_list(self,anchor_object_list,url,version = "0.0.1"):
+    def anchor_object_list_to_dict_list(self,anchor_object_list,url,version = "0.0.1",**kwargs):
         """
         :param anchor_object_list: The list of a the bs4 HTML anchor objects
         :param url: The url of the web page where the  anchor elements are taken of 
@@ -132,7 +132,7 @@ class ScrapDataFromURL():
 
         return result
     
-    def prepare_json_data_for_saving(self,element_list,version = "0.0.1"):
+    def prepare_json_data_for_saving(self,element_list,version = "0.0.1",**kwargs):
         """
         :param element_list: A list of the element to save in the json file as main elements. 
         For exemple, it can be a list of dictionnary like this [{'name': 'Worry, Fear & Anxiety', 'url': 'https://www.monergism.com/topics/worry-fear-anxiety'},
@@ -156,7 +156,7 @@ class ScrapDataFromURL():
             }
         
 
-    def write_html_page_content(self,intermediate_folders = None):
+    def write_html_page_content(self,intermediate_folders = None,**kwargs):
         """
         Write the content of the html files 
         """
@@ -169,7 +169,7 @@ class ScrapDataFromURL():
 
 
 
-    def write_json_data(self):
+    def write_json_data(self,**kwargs):
         """
         Write the json files 
         """
@@ -182,7 +182,7 @@ class ScrapDataFromURL():
 
 
 
-    def scrap_and_write(self,save_html_file= True):
+    def scrap_and_write(self,save_html_file= True,**kwargs):
         """
         Connect to the url specified, scrap the right data, save the html content in a file and write the result in an json file 
         

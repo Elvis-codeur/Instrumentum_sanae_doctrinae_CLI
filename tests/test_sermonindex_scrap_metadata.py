@@ -67,7 +67,7 @@ def test_scrap_all_author_main_info_sermoindex():
     url = "https://www.sermonindex.net/modules/mydownloads/"
     material_folder = "audio_sermon"
     browse_by_type = "speaker"
-    ob = sermonindex_scrap_metadata.SermonIndexScrapWebSiteAudioSermonAllAuthorMainInformation(
+    ob = sermonindex_scrap_metadata.SermonIndexAudioSermonAllAuthorMainInformation(
         root_folder,
         material_folder,
         browse_by_type,
@@ -78,15 +78,60 @@ def test_scrap_all_author_main_info_sermoindex():
     ob.write_log_file()
     
 
+def test_scrap_all_topic_main_info_sermoindex():
+    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
+    material_folder = "audio_sermon"
+    browse_by_type = "topic"
+    ob = sermonindex_scrap_metadata.SermonIndexAudioSermonAllTopicMainInformation(
+        root_folder,
+        material_folder,
+        browse_by_type,
+        overwrite_log=True
+    )    
+    ob.download(100)
+    ob.update_downloaded_and_to_download()
+    ob.write_log_file()
+
+
+def test_scrap_all_scripture_main_info_sermoindex():
+    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
+    material_folder = "audio_sermon"
+    browse_by_type = "scripture"
+    ob = sermonindex_scrap_metadata.SermonIndexAudioSermonAllScriptureMainInformation(
+        root_folder,
+        material_folder,
+        browse_by_type,
+        overwrite_log=True
+    )    
+    ob.download(30)
+    ob.update_downloaded_and_to_download()
+    ob.write_log_file()
+
+
+def test_text_sermon_scrap_all_speaker_main_info_sermoindex():
+    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
+    material_folder = "text_sermon"
+    browse_by_type = "speaker"
+    ob = sermonindex_scrap_metadata.SermonIndexAudioSermonAllScriptureMainInformation(
+        root_folder,
+        material_folder,
+        browse_by_type,
+        overwrite_log=True
+    )    
+    ob.download(30)
+    ob.update_downloaded_and_to_download()
+    ob.write_log_file()
+
 if __name__ == "__main__":
     #print("Elvs")
     
     #test_topic()
     #test_scripture()
     #test_audio_sermon_speaker()
-    #test_text_sermon_speaker()
+    test_text_sermon_speaker()
     #test_video_sermon_speaker()
     #test_vintage_image_sermon_speaker()
-    test_scrap_all_author_main_info_sermoindex()
+    #test_scrap_all_topic_main_info_sermoindex()
+    #test_scrap_all_scripture_main_info_sermoindex()
     
        
