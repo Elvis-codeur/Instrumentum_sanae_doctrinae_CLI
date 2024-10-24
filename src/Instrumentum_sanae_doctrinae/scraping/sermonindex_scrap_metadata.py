@@ -67,43 +67,7 @@ class GetTopicOrScriptureOrPodcastOrChristianBooks(scrap_metadata.GetAnyBrowseBy
         super().__init__(metadata_root_folder,log_root_folder,
                             url_list = [url],
                             browse_by_type=browse_by_type)
-        
-
-     
-
-    def scrap_page_useful_links(self):
-        """
-        This method return the useful links of the page. 
-
-        For example for the page of the topics of sermonindex https://www.sermonindex.net/modules/mydownloads/scr_index.php?act=topicsList
-        The useful link are the <a> element
-        of topics as <a href="scr_index.php?act=topicSermons&amp;topic=1%20Corinthians&amp;page=0">1 Corinthians</a>
-
-        """
-
-
-        self.connect_to_url()
-
-        result = []
-
-        for url in self.url_informations:
-            # Get the links (<a> </a>) which leads to the authors main page. 
-            links = self.url_informations[url]['bs4_object'].findAll("a")
-            
-            # Get all the links of the document
-            links = [i for i in links if i.attrs.get("href")]
-
-            links = self.page_useful_links_validation_method(links)
-
-            links = [[i] for i in links]
-
-            result.append((url,links))
-
-        return result
-
-    def page_useful_links_validation_method(self,anchor_list):
-        pass 
-
+    
     
     def useful_link_validation_function(self,link):
         """
@@ -121,11 +85,6 @@ class GetTopicList(GetTopicOrScriptureOrPodcastOrChristianBooks):
                             is_text=False)
         #print(self.__dict__)     
 
-    def page_useful_links_validation_method(self,anchor_list):
-        # Keep the links which have topic in their url
-        anchor_list = [i for i in anchor_list if ("topic" in i.attrs.get("href") and "page" in i.attrs.get("href"))]
-
-        return anchor_list
 
 
 class GetScriptureList(GetTopicOrScriptureOrPodcastOrChristianBooks):
@@ -136,12 +95,6 @@ class GetScriptureList(GetTopicOrScriptureOrPodcastOrChristianBooks):
                          browse_by_type = browse_by_type,
                          is_text=False)
         """"""
-
-    def page_useful_links_validation_method(self,anchor_list):
-        # Keep the links which have boook in their url
-        anchor_list = [i for i in anchor_list if ("act=bookSermons" in i.attrs.get("href") and "page" in i.attrs.get("href"))]
-       
-        return anchor_list
     
 
 
@@ -152,15 +105,8 @@ class GetChristianBookList(GetTopicOrScriptureOrPodcastOrChristianBooks):
                           url = "https://www.sermonindex.net/modules/bible_books/?view=books_list",
                          browse_by_type = browse_by_type,
                          is_text=True)
+
     
-    def page_useful_links_validation_method(self,anchor_list):
-        # Keep the links which have boook in their url
-        anchor_list = [i for i in anchor_list if ("view=book&book" in i.attrs.get("href"))]
-
-        return anchor_list
-    
-
-
 class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
     def __init__(self, metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders=None) -> None:
         super().__init__(metadata_root_folder, log_root_folder, [url], browse_by_type, intermdiate_folders)
@@ -172,21 +118,6 @@ class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
 
         self.other_page_page_list = []
 
-
-    def page_useful_links_validation_method(self,anchor_list,parent_name_for_selection):
-        """"
-        if element.parent.name == parent_name_for_selection, element is added to the list returned 
-        
-        """
-        anchor_list = [i for i  in anchor_list if "view=category&cid="  in i.attrs.get("href")]
-
-        result = [] 
-
-        for  anchor_object in anchor_list:
-            if anchor_object.parent.name == parent_name_for_selection:
-                result.append(anchor_object)
-        
-        return result
 
     def scrap_page_useful_links_and_other_page_links(self,parent_name_for_selection):
         """
@@ -224,30 +155,11 @@ class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
             #print((url,links),other_page_links)
         return result
     
-       
-    def scrap_page_useful_links(self,parent_name_for_selection):
-        result = self.scrap_page_useful_links_and_other_page_links(parent_name_for_selection)
-        self.other_page_page_list = [i[1] for i in result]
-        links = [i[0] for i in result]
-
-        return links
-
 
 
 class GetAudioSermonsSpeakerLinks(GetSpeakerLinks):
     def __init__(self, metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders=None) -> None:
         super().__init__(metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders)
-
-    def page_useful_links_validation_method(self, anchor_list):
-
-        result = []
-        for  anchor_object in anchor_list:
-            next_sibling = anchor_object.next_sibling
-            if next_sibling:
-                if next_sibling:
-                    if "(" in next_sibling and ")" in next_sibling:
-                        result.append(anchor_object)
-        return result
 
    
 class GetTextSermonsSpeakerLinks(GetSpeakerLinks):
@@ -259,20 +171,14 @@ class GetTextSermonsSpeakerLinks(GetSpeakerLinks):
 class GetVideoSermonsSpeakerLinks(GetSpeakerLinks):
     def __init__(self, metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders=None) -> None:
         super().__init__(metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders)
-
-    def page_useful_links_validation_method(self, anchor_list):
-        result = [i for i  in anchor_list if "/myvideo/viewcat.php?cid="  in i.attrs.get("href")]
-        return result
+        
 
 class GetVintageImageSpeakerLinks(GetSpeakerLinks):
     def __init__(self, metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders=None) -> None:
         super().__init__(metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders)
 
-    def page_useful_links_validation_method(self, anchor_list):
-        result = [i for i  in anchor_list if "/myalbum/viewcat.php?cid="  in i.attrs.get("href")]
-        return result
 
-    
+
 class GetSpeakerList():
     def __init__(self,root_folder,material_type,url) -> None:
 
@@ -318,9 +224,25 @@ class GetSpeakerList():
                        self.url,
                        "speaker",)
         
-        ob.scrap_and_write()
-
-        #print(ob.other_page_page_list)
+        # The parent of the anchor object containing the 
+        # url of author topic or scripture depends on the 
+        # material type. The structure of the pages are not 
+        # the same for all the type of material 
+        # In the page of the of the text sermons ( https://www.sermonindex.net/modules/articles/)
+        # The useful anchor objects are in <b> object 
+        # while in the page of the audio sermons (https://www.sermonindex.net/modules/articles/)
+        # The useful anchor object are in <td> object 
+        def set_parent_name_for_selection(material_type):
+            result_dict = {}
+            result_dict["audio"] = "td"
+            result_dict["text"] = "b"
+            result_dict["video"] = "td"
+            result_dict["vintage_image"] = "td"
+            return result_dict[material_type]
+        
+    
+        ob.scrap_and_write(parent_name_for_selection=
+                           set_parent_name_for_selection(self.material_type))
 
         for other_page_per_url in ob.other_page_page_list:
             for url,url_text in other_page_per_url:
@@ -330,7 +252,8 @@ class GetSpeakerList():
                             "speaker",
                             intermdiate_folders = [url_text.strip()]
                                 )
-                other_page_ob.scrap_and_write()
+                if self.material_type == "text":
+                    other_page_ob.scrap_and_write(parent_name_for_selection="td")
 
             
         

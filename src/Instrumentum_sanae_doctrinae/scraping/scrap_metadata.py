@@ -40,25 +40,59 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
         
         super().__init__(metadata_root_folder, log_root_folder, url_list, browse_by_type, intermdiate_folders)
 
-       
-    def scrap_page_useful_links(self,**kwargs):
+
+    def scrap_page_useful_links(self,parent_name_for_selection):
+        """
+        This method return the useful links of the page. 
+
+        For example for the page of the topics of sermonindex https://www.sermonindex.net/modules/mydownloads/scr_index.php?act=topicsList
+        The useful link are the <a> element
+        of topics as <a href="scr_index.php?act=topicSermons&amp;topic=1%20Corinthians&amp;page=0">1 Corinthians</a>
+
+        :param parent_name_for_selection: if element.parent.name == parent_name_for_selection,
+          element is added to the list returned
+
 
         """
-        html_text : The text of the html page retrieved from the url. This method does the main work. 
-        It get the list of the authors, topics or everthing else desired by the developper and and return 
-        return it as a list. 
 
-        Useful links are the links of the authors, topics, etc 
 
-        For example here is the page of the authors of monergism https://www.monergism.com/authors. 
-        Here is an example useful link **<a href="/search?f[0]=author:39115">H.B. Charles Jr.</a>**
-
-        
-        """
         self.connect_to_url()
 
+        result = []
+
+        for url in self.url_informations:
+            # Get the links (<a> </a>) which leads to the authors main page. 
+            links = self.url_informations[url]['bs4_object'].findAll("a")
+            
+            # Get all the links of the document
+            links = [i for i in links if i.attrs.get("href")]
+
+            links = self.page_useful_links_validation_method(links,parent_name_for_selection = parent_name_for_selection)
+
+            links = [[i] for i in links]
+
+            result.append((url,links))
+
+        return result
+
+
+    def page_useful_links_validation_method(self,anchor_list,parent_name_for_selection):
+        """"
+        if element.parent.name == parent_name_for_selection, element is added to the list returned 
+        
+        """
+        anchor_list = [i for i  in anchor_list if "view="  in i.attrs.get("href")]
+
+        result = [] 
+
+        for  anchor_object in anchor_list:
+            if anchor_object.parent.name == parent_name_for_selection:
+                result.append(anchor_object)
+        
+        return result
+
     
-    def scrap_and_write(self,save_html_file= True,):
+    def scrap_and_write(self,save_html_file= True,parent_name_for_selection = None):
         """
         Connect to the url specified, scrap the right data, save the html content in a file and write the result in an json file 
         
@@ -76,7 +110,7 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
 
         # A list of dictionnaries containing the information of the HTML anchor element scrapped 
         
-        for url,anchor_as_dict_list in self.scrap_page_useful_links():
+        for url,anchor_as_dict_list in self.scrap_page_useful_links(parent_name_for_selection = parent_name_for_selection):
             #print(url,anchor_as_dict_list)
             anchor_as_dict_list = self.anchor_object_list_to_dict_list(anchor_as_dict_list,url)
             self.prepare_json_data_for_saving(anchor_as_dict_list)

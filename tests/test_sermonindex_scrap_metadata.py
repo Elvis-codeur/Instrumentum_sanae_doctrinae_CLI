@@ -125,12 +125,12 @@ def test_text_sermon_scrap_all_speaker_main_info_sermoindex():
 if __name__ == "__main__":
     #print("Elvs")
     
-    #test_topic()
-    #test_scripture()
-    #test_audio_sermon_speaker()
+    test_topic()
+    test_scripture()
+    test_audio_sermon_speaker()
     test_text_sermon_speaker()
-    #test_video_sermon_speaker()
-    #test_vintage_image_sermon_speaker()
+    test_video_sermon_speaker()
+    test_vintage_image_sermon_speaker()
     #test_scrap_all_topic_main_info_sermoindex()
     #test_scrap_all_scripture_main_info_sermoindex()
     
