@@ -41,7 +41,7 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
         super().__init__(metadata_root_folder, log_root_folder, url_list, browse_by_type, intermdiate_folders)
 
 
-    def scrap_page_useful_links(self,parent_name_for_selection):
+    def scrap_page_useful_links(self,**kwargs):
         """
         This method return the useful links of the page. 
 
@@ -54,21 +54,18 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
 
 
         """
-
-
         self.connect_to_url()
 
         result = []
 
+        #print(kwargs.keys(),"get_useful_link_method")
+
         for url in self.url_informations:
             # Get the links (<a> </a>) which leads to the authors main page. 
-            links = self.url_informations[url]['bs4_object'].findAll("a")
+            bs4_object = self.url_informations[url]['bs4_object']
             
-            # Get all the links of the document
-            links = [i for i in links if i.attrs.get("href")]
-
-            links = self.page_useful_links_validation_method(links,parent_name_for_selection = parent_name_for_selection)
-
+            links = kwargs.get("get_useful_link_method")(bs4_object)
+           
             links = [[i] for i in links]
 
             result.append((url,links))
@@ -81,7 +78,6 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
         if element.parent.name == parent_name_for_selection, element is added to the list returned 
         
         """
-        anchor_list = [i for i  in anchor_list if "view="  in i.attrs.get("href")]
 
         result = [] 
 
@@ -90,9 +86,8 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
                 result.append(anchor_object)
         
         return result
-
-    
-    def scrap_and_write(self,save_html_file= True,parent_name_for_selection = None):
+        
+    def scrap_and_write(self,save_html_file= True,**kwargs):
         """
         Connect to the url specified, scrap the right data, save the html content in a file and write the result in an json file 
         
@@ -110,7 +105,7 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
 
         # A list of dictionnaries containing the information of the HTML anchor element scrapped 
         
-        for url,anchor_as_dict_list in self.scrap_page_useful_links(parent_name_for_selection = parent_name_for_selection):
+        for url,anchor_as_dict_list in self.scrap_page_useful_links(**kwargs):
             #print(url,anchor_as_dict_list)
             anchor_as_dict_list = self.anchor_object_list_to_dict_list(anchor_as_dict_list,url)
             self.prepare_json_data_for_saving(anchor_as_dict_list)

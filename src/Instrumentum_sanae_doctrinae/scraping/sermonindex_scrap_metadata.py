@@ -67,14 +67,6 @@ class GetTopicOrScriptureOrPodcastOrChristianBooks(scrap_metadata.GetAnyBrowseBy
         super().__init__(metadata_root_folder,log_root_folder,
                             url_list = [url],
                             browse_by_type=browse_by_type)
-    
-    
-    def useful_link_validation_function(self,link):
-        """
-        :param link: A bs4 HTML anchor element
-
-        Return true if the link is an usefull link 
-        """
         
 
 class GetTopicList(GetTopicOrScriptureOrPodcastOrChristianBooks):
@@ -83,7 +75,21 @@ class GetTopicList(GetTopicOrScriptureOrPodcastOrChristianBooks):
                           url = "https://www.sermonindex.net/modules/mydownloads/scr_index.php?act=topicsList",
                             browse_by_type = browse_by_type,
                             is_text=False)
-        #print(self.__dict__)     
+        #print(self.__dict__) 
+
+    def get_useful_anchor_object_list(self,bs4_container):
+        """
+        :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
+        """    
+
+        container = bs4_container.find("table",
+                                       attrs = {"width":"100%",
+                                                "cellspacing":"0",
+                                                "border":"0"})
+        container = container.find("div")
+
+        return container.find_all("a")
+
 
 
 
@@ -97,7 +103,17 @@ class GetScriptureList(GetTopicOrScriptureOrPodcastOrChristianBooks):
         """"""
     
 
+    def get_useful_anchor_object_list(self,bs4_container):
+        """
+        :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
+        """    
 
+        container = bs4_container.find("table",
+                                       attrs = {"width":"90%",
+                                                "cellpadding":"0",
+                                                "cellspacing":"0",
+                                                "border":"0"})
+        return container.find_all("a")
 
 class GetChristianBookList(GetTopicOrScriptureOrPodcastOrChristianBooks):
     def __init__(self, root_folder, browse_by_type = "christian_book") -> None:
@@ -105,6 +121,25 @@ class GetChristianBookList(GetTopicOrScriptureOrPodcastOrChristianBooks):
                           url = "https://www.sermonindex.net/modules/bible_books/?view=books_list",
                          browse_by_type = browse_by_type,
                          is_text=True)
+        
+
+    def get_useful_anchor_object_list(self,bs4_container):
+        """
+        :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
+        """    
+
+        container = bs4_container.find("table",
+                                       attrs = {"width":"100%",
+                                                "cellpadding":"2",
+                                                "cellspacing":"2",
+                                                "border":"0"})
+        
+        container = container.find("div")
+        return container.find_all("a")
+
+
+
+
 
     
 class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
@@ -116,14 +151,12 @@ class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
         # https://www.sermonindex.net/modules/mydownloads/
         # https://www.sermonindex.net/modules/articles/
 
-        self.other_page_page_list = []
-
-
-    def scrap_page_useful_links_and_other_page_links(self,parent_name_for_selection):
-        """
-        if element.parent.name == parent_name_for_selection, element is added to the list returned
-        """
         
+        # A list to store the link ot the other pages 
+        # For example 
+        self.other_page_links = []
+
+    def scrap_page_useful_links(self,**kwargs):
         
         # Connect to the url and create a beautiful soup object with the html for scraping 
         self.connect_to_url()
@@ -131,28 +164,21 @@ class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
         result = [] 
 
         for url in self.url_informations:
-
-            other_page_links = []
-
             links = []
+            other_page_list = []
 
-            anchor_list = self.url_informations[url]['bs4_object'].findAll("a")
-
-            # A method to filter the useful links. All the subclasses has to reimplement 
-            # this method to their needs
-            anchor_list = [i  for i in anchor_list if i.attrs.get("href")]
-
-            anchor_list = self.page_useful_links_validation_method(anchor_list,parent_name_for_selection)
-        
+            bs4_object = self.url_informations[url]['bs4_object']
+            anchor_list =  kwargs.get("get_useful_link_method")(bs4_object)
+           
             for i in anchor_list:
+                
                 if "~" not in i.get_text():
                     if i.get_text():
                         links.append([i])
                 else:
-                    other_page_links.append((urllib.parse.urljoin(url, i.attrs.get("href")),i.get_text().strip()))
-
-            result.append(((url,links),other_page_links))
-            #print((url,links),other_page_links)
+                    other_page_list.append((urllib.parse.urljoin(url, i.attrs.get("href")),i.get_text().strip()))
+            self.other_page_links.append(other_page_list)
+            result.append((url,links))
         return result
     
 
@@ -161,22 +187,211 @@ class GetAudioSermonsSpeakerLinks(GetSpeakerLinks):
     def __init__(self, metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders=None) -> None:
         super().__init__(metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders)
 
+    def get_useful_anchor_object_list_on_main_page(self,bs4_container):
+        """
+        :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
+        This function work on this page https://www.sermonindex.net/modules/mydownloads/
+        """    
+
+        container = bs4_container.find("table",
+                                       attrs = {"width":"90%",
+                                                "cellpadding":"0",
+                                                "cellspacing":"5",
+                                                "border":"0"})
+        
+        result = []
+
+        tr_container_list = container.find_all("tr")
+
+        for tr_container in tr_container_list:
+            td_container_list = tr_container.find_all("td")
+            if len(td_container_list) >= 4:
+                anchor_element1 = td_container_list[1].find("a")
+                anchor_element2 = td_container_list[3].find("a")
+
+                if anchor_element1:
+                    result.append(anchor_element1)
+
+                if anchor_element2:
+                    result.append(anchor_element2)
+
+
+        return result
+    
+    def get_useful_anchor_object_list_on_other_page(self,bs4_container):
+        """
+        :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
+        This function work on this pages 
+            - https://www.sermonindex.net/modules/mydownloads/viewcat.php?cid=670
+            - https://www.sermonindex.net/modules/mydownloads/viewcat.php?cid=168
+            - https://www.sermonindex.net/modules/mydownloads/viewcat.php?cid=58
+            - https://www.sermonindex.net/modules/mydownloads/viewcat.php?cid=59
+            - https://www.sermonindex.net/modules/mydownloads/viewcat.php?cid=60
+            - https://www.sermonindex.net/modules/mydownloads/viewcat.php?cid=61
+
+        """    
+
+        container = bs4_container.find("table",
+                                       attrs = {"width":"95%"})
+        
+        return container.find_all("a")
+    
    
 class GetTextSermonsSpeakerLinks(GetSpeakerLinks):
     def __init__(self, metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders=None) -> None:
         super().__init__(metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders)
 
+
+    def get_useful_anchor_object_list_on_main_page(self,bs4_container):
+        """
+        :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
+        This function work on this page https://www.sermonindex.net/modules/articles/
+        """    
+
+        result = bs4_container.find_all("a")
+
+        result = [i for i in result if "view=category&amp;cid=" in i.get("href")]
+
+        result = [i for i in result if i.parent.name == "b"]
+
+        return result
+    
+    def get_useful_anchor_object_list_on_other_page(self,bs4_container):
+        """
+        :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
+        This function work on this pages 
+            - https://www.sermonindex.net/modules/articles/index.php?view=category&cid=115
+            - https://www.sermonindex.net/modules/articles/index.php?view=category&cid=116
+            - https://www.sermonindex.net/modules/articles/index.php?view=category&cid=117
+            - https://www.sermonindex.net/modules/articles/index.php?view=category&cid=118
+            
+        """    
+
+        container = bs4_container.find("table",
+                                       attrs = {"width":"100%",
+                                                "cellpadding":"3",
+                                                "cellspacing":"0",
+                                                "border":"0"})
+        
+        container = container.find_all("table")[1]
+        
+        return container.find_all("a")
     
     
 class GetVideoSermonsSpeakerLinks(GetSpeakerLinks):
     def __init__(self, metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders=None) -> None:
         super().__init__(metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders)
+
+
+    def get_useful_anchor_object_list_on_main_page(self,bs4_container):
+        """
+        :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
+        This function work on this page https://www.sermonindex.net/modules/myvideo/
+        """    
+
         
+        container = bs4_container.find("table",
+                                       attrs = {"width":"90%",
+                                                "cellpadding":"0",
+                                                "cellspacing":"5",
+                                                "border":"0"})
+        
+        result = []
+
+        tr_container_list = container.find_all("tr")
+
+        for tr_container in tr_container_list:
+            td_container_list = tr_container.find_all("td")
+            if len(td_container_list) >= 4:
+                anchor_element1 = td_container_list[1].find("a")
+                anchor_element2 = td_container_list[3].find("a")
+
+                if anchor_element1:
+                    result.append(anchor_element1)
+
+                if anchor_element2:
+                    result.append(anchor_element2)
+
+
+
+        return result
+    
+    def get_useful_anchor_object_list_on_other_page(self,bs4_container):
+        """
+        :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
+        This function work on this pages 
+            - https://www.sermonindex.net/modules/myvideo/viewcat.php?cid=21
+            - https://www.sermonindex.net/modules/myvideo/viewcat.php?cid=22
+            - https://www.sermonindex.net/modules/myvideo/viewcat.php?cid=23
+            - https://www.sermonindex.net/modules/myvideo/viewcat.php?cid=24
+        """    
+
+        container = bs4_container.find("table",
+                                       attrs = {"width":"100%",
+                                                "cellpadding":"3",
+                                                "cellspacing":"0",
+                                                "border":"0"})
+        
+        container = container.find("table")
+        
+        return container.find_all("a")
+    
+    
 
 class GetVintageImageSpeakerLinks(GetSpeakerLinks):
     def __init__(self, metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders=None) -> None:
         super().__init__(metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders)
 
+
+    def get_useful_anchor_object_list_on_main_page(self,bs4_container):
+        """
+        :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
+        This function work on this page https://www.sermonindex.net/modules/myalbum/index.php
+        """    
+
+        
+        container = bs4_container.find("table",
+                                       attrs = {"width":"90%",
+                                                "cellpadding":"0",
+                                                "cellspacing":"5",
+                                                "border":"0"})
+        
+        result = []
+
+        tr_container_list = container.find_all("tr")
+
+        for tr_container in tr_container_list:
+            td_container_list = tr_container.find_all("td")
+            if len(td_container_list) >= 4:
+                anchor_element1 = td_container_list[1].find("a")
+                anchor_element2 = td_container_list[3].find("a")
+
+                if anchor_element1:
+                    result.append(anchor_element1)
+
+                if anchor_element2:
+                    result.append(anchor_element2)
+
+
+
+        return result
+    
+    def get_useful_anchor_object_list_on_other_page(self,bs4_container):
+        """
+        :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
+        This function work on this pages 
+            - https://www.sermonindex.net/modules/myalbum/viewcat.php?cid=7
+            - https://www.sermonindex.net/modules/myalbum/viewcat.php?cid=8
+            - https://www.sermonindex.net/modules/myalbum/viewcat.php?cid=9
+            - https://www.sermonindex.net/modules/myalbum/viewcat.php?cid=10
+            
+        """    
+
+        container = bs4_container.find("table",
+                                       attrs = {"width":"95%",})
+        
+        return container.find_all("a")
+    
 
 
 class GetSpeakerList():
@@ -232,19 +447,13 @@ class GetSpeakerList():
         # The useful anchor objects are in <b> object 
         # while in the page of the audio sermons (https://www.sermonindex.net/modules/articles/)
         # The useful anchor object are in <td> object 
-        def set_parent_name_for_selection(material_type):
-            result_dict = {}
-            result_dict["audio"] = "td"
-            result_dict["text"] = "b"
-            result_dict["video"] = "td"
-            result_dict["vintage_image"] = "td"
-            return result_dict[material_type]
         
-    
-        ob.scrap_and_write(parent_name_for_selection=
-                           set_parent_name_for_selection(self.material_type))
-
-        for other_page_per_url in ob.other_page_page_list:
+        
+        ob.scrap_and_write(get_useful_link_method = 
+                            ob.get_useful_anchor_object_list_on_main_page)
+       
+        #print(ob.other_page_links)
+        for other_page_per_url in ob.other_page_links:
             for url,url_text in other_page_per_url:
                 other_page_ob = ob_class(self.metadata_root_folder,
                             self.log_root_folder,
@@ -252,8 +461,9 @@ class GetSpeakerList():
                             "speaker",
                             intermdiate_folders = [url_text.strip()]
                                 )
-                if self.material_type == "text":
-                    other_page_ob.scrap_and_write(parent_name_for_selection="td")
+                
+                other_page_ob.scrap_and_write(get_useful_link_method = 
+                                                  ob.get_useful_anchor_object_list_on_other_page)
 
             
         
