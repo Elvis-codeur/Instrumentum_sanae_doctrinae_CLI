@@ -56,9 +56,6 @@ class GetTopicOrScriptureOrPodcastOrChristianBooks(scrap_metadata.GetAnyBrowseBy
         """
         if not root_folder:
             root_folder = os.getcwd()
-
-
-
         
         material_root_folder = my_constants.SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER if is_text else my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
     
@@ -69,7 +66,7 @@ class GetTopicOrScriptureOrPodcastOrChristianBooks(scrap_metadata.GetAnyBrowseBy
                             browse_by_type=browse_by_type)
         
 
-class GetTopicList(GetTopicOrScriptureOrPodcastOrChristianBooks):
+class GetAudioSermonTopicList(GetTopicOrScriptureOrPodcastOrChristianBooks):
     def __init__(self, root_folder, browse_by_type = "topic") -> None:
         super().__init__(root_folder,
                           url = "https://www.sermonindex.net/modules/mydownloads/scr_index.php?act=topicsList",
@@ -92,8 +89,38 @@ class GetTopicList(GetTopicOrScriptureOrPodcastOrChristianBooks):
 
 
 
+class GetAudioSermonPodcastList(GetTopicOrScriptureOrPodcastOrChristianBooks):
+    def __init__(self, root_folder, browse_by_type = "podcast") -> None:
+        super().__init__(root_folder,
+                          url = "https://www.sermonindex.net/podcast.php",
+                            browse_by_type = browse_by_type,
+                            is_text=False)
+        #print(self.__dict__) 
 
-class GetScriptureList(GetTopicOrScriptureOrPodcastOrChristianBooks):
+    def get_useful_anchor_object_list(self,bs4_container):
+        """
+        :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
+        """    
+
+        container = bs4_container.find("table",
+                                       attrs = {"width":"100%",
+                                                "cellspacing":"0",
+                                                "cellpadding":"1",
+                                                "width":"571",
+                                                "border":"0"})
+        
+        result = container.find("tr").find("td").\
+                find_all("a")
+
+        #print(result)
+
+        #result = [i for i in result if 
+        #          urllib.parse.urlparse(i.get("href")).netloc == "archive.org"]
+
+        return result 
+
+
+class GetAudioSermonScriptureList(GetTopicOrScriptureOrPodcastOrChristianBooks):
     """"""
     def __init__(self, root_folder, browse_by_type = "scripture") -> None:
         super().__init__(root_folder,
@@ -115,7 +142,7 @@ class GetScriptureList(GetTopicOrScriptureOrPodcastOrChristianBooks):
                                                 "border":"0"})
         return container.find_all("a")
 
-class GetChristianBookList(GetTopicOrScriptureOrPodcastOrChristianBooks):
+class GetAudioSermonChristianBookList(GetTopicOrScriptureOrPodcastOrChristianBooks):
     def __init__(self, root_folder, browse_by_type = "christian_book") -> None:
         super().__init__(root_folder,
                           url = "https://www.sermonindex.net/modules/bible_books/?view=books_list",
@@ -141,7 +168,15 @@ class GetChristianBookList(GetTopicOrScriptureOrPodcastOrChristianBooks):
 
 
 
-    
+
+
+
+
+
+
+
+
+   
 class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
     def __init__(self, metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders=None) -> None:
         super().__init__(metadata_root_folder, log_root_folder, [url], browse_by_type, intermdiate_folders)
@@ -248,12 +283,24 @@ class GetTextSermonsSpeakerLinks(GetSpeakerLinks):
         This function work on this page https://www.sermonindex.net/modules/articles/
         """    
 
-        result = bs4_container.find_all("a")
+        container = bs4_container.find("table",
+                                       attrs = {"width":"100%",
+                                                "cellpadding":"2",
+                                                "cellspacing":"2",
+                                                "border":"0"})
+        
+        container = container.find("tr").find("td")
+        
+        container = [i for i in container.find_all("table") if not i.attrs][0]
+        
+        containers = container.find_all("table")
+        containers = [i for i in containers if not i.attrs]
 
-        result = [i for i in result if "view=category&amp;cid=" in i.get("href")]
 
-        result = [i for i in result if i.parent.name == "b"]
-
+        result = [i.find_all("a")[1] for i in containers]
+        result = [i for i in result if i]
+        result = [i for i in result if "index.php?view=category" in i.get("href")]
+        
         return result
     
     def get_useful_anchor_object_list_on_other_page(self,bs4_container):
@@ -266,16 +313,21 @@ class GetTextSermonsSpeakerLinks(GetSpeakerLinks):
             - https://www.sermonindex.net/modules/articles/index.php?view=category&cid=118
             
         """    
-
+        
         container = bs4_container.find("table",
                                        attrs = {"width":"100%",
                                                 "cellpadding":"3",
                                                 "cellspacing":"0",
                                                 "border":"0"})
         
-        container = container.find_all("table")[1]
+        container = container.find("tr").find("td")
         
+        container = container.find_all("table",recursive = False)[1]
         return container.find_all("a")
+    
+
+
+
     
     
 class GetVideoSermonsSpeakerLinks(GetSpeakerLinks):
@@ -331,9 +383,30 @@ class GetVideoSermonsSpeakerLinks(GetSpeakerLinks):
                                                 "cellpadding":"3",
                                                 "cellspacing":"0",
                                                 "border":"0"})
+
+        container = container.find_all("tr",recursive = False)[-1]
         
-        container = container.find("table")
+        container = container.find("td").find("table")
         
+        return container.find_all("a")
+    
+
+
+class GetTextSermonsChristianBook(GetTopicOrScriptureOrPodcastOrChristianBooks):
+    def __init__(self, root_folder, 
+                 url = "https://www.sermonindex.net/modules/bible_books/?view=books_list",
+                  browse_by_type = "Christian Book", is_text= True):
+        
+        super().__init__(root_folder, url, browse_by_type, is_text)
+
+
+    def get_useful_anchor_object_list(self,bs4_container):
+        """
+        :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
+        """    
+
+        container = bs4_container.find("div",
+                                       attrs = {"class":"bookContentsPage"})
         return container.find_all("a")
     
     
@@ -617,36 +690,8 @@ class SermonIndexScrapAuthorTopicScriptureMainInformation(SermonIndexScrapAuthor
         return final_result
     
 
-# Text sermon main information 
 
-class SermonIndexAudioSermonScrapAuthorMainInformation(SermonIndexScrapAuthorTopicScriptureMainInformation):
-    def __init__(self, name, root_folder, url_list,intermdiate_folders):
-        super().__init__(name, root_folder, "speaker", url_list,
-                        material_root_folder =  my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER,
-                         intermdiate_folders = intermdiate_folders)
-
-
-class SermonIndexAudioSermonScrapTopicMainInformation(SermonIndexScrapAuthorTopicScriptureMainInformation):
-    def __init__(self, name, root_folder, url_list,intermdiate_folders):
-        super().__init__(name, root_folder, "topic", url_list,
-                        material_root_folder =  my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER,
-                         intermdiate_folders = intermdiate_folders)
-
-
-class SermonIndexAudioSermonScrapScriptureMainInformation(SermonIndexScrapAuthorTopicScriptureMainInformation):
-    def __init__(self, name, root_folder, url_list,intermdiate_folders):
-        super().__init__(name, root_folder, "scripture", url_list,
-                        material_root_folder =  my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER,
-                         intermdiate_folders = intermdiate_folders)
-
-# For text Sermon 
-class SermonIndexTextSermonScrapSpeakerMainInformation(SermonIndexScrapAuthorTopicScriptureMainInformation):
-    def __init__(self, name, root_folder, url_list,intermdiate_folders):
-        super().__init__(name, root_folder, "speaker", url_list,
-                        material_root_folder =  my_constants.SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER,
-                         intermdiate_folders = intermdiate_folders)
-
-
+# Download the main information of each author, topic, etc 
 
 
 class SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation(scrap_metadata.ScrapWebSiteAllAuthorTopicScriptures):
@@ -670,24 +715,39 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation(scrap_metad
                          input_root_folder,
                          overwrite_log,update_log)
         
+        self.material_root_folder = material_root_folder
+        self.browse_by_type = browse_by_type
         self.root_folder = root_folder
 
+    
     
     def download_element_data(self,element):
         """This element take an element ( for example the information of an author or topic) 
         and download the data that must be downloaded from it """
+
+
+        ob = SermonIndexScrapAuthorTopicScriptureMainInformation(
+            name = element.get("name"),
+            root_folder = self.root_folder,
+            browse_by_type = self.browse_by_type,
+            url_list = element.get("url_list"),
+            intermdiate_folders = element.get("download_log").get("intermediate_folders"),
+            material_root_folder = self.material_root_folder
+        )
+
+        ob.scrap_and_write()
+
+    def is_element_data_downloaded(self,element):
+        ob = SermonIndexScrapAuthorTopicScriptureMainInformation(
+            name = element.get("name"),
+            root_folder = self.root_folder,
+            browse_by_type =self.browse_by_type,
+            url_list = element.get("url_list"),
+            intermdiate_folders = element.get("download_log").get("intermediate_folders"),
+            material_root_folder = self.material_root_folder
+        )
+        return ob.is_data_downloaded()
         
-
-        try: 
-            ob = SermonIndexAudioSermonScrapAuthorMainInformation(
-            element.get("name"),self.root_folder,element.get("url_list"),
-            element.get("download_log").get("intermediate_folders"))
-            ob.scrap_and_write()
-            
-            return {"success":True}
-        except Exception as e:
-            return {"success":False,"error":"".join(traceback.format_exception(e))}
-
 
     def download(self,download_batch_size):
         """
@@ -718,59 +778,7 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation(scrap_metad
 
      
 
-class SermonIndexAudioSermonAllAuthorMainInformation(SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation):
-    def __init__(self, root_folder, material_root_folder, browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
-        super().__init__(root_folder, material_root_folder, browse_by_type, overwrite_log, update_log,intermdiate_folders)
-
-
-    def download_element_data(self,element):
-        """This element take an element ( for example the information of an author or topic) 
-        and download the data that must be downloaded from it """
-
-        ob = SermonIndexAudioSermonScrapAuthorMainInformation(
-            element.get("name"),self.root_folder,element.get("url_list"),
-            element.get("download_log").get("intermediate_folders")
-        )
-
-        ob.scrap_and_write()
-
-    def is_element_data_downloaded(self,element):
-        ob = SermonIndexAudioSermonScrapAuthorMainInformation(
-            element.get("name"),self.root_folder,element.get("url_list"),
-            element.get("download_log").get("intermediate_folders")
-        )
-        #print(ob)
-        return ob.is_data_downloaded()
-        
-
-
-
-class SermonIndexAudioSermonAllTopicMainInformation(SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation):
-    def __init__(self, root_folder, material_root_folder, browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
-        super().__init__(root_folder, material_root_folder, browse_by_type, overwrite_log, update_log,intermdiate_folders)
-
-
-    def download_element_data(self,element):
-        """This element take an element ( for example the information of an author or topic) 
-        and download the data that must be downloaded from it """
-
-        ob = SermonIndexAudioSermonScrapTopicMainInformation(
-            element.get("name"),self.root_folder,element.get("url_list"),
-            element.get("download_log").get("intermediate_folders")
-        )
-
-        ob.scrap_and_write()
-
-    def is_element_data_downloaded(self,element):
-        ob = SermonIndexAudioSermonScrapTopicMainInformation(
-            element.get("name"),self.root_folder,element.get("url_list"),
-            element.get("download_log").get("intermediate_folders")
-        )
-        return ob.is_data_downloaded()
-        
-
-
-
+# Audio sermon scripture 
 class SermonIndexAudioSermonAllScriptureMainInformation(SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation):
     def __init__(self, root_folder, material_root_folder, browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
         super().__init__(root_folder, material_root_folder, browse_by_type, overwrite_log, update_log,intermdiate_folders)
@@ -780,42 +788,25 @@ class SermonIndexAudioSermonAllScriptureMainInformation(SermonIndexScrapWebSiteA
         """This element take an element ( for example the information of an author or topic) 
         and download the data that must be downloaded from it """
 
-        ob = SermonIndexAudioSermonScrapScriptureMainInformation(
-            element.get("name"),self.root_folder,element.get("url_list"),
-            element.get("download_log").get("intermediate_folders")
+        ob = SermonIndexScrapAuthorTopicScriptureMainInformation(
+            name = element.get("name"),
+            root_folder = self.root_folder,
+            browse_by_type ="scripture",
+            url_list = element.get("url_list"),
+            intermdiate_folders = element.get("download_log").get("intermediate_folders"),
+            material_root_folder = self.material_root_folder
         )
 
         ob.scrap_and_write()
 
     def is_element_data_downloaded(self,element):
-        ob = SermonIndexAudioSermonScrapScriptureMainInformation(
-            element.get("name"),self.root_folder,element.get("url_list"),
-            element.get("download_log").get("intermediate_folders")
-        )
-        return ob.is_data_downloaded()
-        
-
-
-class SermonIndexTextSermonAllSpeakerMainInformation(SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation):
-    def __init__(self, root_folder, material_root_folder, browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
-        super().__init__(root_folder, material_root_folder, browse_by_type, overwrite_log, update_log,intermdiate_folders)
-
-
-    def download_element_data(self,element):
-        """This element take an element ( for example the information of an author or topic) 
-        and download the data that must be downloaded from it """
-
-        ob = SermonIndexAudioSermonScrapScriptureMainInformation(
-            element.get("name"),self.root_folder,element.get("url_list"),
-            element.get("download_log").get("intermediate_folders")
-        )
-
-        ob.scrap_and_write()
-
-    def is_element_data_downloaded(self,element):
-        ob = SermonIndexAudioSermonScrapScriptureMainInformation(
-            element.get("name"),self.root_folder,element.get("url_list"),
-            element.get("download_log").get("intermediate_folders")
+        ob = SermonIndexScrapAuthorTopicScriptureMainInformation(
+            name = element.get("name"),
+            root_folder = self.root_folder,
+            browse_by_type ="scripture",
+            url_list = element.get("url_list"),
+            intermdiate_folders = element.get("download_log").get("intermediate_folders"),
+            material_root_folder = self.material_root_folder
         )
         return ob.is_data_downloaded()
         
