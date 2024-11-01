@@ -153,6 +153,7 @@ class MonergismScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicScri
         """
         
         """
+        self.connect_to_url()
     
 
 
@@ -195,7 +196,7 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
         final_result = []
 
         for url in self.url_informations:
-
+            
             soup = self.url_informations[url].get("bs4_object")
 
             # Filter by topic
@@ -224,19 +225,3 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
             final_result.append(result)
 
         return final_result 
-
-
-
-class MonergismScrapAuthorMainPage(MonergismScrapAuthorTopicScriptureMainPage):
-    def __init__(self, name, root_folder, url) -> None:
-        super().__init__(name, root_folder, url, "speaker")
-    
-
-class MonergismScrapTopicMainPage(MonergismScrapAuthorTopicScriptureMainPage):
-    def __init__(self, name, root_folder, url) -> None:
-        super().__init__(name, root_folder, url, "topic")
-
-
-class MonergismScrapScriptureMainPage(MonergismScrapAuthorTopicScriptureMainPage):
-    def __init__(self, name, root_folder, url) -> None:
-        super().__init__(name, root_folder, url, "scripture")

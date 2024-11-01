@@ -6,6 +6,9 @@ import urllib.parse
 import pathlib
 import traceback
 
+from bs4 import BeautifulSoup
+import requests
+
 
 
 from ..scraping import scrap_metadata
@@ -589,6 +592,8 @@ class SermonIndexScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicSc
         super().__init__(name,metadata_root_folder,log_root_folder,url,browse_by_type,intermdiate_folders)
 
 
+
+
 class SermonIndexAudioSermonScrapAuthorTopicScripturePage(SermonIndexScrapAuthorTopicScripturePage):
     def __init__(self, name, root_folder, url):
         
@@ -690,16 +695,13 @@ class SermonIndexScrapAuthorTopicScriptureMainInformation(SermonIndexScrapAuthor
         return final_result
     
 
-
 # Download the main information of each author, topic, etc 
-
-
 class SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation(scrap_metadata.ScrapWebSiteAllAuthorTopicScriptures):
     def __init__(self,root_folder,material_root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
         
         root_folder = _my_tools.process_path_according_to_cwd(root_folder)
 
-        log_root_folder = os.path.join(root_folder,my_constants.LOGS_ROOT_FOLDER,
+        log_filepath = os.path.join(root_folder,my_constants.LOGS_ROOT_FOLDER,
                                        my_constants.SERMONINDEX_NAME,
                                        material_root_folder,browse_by_type,
                                        my_constants.ELABORATED_DATA_FOLDER,
@@ -711,9 +713,11 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation(scrap_metad
                                          material_root_folder,my_constants.ELABORATED_DATA_FOLDER,
                                          browse_by_type)
 
-        super().__init__(log_root_folder,
-                         input_root_folder,
-                         overwrite_log,update_log)
+        super().__init__(log_filepath = log_filepath,
+                         input_root_folder = input_root_folder,
+                         subfolder_pattern = my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER,
+                         overwrite_log = overwrite_log,
+                         update_log = update_log)
         
         self.material_root_folder = material_root_folder
         self.browse_by_type = browse_by_type
@@ -749,50 +753,262 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation(scrap_metad
         return ob.is_data_downloaded()
         
 
-    def download(self,download_batch_size):
-        """
-        Download the content of the input files concurrently 
-        by a batch of size :data:`download_batch` 
-        """
-        result = []
 
-        # Update before the begining of downloads
-        self.update_downloaded_and_to_download() 
-         
-        element_to_download = list(self.log_file_content["to_download"].values())
+# Scrap the works on the page of each author, topic, etc
+# This class works for the audio sermons 
+
+
+class SermonIndexAudioSermonScrapAuthorTopicScriptureWork(SermonIndexScrapAuthorTopicScripturePage):
+    def __init__(self, name, root_folder,browse_by_type, url_list,material_root_folder,intermdiate_folders=None):
         
-        print(f"to_download = {len(element_to_download)} Download batch size = {download_batch_size}")
-        # Split it by size download_batch_size to download
-        #  them in parralel 
-        element_to_download_splitted = _my_tools.sample_list(element_to_download,
-                                                      download_batch_size)
+        super().__init__(name, root_folder, url_list,browse_by_type,material_root_folder = material_root_folder,intermdiate_folders = intermdiate_folders)
+        
+        
 
-        with ThreadPoolExecutor() as executor:
-            for download_batch in element_to_download_splitted:
-                result_list = executor.map(
-                                self.download_element_data,download_batch)    
-            self.update_downloaded_and_to_download()
-      
+    def scrap_url_pages(self):
+        """
+        Scrap the main information of the web page. Here the description, the 
+        urls of the author, topic, scripture work 
+        """
+        super().scrap_url_pages()
+
+        final_result = []
+
+        for url in self.url_informations:
+                
+            soup = self.url_informations[url].get("bs4_object")
+
+            
+
+            main_links_element = soup.find("table",{"border":0,"cellspacing":0,
+                                            "cellpadding":10,"width":"100%"})
+            
+            if main_links_element:
+                main_links_element = main_links_element.find_all("tr")
+            else:
+                return []
+            
+
+            #print(*main_links_element[:2],sep="\n\n\n")
+
+            author_name = ""
 
 
+            result = []
 
-     
+            compteur = 0
+            for element in main_links_element:
+            
+                a_element = element.find("a")
+                
+                compteur += 1
 
-# Audio sermon scripture 
-class SermonIndexAudioSermonAllScriptureMainInformation(SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation):
-    def __init__(self, root_folder, material_root_folder, browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
-        super().__init__(root_folder, material_root_folder, browse_by_type, overwrite_log, update_log,intermdiate_folders)
+                # There is some element in the main_links_element which are not a comment element
 
+                if a_element:
+
+
+                    url = a_element.get("href")
+                    link_text  = a_element.get_text()
+
+                    element_content = element.contents[-1].findAll("tr")[1:]
+
+
+                    if (len(element_content) > 1):
+
+                        add_element_to_topic = False
+                        add_element_to_scriptures = False
+
+                        topic_list = []
+                        scripture_list = []
+
+                        #print("\n\n\n",element_content[1].contents[0].contents[1:],compteur)
+                        #print("\n\n\n",element_content[1],"\n",element_content)
+
+                    
+                        for comp in element_content[1].contents[0].contents[1:]:
+                            if "by" in comp.get_text():
+                                author_name = comp.get_text().split(" ")
+                                if len(author_name) > 1:
+
+                                    author_name = " ".join(author_name[1:])
+
+                            if  "Topic:" in comp.get_text():
+                                add_element_to_topic = True
+
+                            if "Scripture" in comp.get_text():
+                                add_element_to_scriptures = True
+                                add_element_to_topic = False
+
+                            if comp.name == 'i' and add_element_to_topic:
+                                topic_list.append(comp.get_text())
+
+                            if comp.name == 'i' and add_element_to_scriptures:
+                                scripture_list.append(comp.get_text())
+
+                        
+                        link_description = "".join(element_content[2].find("td").find_all(string = True,recursive = False))
+
+
+                        download_number = element_content[3].get_text().split("\xa0")
+                        if len(download_number) >= 1:
+                            download_number = download_number[0]
+
+
+                        element_comment_a = element_content[-1].find("a")
+
+                        element_comment_url = urllib.parse.urljoin(url,element_comment_a.get("href"))
+                        
+                        comment_number = int(element_comment_a.get_text().split("(")[1][:-1])
+                        
+                        comments = []
+
+                        if comment_number > 0:
+                            comments = self.get_element_comments(element_comment_url,
+                                                                 link_text,
+                                                                 os.path.dirname(
+                                                                     self.url_informations[url].get("local_html_filepath")))
+
+
+                        # Take the number of download
+
+                        download_number_element = element.find("td",{"colspan":"2","class":"bg3","align":"right"}) 
+
+                        download_number = download_number_element.get_text()
+
+                        download_number = download_number.split("\xa0")
+                        if len(download_number) > 1:
+                            download_number = download_number[0]
+                        else:
+                            download_number = -1
+
+                        result.append({
+                            "url":url,
+                            "author_name":author_name,
+                            "downlaod_number":download_number,
+                            "topics":topic_list,
+                            "scriptures":scripture_list,
+                            "link_text":link_text,
+                            "link_description":link_description,
+                            "comments_url":element_comment_url,
+                            "comments":comments,
+                            "comments_number": comment_number
+                        })
+
+            final_result.append(result)
+
+        return final_result
+
+
+    def get_element_comments(self,comment_url,link_text,raw_filefolder):
+        """
+        :param comment_url: The url of the comment. Here is an example of comment's  
+        url on a sermon of Ravenhill https://www.sermonindex.net/modules/mydownloads/singlefile.php?lid=14469&commentView=itemComments
+        :param link_text: The text content of the anchor object of the url
+        :param raw_filefolder: The folder where the html files of this author or 
+        topic are saved  
+        """
+
+        comment_html_file_path =  os.path.join(
+            os.path.dirname(raw_filefolder),
+            "comments",
+            _my_tools.remove_forbiden_char_in_text(link_text.strip()).replace("...",""),"page.html")
+        
+
+        response = requests.get(comment_url,timeout=20)
+
+        # Write the comment file 
+        _my_tools.write_file(comment_html_file_path,response.text)
+
+        soup = BeautifulSoup(response.text,features="lxml")
+
+        comment_element = soup.find("table",{"width":"90%"})
+        
+
+        comments = [tr.find("td") for tr in  comment_element.contents if tr.name == "tr"]
+
+        comments_list = []
+        for i in range(2,len(comments),3):
+            comments_list.append(
+                {
+                    "title":comments[i-2].find("strong").get_text(),
+                    "text":comments[i].get_text(),
+                }
+            )
+
+                    
+        return {"local_html_filepath":comment_html_file_path,
+                "request_headers":dict(response.headers),
+                "comments":comments_list}
+    
+
+
+class SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWebSiteAllAuthorTopicScriptures):
+    def __init__(self,root_folder,material_root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
+        
+        root_folder = _my_tools.process_path_according_to_cwd(root_folder)
+
+        log_filepath = os.path.join(root_folder,my_constants.LOGS_ROOT_FOLDER,
+                                       my_constants.SERMONINDEX_NAME,
+                                       material_root_folder,browse_by_type,
+                                       my_constants.ELABORATED_DATA_FOLDER,
+                                       my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
+                                       my_constants.get_default_json_filename(0))
+        
+        input_root_folder = os.path.join(root_folder,
+                                         my_constants.METADATA_ROOT_FOLDER,
+                                         my_constants.SERMONINDEX_NAME,
+                                         material_root_folder,my_constants.ELABORATED_DATA_FOLDER,
+                                         browse_by_type)
+        
+
+        super().__init__(log_filepath = log_filepath,
+                         input_root_folder = input_root_folder,
+                         subfolder_pattern = my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
+                         overwrite_log = overwrite_log,
+                         update_log = update_log)
+        
+        self.material_root_folder = material_root_folder
+        self.browse_by_type = browse_by_type
+        self.root_folder = root_folder
+
+    
+
+    def prepare_input_data(self,**kwargs):
+        """
+        This method take a json file content and create input data for download 
+        that are put int dict self.element_dict
+
+        :param file_content: the content of a json file where input data will be taken 
+        :param intermediate_folders: The intermediate folders from the root folder to 
+        the json file 
+        :param file_path: The path of the json file 
+        """
+
+        element = kwargs.get("file_content").get("data")
+        
+        print(self.element_dict)
+
+        self.element_dict[element.get("name")] = {
+            **element,
+            **{"download_log":{
+                "input_file_index":self.meta_informations["input_files_information"]\
+                                                        ["input_files"].index(kwargs.get("file_path")),
+                "intermediate_folders":kwargs.get("intermediate_folders")}
+                }
+                }
+        
 
     def download_element_data(self,element):
         """This element take an element ( for example the information of an author or topic) 
         and download the data that must be downloaded from it """
 
-        ob = SermonIndexScrapAuthorTopicScriptureMainInformation(
+
+        ob = SermonIndexAudioSermonScrapAuthorTopicScriptureWork(
             name = element.get("name"),
             root_folder = self.root_folder,
-            browse_by_type ="scripture",
-            url_list = element.get("url_list"),
+            browse_by_type = self.browse_by_type,
+            url_list = element.get("pages"),
             intermdiate_folders = element.get("download_log").get("intermediate_folders"),
             material_root_folder = self.material_root_folder
         )
@@ -800,13 +1016,14 @@ class SermonIndexAudioSermonAllScriptureMainInformation(SermonIndexScrapWebSiteA
         ob.scrap_and_write()
 
     def is_element_data_downloaded(self,element):
-        ob = SermonIndexScrapAuthorTopicScriptureMainInformation(
+        ob = SermonIndexAudioSermonScrapAuthorTopicScriptureWork(
             name = element.get("name"),
             root_folder = self.root_folder,
-            browse_by_type ="scripture",
+            browse_by_type =self.browse_by_type,
             url_list = element.get("url_list"),
             intermdiate_folders = element.get("download_log").get("intermediate_folders"),
             material_root_folder = self.material_root_folder
         )
         return ob.is_data_downloaded()
         
+

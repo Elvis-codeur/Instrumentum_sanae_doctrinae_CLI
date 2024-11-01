@@ -207,7 +207,7 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
 
 class ScrapWebSiteAllAuthorTopicScriptures(http_connexion.ParallelHttpConnexionWithLogManagement):
 
-    def __init__(self, log_filepath, input_root_folder, overwrite_log=False, update_log=True):
+    def __init__(self, log_filepath, input_root_folder,subfolder_pattern, overwrite_log=False, update_log=True):
 
         self.input_json_root_folder = input_root_folder
 
@@ -219,7 +219,7 @@ class ScrapWebSiteAllAuthorTopicScriptures(http_connexion.ParallelHttpConnexionW
         # List of folder in which name  :data:`my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER`
         input_json_files = []
         
-        pattern = f"*{my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER}"
+        pattern = f"*{subfolder_pattern}" 
 
         input_root_folder = pathlib.Path(input_root_folder)
 
@@ -241,17 +241,7 @@ class ScrapWebSiteAllAuthorTopicScriptures(http_connexion.ParallelHttpConnexionW
         for file in input_json_files:
             input_json_files_content[str(file)] = _my_tools.read_json(file)
        
-        
-        
+                
         super().__init__(log_filepath,input_json_files_content,overwrite_log,update_log,input_root_folder)
 
-    def download_element_data(self,element):
-        """This element take an element ( for example the information of an author or topic) 
-        and download the data that must be downloaded from it """
-
-
-    def download(self,download_batch):
-        """
-        Download the content of the input files concurrently 
-        by a batch of size :data:`download_batch` 
-        """
+    

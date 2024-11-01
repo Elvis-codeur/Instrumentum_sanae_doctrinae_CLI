@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 import datetime
 import os 
 import urllib
@@ -59,7 +60,7 @@ class ScrapDataFromURL():
     
         self.url_list = url_list #: A list of all the urls of the web pages accross which the list of the speakers, topic, etc are spreaded
 
-
+        self.browse_by_type = browse_by_type
         
 
     def connect_to_url(self,**kwargs):
@@ -249,16 +250,11 @@ class ParallelHttpConnexionWithLogManagement():
 
             #print(self.meta_informations)
 
-            for element in file_content.get("data"):
-                self.element_dict[element.get("name")] = {
-                    **element,
+            self.prepare_input_data(file_content = file_content,
+                                    intermediate_folders = intermediate_folders,
+                                    file_path = file_path)
+            
 
-                    **{"download_log":{
-                        "input_file_index":self.meta_informations["input_files_information"]\
-                                                                ["input_files"].index(file_path),
-                        "intermediate_folders":intermediate_folders}
-                      }
-                        }
 
         self.log_file_content = {}
 
@@ -316,6 +312,29 @@ class ParallelHttpConnexionWithLogManagement():
         self.log_file_content["downloaded"] = downloaded
 
 
+    def prepare_input_data(self,**kwargs):
+        """
+        This method take a json file content and create input data for download 
+        that are put int dict self.element_dict
+
+        :param file_content: the content of a json file where input data will be taken 
+        :param intermediate_folders: The intermediate folders from the root folder to 
+        the json file 
+        :param file_path: The path of the json file 
+        """
+
+        for element in kwargs.get("file_content").get("data"):
+                self.element_dict[element.get("name")] = {
+                    **element,
+
+                    **{"download_log":{
+                        "input_file_index":self.meta_informations["input_files_information"]\
+                                                                ["input_files"].index(kwargs.get("file_path")),
+                        "intermediate_folders":kwargs.get("intermediate_folders")}
+                      }
+                        }
+
+
 
     def write_log_file(self):
         return _my_tools.write_json(self.log_filepath,self.log_file_content)
@@ -340,11 +359,30 @@ class ParallelHttpConnexionWithLogManagement():
         and download the data that must be downloaded from it """
 
 
-    def download(self,download_batch):
+    def download(self,download_batch_size):
         """
         Download the content of the input files concurrently 
         by a batch of size :data:`download_batch` 
         """
+        result = []
+
+        # Update before the begining of downloads
+        self.update_downloaded_and_to_download() 
+         
+        element_to_download = list(self.log_file_content["to_download"].values())
+        
+        print(f"to_download = {len(element_to_download)} Download batch size = {download_batch_size}")
+        # Split it by size download_batch_size to download
+        #  them in parralel 
+        element_to_download_splitted = _my_tools.sample_list(element_to_download,
+                                                      download_batch_size)
+
+        with ThreadPoolExecutor() as executor:
+            for download_batch in element_to_download_splitted:
+                result_list = executor.map(
+                                self.download_element_data,download_batch)    
+            self.update_downloaded_and_to_download()
+      
         
 
 
