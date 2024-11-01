@@ -573,7 +573,7 @@ class GetVintageImageSpeakerList(GetSpeakerList):
 # intended to scrap the work of a given author, topic, or the podcasts
 
 class SermonIndexScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicScripturePage):
-    def __init__(self,name, root_folder,url,browse_by_type,material_root_folder,intermdiate_folders=None) -> None:
+    def __init__(self,name, root_folder,url,browse_by_type,material_root_folder,information_type_root_folder,intermdiate_folders=None) -> None:
         """
         :param name: The name of the author, topic, ...
         :param root_folder: The folder where the logs, metadata download and more will be stored 
@@ -589,7 +589,9 @@ class SermonIndexScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicSc
             url = [url]
 
         metadata_root_folder,log_root_folder = get_sermonindex_metadata_and_log_folder(root_folder,material_root_folder)
-        super().__init__(name,metadata_root_folder,log_root_folder,url,browse_by_type,intermdiate_folders)
+        super().__init__(name,metadata_root_folder,log_root_folder,url,
+                         browse_by_type,information_type_root_folder,
+                         intermdiate_folders)
 
 
 
@@ -598,7 +600,8 @@ class SermonIndexAudioSermonScrapAuthorTopicScripturePage(SermonIndexScrapAuthor
     def __init__(self, name, root_folder, url):
         
         super().__init__(name, root_folder, url,browse_by_type = "speaker",
-                        material_root_folder =  my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER)
+                        material_root_folder =  my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER,
+                        information_type_root_folder = my_constants.MAIN_INFORMATION_ROOT_FOLDER)
         
     def scrap_page(self):
         """
@@ -609,7 +612,11 @@ class SermonIndexAudioSermonScrapAuthorTopicScripturePage(SermonIndexScrapAuthor
 class SermonIndexScrapAuthorTopicScriptureMainInformation(SermonIndexScrapAuthorTopicScripturePage):
     def __init__(self, name, root_folder,browse_by_type, url_list,material_root_folder,intermdiate_folders=None):
         
-        super().__init__(name, root_folder, url_list,browse_by_type,material_root_folder = material_root_folder,intermdiate_folders = intermdiate_folders)
+        super().__init__(name, root_folder, url_list,browse_by_type,
+                         information_type_root_folder = my_constants.MAIN_INFORMATION_ROOT_FOLDER,
+                         material_root_folder = material_root_folder,
+                         intermdiate_folders = intermdiate_folders)
+        
         
     def scrap_url_pages(self):
         """
@@ -722,7 +729,20 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation(scrap_metad
         self.material_root_folder = material_root_folder
         self.browse_by_type = browse_by_type
         self.root_folder = root_folder
+    
 
+    def prepare_input_json_file(self,matching_subfolders):
+        """
+        :param matching_subfolders: The folders from wich the json files will be searched out 
+        """
+        # List of folder in which name  :data:`my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER`
+        input_json_files = []
+        for folder in matching_subfolders:
+            for file in [i for i in pathlib.Path(folder).rglob("*.json") if i.is_file()]:
+                if str(file.parent).endswith(my_constants.MAIN_INFORMATION_ROOT_FOLDER): 
+                    input_json_files.append(file)
+
+        return input_json_files
     
     
     def download_element_data(self,element):
@@ -761,7 +781,10 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation(scrap_metad
 class SermonIndexAudioSermonScrapAuthorTopicScriptureWork(SermonIndexScrapAuthorTopicScripturePage):
     def __init__(self, name, root_folder,browse_by_type, url_list,material_root_folder,intermdiate_folders=None):
         
-        super().__init__(name, root_folder, url_list,browse_by_type,material_root_folder = material_root_folder,intermdiate_folders = intermdiate_folders)
+        super().__init__(name, root_folder, url_list,browse_by_type,
+                         information_type_root_folder = my_constants.WORK_INFORMATION_ROOT_FOLDER,
+                         material_root_folder = material_root_folder,
+                         intermdiate_folders = intermdiate_folders)
         
         
 
@@ -942,6 +965,31 @@ class SermonIndexAudioSermonScrapAuthorTopicScriptureWork(SermonIndexScrapAuthor
                 "comments":comments_list}
     
 
+    def is_data_downloaded(self):
+
+        for url in self.url_informations:
+            file_path = self.url_informations[url].get("json_filepath")
+            if not os.path.exists(file_path):
+                return False
+            
+            
+            file_content = _my_tools.read_json(file_path)
+
+            print(file_content,file_path)
+
+
+            if not file_content:
+                return False
+            
+            # Check mandatory information in the json file 
+
+            if not file_content.get("url"):
+                return False
+            
+        return True
+
+    
+
 
 class SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWebSiteAllAuthorTopicScriptures):
     def __init__(self,root_folder,material_root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
@@ -972,6 +1020,21 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWe
         self.browse_by_type = browse_by_type
         self.root_folder = root_folder
 
+
+    
+    def prepare_input_json_file(self,matching_subfolders):
+        """
+        :param matching_subfolders: The folders from wich the json files will be searched out 
+        """
+        # List of folder in which name  :data:`my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER`
+        input_json_files = []
+        for folder in matching_subfolders:
+            for files in [i for i in pathlib.Path(folder).rglob("*.json") if i.is_file()]:
+
+                input_json_files.append([i for i in files 
+                                         if my_constants.WORK_INFORMATION_ROOT_FOLDER in str(i.parent)])
+        return input_json_files
+
     
 
     def prepare_input_data(self,**kwargs):
@@ -987,14 +1050,13 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWe
 
         element = kwargs.get("file_content").get("data")
         
-        print(self.element_dict)
-
+        
         self.element_dict[element.get("name")] = {
             **element,
             **{"download_log":{
                 "input_file_index":self.meta_informations["input_files_information"]\
                                                         ["input_files"].index(kwargs.get("file_path")),
-                "intermediate_folders":kwargs.get("intermediate_folders")}
+                "intermediate_folders":[]} #kwargs.get("intermediate_folders")
                 }
                 }
         
@@ -1003,6 +1065,7 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWe
         """This element take an element ( for example the information of an author or topic) 
         and download the data that must be downloaded from it """
 
+        #print(self.root_folder,self.browse_by_type)
 
         ob = SermonIndexAudioSermonScrapAuthorTopicScriptureWork(
             name = element.get("name"),

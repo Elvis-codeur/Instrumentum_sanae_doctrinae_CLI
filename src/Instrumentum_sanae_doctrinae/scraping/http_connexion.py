@@ -230,7 +230,6 @@ class ParallelHttpConnexionWithLogManagement():
         # The information of the json input files 
         self.meta_informations["input_files_information"] = {}
 
-
         self.meta_informations["input_files_information"]["input_files"] = list(element_list.keys())
 
 

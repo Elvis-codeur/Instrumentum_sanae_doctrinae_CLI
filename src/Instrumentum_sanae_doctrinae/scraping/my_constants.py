@@ -52,6 +52,9 @@ LOGS_ROOT_FOLDER = "log" #: The root folder for log files
 METADATA_ROOT_FOLDER = "metadata" #: The root folder for metadata files 
 DOWNLOAD_ROOT_FOLDER = "download" #: The root folder for metadata files 
 
+MAIN_INFORMATION_ROOT_FOLDER = "main_information"
+WORK_INFORMATION_ROOT_FOLDER = "work"
+
 
 BY_SPEAKER_ROOT_FOLDER = "by_speaker"
 BY_TOPIC_ROOT_FOLDER = "by_topic"

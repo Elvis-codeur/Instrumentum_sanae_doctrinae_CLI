@@ -118,7 +118,7 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
 
 
 class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
-    def __init__(self,name, metadata_root_folder, log_root_folder, url_list, browse_by_type, intermdiate_folders=None) -> None:
+    def __init__(self,name, metadata_root_folder, log_root_folder, url_list, browse_by_type,information_type_root_folder, intermdiate_folders=None) -> None:
         """
         :param name: The name of the author,topic, and more 
         """
@@ -127,10 +127,10 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
 
         if intermdiate_folders:
             intermdiate_folders = [browse_by_type,my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,]\
-                                 + intermdiate_folders +[name,"main_information"] 
+                                 + intermdiate_folders +[name,information_type_root_folder] 
         else:
             intermdiate_folders = [browse_by_type,my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER
-                                   ,name,"main_information"]
+                                   ,name,information_type_root_folder]
     
         super().__init__(metadata_root_folder, log_root_folder, url_list, browse_by_type, intermdiate_folders)
     
@@ -154,6 +154,7 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
             if not file_content.get("url"):
                 return False
             
+
             if not file_content.get("data").get("name"):
                 return False
             
@@ -216,8 +217,8 @@ class ScrapWebSiteAllAuthorTopicScriptures(http_connexion.ParallelHttpConnexionW
         # which we are 
         # The files in these folders are the list of the authors, topics, scriptures, etc
         
-        # List of folder in which name  :data:`my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER`
-        input_json_files = []
+        
+
         
         pattern = f"*{subfolder_pattern}" 
 
@@ -225,23 +226,21 @@ class ScrapWebSiteAllAuthorTopicScriptures(http_connexion.ParallelHttpConnexionW
 
         matching_subfolders = [i for i  in input_root_folder.rglob(pattern) if i.is_dir()]
 
-        #print(input_root_folder)
-        
-
-
-        for folder in matching_subfolders:
-            for files in [i for i in pathlib.Path(folder).rglob("*.json") if i.is_file()]:
-                input_json_files.append(files)
 
         self.input_json_content_dict = {}
 
         input_json_files_content = {}
 
-        
-        for file in input_json_files:
+        for file in self.prepare_input_json_file(matching_subfolders):
             input_json_files_content[str(file)] = _my_tools.read_json(file)
        
                 
         super().__init__(log_filepath,input_json_files_content,overwrite_log,update_log,input_root_folder)
 
     
+
+    def prepare_input_json_file(self,matching_subfolders):
+        """
+        :param matching_subfolders: The folders from wich the json files will be searched out 
+        """
+        
