@@ -211,7 +211,7 @@ if __name__ == "__main__":
     #test_vintage_image_sermon_speaker()
     
     #test_scrap_all_audio_sermon_author_main_info_sermoindex()
-    test_scrap_all_audio_sermon_scripture_main_info_sermoindex()
+    #test_scrap_all_audio_sermon_scripture_main_info_sermoindex()
     #test_scrap_all_audio_sermon_topic_main_info_sermoindex()
     #test_vintage_image_scrap_all_speaker_main_info_sermoindex()
     test_audio_sermon_get_scripture_work()  

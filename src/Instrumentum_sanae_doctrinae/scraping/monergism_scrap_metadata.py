@@ -7,9 +7,13 @@ This module is created for the scrapping of metadata from https://www.monergism.
 import os 
 import re
 import urllib
+import urllib.parse
+from urllib.parse import urlparse, parse_qs
+
 
 from ..scraping import scrap_metadata
 from ..scraping import my_constants
+from ..scraping import _my_tools
 
 
 
@@ -190,7 +194,45 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
                     "link_text": link_text.split("(")[0].strip(),
                     "number":topic_element_number
                 })   
-            return result         
+            return result    
+
+
+        def get_other_pages(old_url_list,soup):
+            
+            pages_ul = soup.find(lambda tag :tag.name == "ul" and 
+                                            tag.has_attr("class") and 
+                                            'pager' in tag['class'] and
+                                                  'clearfix' in tag['class']
+                                            )
+            next_page_li_list = pages_ul.find_all("li")
+
+            new_url_list = []
+
+            for next_page_li in next_page_li_list:
+                if next_page_li:
+                    next_page_anchor = next_page_li.find("a")
+                    if next_page_anchor:
+                        next_page_url = urllib.parse.urljoin(url,
+                                                            next_page_anchor.get("href"))
+                        new_url_list.append(next_page_url)
+
+            for new_url in new_url_list:
+                if not new_url in old_url_list:
+                    old_url_list.append(new_url)
+            
+            # This li element exists only on the last page of 
+            # an author, topic, scripture, etc
+            last_page_li = soup.find(lambda tag: tag.name == "li" and 
+                                                tag.has_attr('class') and 
+                                                'pager-current' in tag['class'] and
+                                                  'last' in tag['class'])
+            if last_page_li:
+                return []
+
+            return new_url_list
+
+
+
 
 
         final_result = []
@@ -214,7 +256,27 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
             # Filter by author 
             filter_by_author_data = parse_filter_by_ul(soup,"facetapi-facetapi-links*.facetapi-facet-field-link-authors",url)
 
+            pages_list = []
+            next_page_url = get_other_pages(pages_list,soup)
+
+            if next_page_url:
+               pages_list += next_page_url
+
+               while(next_page_url):
+                   soup = _my_tools.get_bs4soup_from_url(next_page_url[-1])
+                   next_page_url = get_other_pages(pages_list,soup)
+                   pages_list += next_page_url
+            
+            pages_list = list(set(pages_list))
+
+            
+            
+            pages_list = sorted(pages_list,
+                                key= lambda url: int(parse_qs(urlparse(url).query).get("page",[0])[0]))
+
+                    
             result = {
+                "pages":pages_list,
                 "filter_by_topic": filter_by_topic_data,
                 "filter_by_format":filter_by_format_data,
                 "filter_by_genre":filter_by_genre_data,
@@ -222,6 +284,10 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
                 "filter_by_author":filter_by_author_data,
             }
 
+
             final_result.append(result)
+
+
+
 
         return final_result 

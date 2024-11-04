@@ -4,6 +4,9 @@ import random
 import string
 import json 
 import requests
+import bs4
+
+from . import my_constants
 
 def datetimeToGoogleFormat(date:datetime.datetime):
     """
@@ -72,9 +75,14 @@ def replace_forbiden_char_in_text(text):
     \\ by _i_
     """
     #invalid = '<>:"|?*/\\'
+    if not text:
+        return ""
+    
     return text.replace("<","_a_").replace(">","_b_").replace(":","_c_")\
-            .replace('"',"_d_").replace("|","_e_").replace("?","_f_")\
-            .replace("*","_g_").replace("/","_h_").replace("\\","_i_")
+                .replace('"',"_d_").replace("|","_e_").replace("?","_f_")\
+                .replace("*","_g_").replace("/","_h_").replace("\\","_i_")
+
+
 
 
 def generateID(prefix = "",suffix = "",length = 20):
@@ -228,3 +236,9 @@ def process_path_according_to_cwd(folder_path):
     result,_ = get_uncommon_part_of_two_path(folder_path,os.getcwd())
 
     return result
+
+
+def get_bs4soup_from_url(url):
+    response = requests.get(url=url,timeout=my_constants.HTTP_REQUEST_TIMEOUT)
+
+    return bs4.BeautifulSoup(response.text,features="lxml")

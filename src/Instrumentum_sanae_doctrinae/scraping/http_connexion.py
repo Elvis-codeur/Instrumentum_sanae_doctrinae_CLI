@@ -1,4 +1,4 @@
-from concurrent.futures import ThreadPoolExecutor
+import threading
 import datetime
 import os 
 import urllib
@@ -68,8 +68,20 @@ class ScrapDataFromURL():
         Connect to an html page whose url has been given 
         """
 
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Connection": "close",
+        }
+
+        #print(self.url_list)
+
         for url in self.url_list:
-            response = requests.get(url=url,timeout=my_constants.HTTP_REQUEST_TIMEOUT)
+            response = requests.get(url=url,
+                                    timeout=my_constants.HTTP_REQUEST_TIMEOUT,
+                                    )
             
             if response.status_code == 404:
                 raise my_errors.HTTP404Error(url)
@@ -166,7 +178,7 @@ class ScrapDataFromURL():
             _my_tools.write_file(self.url_informations[url]["html_filepath"],
                                  self.url_informations[url]["request"].text)
             self.url_informations[url]['is_html_file_locally_saved'] = True
-            #print(url,self.url_informations[url]['is_html_file_locally_saved'])
+            print(url,"write html")
 
 
 
@@ -175,6 +187,7 @@ class ScrapDataFromURL():
         Write the json files 
         """
         for url in self.url_informations:
+            print("---ELVIS---",url)
             #print(self.url_informations[url]["json_filepath"])
             _my_tools.write_json(self.url_informations[url]["json_filepath"],
                                  self.url_informations[url]["json_file_content"])
@@ -376,11 +389,15 @@ class ParallelHttpConnexionWithLogManagement():
         element_to_download_splitted = _my_tools.sample_list(element_to_download,
                                                       download_batch_size)
 
-        with ThreadPoolExecutor() as executor:
-            for download_batch in element_to_download_splitted:
-                result_list = executor.map(
-                                self.download_element_data,download_batch)    
-            self.update_downloaded_and_to_download()
+    
+        for download_batch in element_to_download_splitted:
+            for element in download_batch:
+                thread = threading.Thread(target = self.download_element_data,
+                                          kwargs = {"element":element})
+                thread.start()
+                thread.join()
+
+        self.update_downloaded_and_to_download()
       
         
 

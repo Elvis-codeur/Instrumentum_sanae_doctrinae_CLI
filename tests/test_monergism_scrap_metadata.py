@@ -50,7 +50,7 @@ def test_scrap_scriptures_main_information():
     root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     url = "https://www.monergism.com/topics/abraham" 
     ob = monergism_scrap_metadata.MonergismScrapAuthorTopicScriptureMainPage(
-        name = "Abraham",
+        name = "",
         root_folder = root_folder,
         url = url,
         browse_by_type="s"

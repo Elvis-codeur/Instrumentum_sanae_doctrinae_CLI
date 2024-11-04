@@ -189,7 +189,9 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
 
         if save_html_file:
             # Write the content of the html file get from the url
-            self.write_html_page_content()        
+            self.write_html_page_content()  
+
+              
 
         for data in url_datascraped_list:
             self.prepare_json_data_for_saving(data)

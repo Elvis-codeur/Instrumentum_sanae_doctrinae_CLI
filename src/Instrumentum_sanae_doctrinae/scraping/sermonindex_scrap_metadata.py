@@ -137,7 +137,7 @@ class GetAudioSermonScriptureList(GetTopicOrScriptureOrPodcastOrChristianBooks):
         """
         :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
         """    
-
+        #print(bs4_container)
         container = bs4_container.find("table",
                                        attrs = {"width":"90%",
                                                 "cellpadding":"0",
@@ -690,6 +690,8 @@ class SermonIndexScrapAuthorTopicScriptureMainInformation(SermonIndexScrapAuthor
             
             other_page_url_list = [url] + [urllib.parse.urljoin(url,i) for i in other_page_url_list]
 
+            #print(other_page_url_list)
+
             result["pages"] = other_page_url_list
 
             if not result.get("name"):
@@ -739,8 +741,9 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation(scrap_metad
         input_json_files = []
         for folder in matching_subfolders:
             for file in [i for i in pathlib.Path(folder).rglob("*.json") if i.is_file()]:
-                if str(file.parent).endswith(my_constants.MAIN_INFORMATION_ROOT_FOLDER): 
-                    input_json_files.append(file)
+                input_json_files.append(file)
+
+        #print(input_json_files,"\n\n\n")
 
         return input_json_files
     
@@ -797,9 +800,9 @@ class SermonIndexAudioSermonScrapAuthorTopicScriptureWork(SermonIndexScrapAuthor
 
         final_result = []
 
-        for url in self.url_informations:
+        for current_page_url in self.url_informations:
                 
-            soup = self.url_informations[url].get("bs4_object")
+            soup = self.url_informations[current_page_url].get("bs4_object")
 
             
 
@@ -887,10 +890,11 @@ class SermonIndexAudioSermonScrapAuthorTopicScriptureWork(SermonIndexScrapAuthor
                         comments = []
 
                         if comment_number > 0:
+                            #print(self.url_informations[current_page_url].keys())
                             comments = self.get_element_comments(element_comment_url,
                                                                  link_text,
                                                                  os.path.dirname(
-                                                                     self.url_informations[url].get("local_html_filepath")))
+                                                                     self.url_informations[current_page_url].get("html_filepath")))
 
 
                         # Take the number of download
@@ -931,7 +935,7 @@ class SermonIndexAudioSermonScrapAuthorTopicScriptureWork(SermonIndexScrapAuthor
         :param raw_filefolder: The folder where the html files of this author or 
         topic are saved  
         """
-
+        #print(raw_filefolder)
         comment_html_file_path =  os.path.join(
             os.path.dirname(raw_filefolder),
             "comments",
@@ -975,7 +979,7 @@ class SermonIndexAudioSermonScrapAuthorTopicScriptureWork(SermonIndexScrapAuthor
             
             file_content = _my_tools.read_json(file_path)
 
-            print(file_content,file_path)
+            #print(file_content,file_path)
 
 
             if not file_content:
@@ -1028,11 +1032,14 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWe
         """
         # List of folder in which name  :data:`my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER`
         input_json_files = []
+    
         for folder in matching_subfolders:
-            for files in [i for i in pathlib.Path(folder).rglob("*.json") if i.is_file()]:
+            for file in [i for i in pathlib.Path(folder).rglob("*.json") if i.is_file()]:
+                if str(file.parent).endswith(my_constants.MAIN_INFORMATION_ROOT_FOLDER):
+                    input_json_files.append(file)
 
-                input_json_files.append([i for i in files 
-                                         if my_constants.WORK_INFORMATION_ROOT_FOLDER in str(i.parent)])
+        #print(input_json_files)
+
         return input_json_files
 
     
@@ -1060,13 +1067,15 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWe
                 }
                 }
         
-
+    
     def download_element_data(self,element):
         """This element take an element ( for example the information of an author or topic) 
         and download the data that must be downloaded from it """
 
         #print(self.root_folder,self.browse_by_type)
 
+        print(element.get("name"))
+        
         ob = SermonIndexAudioSermonScrapAuthorTopicScriptureWork(
             name = element.get("name"),
             root_folder = self.root_folder,
@@ -1075,6 +1084,7 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWe
             intermdiate_folders = element.get("download_log").get("intermediate_folders"),
             material_root_folder = self.material_root_folder
         )
+
 
         ob.scrap_and_write()
 
