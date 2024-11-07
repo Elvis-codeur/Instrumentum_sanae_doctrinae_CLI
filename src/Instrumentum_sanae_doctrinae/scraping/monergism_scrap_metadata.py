@@ -197,7 +197,12 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
             return result    
 
 
-        def get_other_pages(old_url_list,soup):
+        def get_page_param(url):
+            query_params = parse_qs(url.query)
+            return int(query_params.get('page', [0])[0])
+
+        def get_other_pages(old_url_list,soup,current_url):
+            #print(current_url)
             
             pages_ul = soup.find(lambda tag :tag.name == "ul" and 
                                             tag.has_attr("class") and 
@@ -216,18 +221,38 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
                                                             next_page_anchor.get("href"))
                         new_url_list.append(next_page_url)
 
-            for new_url in new_url_list:
-                if not new_url in old_url_list:
-                    old_url_list.append(new_url)
+            new_url_list = [urlparse(url) for url in new_url_list[:-1]]
+
+            
+
+            if not current_url in old_url_list:
+                if isinstance(current_url,str):
+                    old_url_list.append(urllib.parse.urlparse(current_url))
+                else:
+                    old_url_list.append(current_url)
+
+            
+            # To avoid the addition of the last page who will break the
+            # loop using the method  
+            old_url_list += new_url_list
+
+            
             
             # This li element exists only on the last page of 
             # an author, topic, scripture, etc
-            last_page_li = soup.find(lambda tag: tag.name == "li" and 
+            last_page_li = pages_ul.find(lambda tag: tag.name == "li" and 
                                                 tag.has_attr('class') and 
                                                 'pager-current' in tag['class'] and
                                                   'last' in tag['class'])
+            
+            maximum_page_number = 0
             if last_page_li:
-                return []
+                maximum_page_number = int(last_page_li.get_text()) -1
+                print(current_url,"---",maximum_page_number) 
+                if int(urlparse(current_url.query).get("page",[0])[0]) == maximum_page_number:
+                    return []
+
+            #print(new_url_list)
 
             return new_url_list
 
@@ -257,24 +282,25 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
             filter_by_author_data = parse_filter_by_ul(soup,"facetapi-facetapi-links*.facetapi-facet-field-link-authors",url)
 
             pages_list = []
-            next_page_url = get_other_pages(pages_list,soup)
+            new_pages_url = get_other_pages(pages_list,soup,url)
 
-            if next_page_url:
-               pages_list += next_page_url
+            if new_pages_url:
+               pages_list += new_pages_url
 
-               while(next_page_url):
-                   soup = _my_tools.get_bs4soup_from_url(next_page_url[-1])
-                   next_page_url = get_other_pages(pages_list,soup)
-                   pages_list += next_page_url
+               while(new_pages_url):
+                   next_page_url = max(pages_list,key=get_page_param)
+                   soup = _my_tools.get_bs4soup_from_url(urllib.parse.urlunparse(next_page_url))
+                   new_pages_url = get_other_pages(pages_list,soup,next_page_url)
+                   
             
             pages_list = list(set(pages_list))
 
-            
-            
-            pages_list = sorted(pages_list,
-                                key= lambda url: int(parse_qs(urlparse(url).query).get("page",[0])[0]))
+            pages_list = sorted(pages_list,key = get_page_param)
 
-                    
+            pages_list = [urllib.parse.urlunparse(url) for url in pages_list]
+            
+            
+               
             result = {
                 "pages":pages_list,
                 "filter_by_topic": filter_by_topic_data,
