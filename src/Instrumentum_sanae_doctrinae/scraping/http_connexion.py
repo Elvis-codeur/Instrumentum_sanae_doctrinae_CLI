@@ -178,7 +178,7 @@ class ScrapDataFromURL():
             _my_tools.write_file(self.url_informations[url]["html_filepath"],
                                  self.url_informations[url]["request"].text)
             self.url_informations[url]['is_html_file_locally_saved'] = True
-            print(url,"write html")
+            #print(url,"write html")
 
 
 

@@ -5,6 +5,7 @@ This module is created for the scrapping of metadata from https://www.monergism.
 """
 
 import os 
+import pathlib
 import re
 import urllib
 import urllib.parse
@@ -147,11 +148,17 @@ class GetSpeakerList(GetTopicOrAuthorOrScriptureList):
     
 
 class MonergismScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicScripturePage):
-    def __init__(self, name,root_folder,url, browse_by_type) -> None:
+    def __init__(self, name,root_folder,url_list, browse_by_type,
+                 information_type_root_folder,intermdiate_folders) -> None:
         
         metadata_root_folder,log_root_folder = get_monergism_metadata_and_log_folder(root_folder)
         
-        super().__init__(name, metadata_root_folder, log_root_folder,[url], browse_by_type,None)
+        if not isinstance(url_list,list):
+            url_list = [url_list]
+     
+
+        super().__init__(name, metadata_root_folder, log_root_folder,url_list,
+                          browse_by_type,information_type_root_folder,intermdiate_folders)
 
     def scrap_url_pages(self):
         """
@@ -162,8 +169,11 @@ class MonergismScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicScri
 
 
 class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScripturePage):
-    def __init__(self, name, root_folder, url, browse_by_type) -> None:
-        super().__init__(name, root_folder, url, browse_by_type)
+    def __init__(self, name, root_folder, url, browse_by_type,) -> None:
+
+        super().__init__(name, root_folder, url, browse_by_type,
+                         information_type_root_folder = my_constants.MAIN_INFORMATION_ROOT_FOLDER,
+                         intermdiate_folders= None)
 
 
     def scrap_url_pages(self):
@@ -209,7 +219,7 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
                                             'pager' in tag['class'] and
                                                   'clearfix' in tag['class']
                                             )
-            next_page_li_list = pages_ul.find_all("li")
+            next_page_li_list = pages_ul.find_all("li",attrs = {"class":"pager-item"})
 
             new_url_list = []
 
@@ -219,9 +229,7 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
                     if next_page_anchor:
                         next_page_url = urllib.parse.urljoin(url,
                                                             next_page_anchor.get("href"))
-                        new_url_list.append(next_page_url)
-
-            new_url_list = [urlparse(url) for url in new_url_list[:-1]]
+                        new_url_list.append(urllib.parse.urlparse(next_page_url))
 
             
 
@@ -236,7 +244,7 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
             # loop using the method  
             old_url_list += new_url_list
 
-            
+            #print(current_url)
             
             # This li element exists only on the last page of 
             # an author, topic, scripture, etc
@@ -248,16 +256,13 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
             maximum_page_number = 0
             if last_page_li:
                 maximum_page_number = int(last_page_li.get_text()) -1
-                print(current_url,"---",maximum_page_number) 
-                if int(urlparse(current_url.query).get("page",[0])[0]) == maximum_page_number:
+                #print(current_url,"---",maximum_page_number) 
+                if int(parse_qs(current_url.query).get("page",[0])[0]) == maximum_page_number:
                     return []
 
             #print(new_url_list)
 
             return new_url_list
-
-
-
 
 
         final_result = []
@@ -300,8 +305,18 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
             pages_list = [urllib.parse.urlunparse(url) for url in pages_list]
             
             
+            name =  ""
+            name_element = soup.find_all("li",attrs = {"class":"views-row"})[0]
+            if name_element:
+                name_element =  name_element.find("small")
+                if name_element:
+                    name = name_element.get_text()
+                    name = name.split("by")[1].strip()
+
+
                
             result = {
+                "name": name,
                 "pages":pages_list,
                 "filter_by_topic": filter_by_topic_data,
                 "filter_by_format":filter_by_format_data,
@@ -313,7 +328,185 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
 
             final_result.append(result)
 
-
-
-
         return final_result 
+    
+
+class MonergismScrapAuthorTopicScriptureWork(MonergismScrapAuthorTopicScripturePage):
+    def __init__(self, name, root_folder, url_list, browse_by_type,intermdiate_folders = None):
+
+        super().__init__(name, root_folder, url_list, browse_by_type,
+                          information_type_root_folder = my_constants.WORK_INFORMATION_ROOT_FOLDER,
+                          intermdiate_folders = intermdiate_folders)
+        
+
+    
+    
+    def scrap_url_pages(self):
+        """
+        Scrap the main links of the page. See this file (documentation/documentation.odt) for more info 
+        """
+
+        self.connect_to_url()
+
+        final_result = []
+
+        for url in self.url_informations:
+            
+            # Take the div containing the links of the author 
+            
+            bs4_obect = self.url_informations[url].get("bs4_object")
+            
+            links_div = bs4_obect.find_all("div",
+                                            class_=re.compile("view.*view-link-search.*view-id-link_search.*view-display-id-page.*view-dom-id-")) 
+            
+            if(len(links_div) != 0):
+                links_div = links_div[0]
+
+                # The header where this text isYour Search Yielded <n> Results
+                # Displaying <a> Through <b> where <n> is the total number of links about the author and <a> and <b> the range of links displayed 
+                header = links_div.find("div",{"class":"view-header"})
+
+                header_text = header.get_text()
+                header_text = header_text.split(" ")
+                
+                header_numbers = []
+
+                for text in header_text:
+                    if text.strip().isdigit():
+                        header_numbers.append(int(text.strip()))
+
+                # The number of element monergism has on the author
+                self.num_result = header_numbers[0]
+
+                # The index of element returned in this page. For exemple 1rst to 50th gives 1 and 50 in the two variables
+                display_index_begin = header_numbers[1]
+                display_index_end = header_numbers[2]
+
+
+                # Get the main page links 
+                main_content = links_div.find("div",{"class":"view-content"})
+                main_links_li = main_content.find_all("li",{"class":"views-row"})
+                main_links = []
+
+                for li in main_links_li:
+                    li = li.find("div").find("span")
+                    link_type = li.get("class")[1]
+                    link_href = li.find("a").get("href")
+                    link_text = li.find("a").get_text()
+                    main_links.append({
+                        "link_type":link_type,
+                        "url":link_href,
+                        "link_text":link_text
+                    })
+
+                final_result.append(main_links)
+
+            return final_result
+
+
+
+
+class MonergismScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWebSiteAllAuthorTopicScriptures):
+    def __init__(self,root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
+
+        root_folder = _my_tools.process_path_according_to_cwd(root_folder)
+
+        log_filepath = os.path.join(root_folder,my_constants.LOGS_ROOT_FOLDER,
+                                       my_constants.MONERGISM_NAME,
+                                       browse_by_type,
+                                       my_constants.ELABORATED_DATA_FOLDER,
+                                       my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
+                                       my_constants.get_default_json_filename(0))
+        
+        input_root_folder = os.path.join(root_folder,
+                                         my_constants.METADATA_ROOT_FOLDER,
+                                         my_constants.MONERGISM_NAME,
+                                         my_constants.ELABORATED_DATA_FOLDER,
+                                         browse_by_type)
+        
+
+        super().__init__(log_filepath = log_filepath,
+                         input_root_folder = input_root_folder,
+                         subfolder_pattern = my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
+                         overwrite_log = overwrite_log,
+                         update_log = update_log)
+        
+        self.browse_by_type = browse_by_type
+        self.root_folder = root_folder
+
+
+    def prepare_input_json_file(self,matching_subfolders):
+        """
+        :param matching_subfolders: The folders from wich the json files will be searched out 
+        """
+        # List of folder in which name  :data:`my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER`
+        input_json_files = []
+    
+        for folder in matching_subfolders:
+            for file in [i for i in pathlib.Path(folder).rglob("*.json") if i.is_file()]:
+                if str(file.parent).endswith(my_constants.MAIN_INFORMATION_ROOT_FOLDER):
+                    input_json_files.append(file)
+
+        #print(input_json_files)
+
+        return input_json_files
+    
+    def prepare_input_data(self,**kwargs):
+        """
+        This method take a json file content and create input data for download 
+        that are put int dict self.element_dict
+
+        :param file_content: the content of a json file where input data will be taken 
+        :param intermediate_folders: The intermediate folders from the root folder to 
+        the json file 
+        :param file_path: The path of the json file 
+        """
+
+        element = kwargs.get("file_content").get("data")
+        
+        
+        self.element_dict[element.get("name")] = {
+            **{
+                "data":{
+                    "name":element.get("name"),
+                    "pages":element.get("pages")
+                }
+            },
+            **{"download_log":{
+                "input_file_index":self.meta_informations["input_files_information"]\
+                                                        ["input_files"].index(kwargs.get("file_path")),
+                "intermediate_folders":[]} #kwargs.get("intermediate_folders")
+                }
+                }
+        
+
+    def download_element_data(self,element):
+        """This element take an element ( for example the information of an author or topic) 
+        and download the data that must be downloaded from it """
+
+        #print(self.root_folder,self.browse_by_type)
+
+        print(element.get("name"))
+        
+        ob = MonergismScrapAuthorTopicScriptureWork(
+            name = element.get("name"),
+            root_folder = self.root_folder,
+            browse_by_type = self.browse_by_type,
+            url_list = element.get("pages"),
+            intermdiate_folders = element.get("download_log").get("intermediate_folders")
+        )
+
+
+        ob.scrap_and_write()
+
+    def is_element_data_downloaded(self,element):
+        ob = MonergismScrapAuthorTopicScriptureWork(
+            name = element.get("name"),
+            root_folder = self.root_folder,
+            browse_by_type =self.browse_by_type,
+            url_list = element.get("url_list"),
+            intermdiate_folders = element.get("download_log").get("intermediate_folders")
+        )
+        return ob.is_data_downloaded()
+        
+
