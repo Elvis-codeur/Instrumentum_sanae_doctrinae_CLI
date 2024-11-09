@@ -313,11 +313,16 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
                     name = name_element.get_text()
                     name = name.split("by")[1].strip()
 
+            if name:
+                name = list(name)
+                for indice in  range(len(name)-1):
+                    if  name[indice] == " " and name[indice+1] == " ":
+                        name[indice] = ""
 
                
             result = {
-                "name": name,
-                "pages":pages_list,
+                "name": "".join(name),
+                "pages":pages_list[1:], # To avoid having the first url twice 
                 "filter_by_topic": filter_by_topic_data,
                 "filter_by_format":filter_by_format_data,
                 "filter_by_genre":filter_by_genre_data,
@@ -399,9 +404,16 @@ class MonergismScrapAuthorTopicScriptureWork(MonergismScrapAuthorTopicScriptureP
                         "link_text":link_text
                     })
 
-                final_result.append(main_links)
+                
+                #print(main_links,url,"\n\n")
 
-            return final_result
+                final_result.append(
+                    {
+                        "data": main_links
+                    }
+                    )
+
+        return final_result
 
 
 
@@ -486,13 +498,13 @@ class MonergismScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWebS
 
         #print(self.root_folder,self.browse_by_type)
 
-        print(element.get("name"))
+        #print(element.get("data"))
         
         ob = MonergismScrapAuthorTopicScriptureWork(
-            name = element.get("name"),
+            name = element.get("data").get("name"),
             root_folder = self.root_folder,
             browse_by_type = self.browse_by_type,
-            url_list = element.get("pages"),
+            url_list = element.get("data").get("pages"),
             intermdiate_folders = element.get("download_log").get("intermediate_folders")
         )
 

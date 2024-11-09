@@ -44,7 +44,7 @@ def test_get_author_all_work():
         browse_by_type,
         overwrite_log=True
     )
-    ob.download(2)
+    ob.download(1)
     ob.update_downloaded_and_to_download()
     ob.write_log_file()
     
@@ -72,5 +72,5 @@ if __name__ == "__main__":
     #     "speaker"
     # )
     # ob.scrap_and_write()
-    test_scrap_author_main_information()
+    #test_scrap_author_main_information()
     test_get_author_all_work()

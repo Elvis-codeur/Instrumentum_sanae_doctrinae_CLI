@@ -77,8 +77,9 @@ class ScrapDataFromURL():
         }
 
         #print(self.url_list)
-
+        
         for url in self.url_list:
+            #print(url)
             response = requests.get(url=url,
                                     timeout=my_constants.HTTP_REQUEST_TIMEOUT,
                                     )
@@ -153,6 +154,7 @@ class ScrapDataFromURL():
         :param version: The version of the json data structure used to store the informations scrapped 
         """
 
+        #print(element_list,"\n\n\n")
 
         for url in self.url_informations:
             #print(self.url_informations[url]['html_filepath'],self.url_informations[url]['is_html_file_locally_saved'])
@@ -186,8 +188,11 @@ class ScrapDataFromURL():
         """
         Write the json files 
         """
+        
+        #print(*[i.get("json_file_content") for i in self.url_informations.values()],sep="\n\n\n")
+
         for url in self.url_informations:
-            print("---ELVIS---",url)
+            #print("---ELVIS---",url)
             #print(self.url_informations[url]["json_filepath"])
             _my_tools.write_json(self.url_informations[url]["json_filepath"],
                                  self.url_informations[url]["json_file_content"])
@@ -392,10 +397,9 @@ class ParallelHttpConnexionWithLogManagement():
     
         for download_batch in element_to_download_splitted:
             for element in download_batch:
-                thread = threading.Thread(target = self.download_element_data,
-                                          kwargs = {"element":element})
-                thread.start()
-                thread.join()
+                #print(element)
+                self.download_element_data(element)
+                
 
         self.update_downloaded_and_to_download()
       
