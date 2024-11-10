@@ -197,7 +197,7 @@ class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
     def scrap_page_useful_links(self,**kwargs):
         
         # Connect to the url and create a beautiful soup object with the html for scraping 
-        self.connect_to_url()
+        self.connect_to_all_url()
 
         result = [] 
 

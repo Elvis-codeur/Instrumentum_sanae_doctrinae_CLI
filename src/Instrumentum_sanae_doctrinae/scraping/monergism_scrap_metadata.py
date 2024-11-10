@@ -14,6 +14,7 @@ from urllib.parse import urlparse, parse_qs
 
 from ..scraping import scrap_metadata
 from ..scraping import my_constants
+from ..scraping import http_connexion
 from ..scraping import _my_tools
 
 
@@ -63,7 +64,7 @@ class GetTopicOrAuthorOrScriptureList(scrap_metadata.GetAnyBrowseByListFromManyP
         of authors or topics as **<a href="/search?f[0]=author:39115">H.B. Charles Jr.</a>**
         """
 
-        self.connect_to_url()
+        self.connect_to_all_url()
 
         result = []
 
@@ -96,7 +97,7 @@ class GetScriptureList(GetTopicOrAuthorOrScriptureList):
 
 
     def scrap_page_useful_links(self):
-        self.connect_to_url()
+        self.connect_to_all_url()
 
         result = []
 
@@ -164,176 +165,10 @@ class MonergismScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicScri
         """
         
         """
-        self.connect_to_url()
+        self.connect_to_all_url()
     
 
 
-class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScripturePage):
-    def __init__(self, name, root_folder, url, browse_by_type,) -> None:
-
-        super().__init__(name, root_folder, url, browse_by_type,
-                         information_type_root_folder = my_constants.MAIN_INFORMATION_ROOT_FOLDER,
-                         intermdiate_folders= None)
-
-
-    def scrap_url_pages(self):
-        """
-        
-        """
-        super().scrap_url_pages()
-
-        def parse_filter_by_ul(bs4_soup,css_selector,url):
-            result = {}
-
-            filter_by_ul = bs4_soup.find("ul",class_= re.compile(css_selector))
-
-            if not filter_by_ul:
-                return []
-
-            filter_by_lis = filter_by_ul.find_all("li")                       
-                                        
-            for li in filter_by_lis:
-                link = li.find("a")
-                link_text = link.get_text()
-
-                topic_element_number = re.findall(r'\((\d+)\)',link_text)
-
-                topic_element_number = int(topic_element_number[0]) if topic_element_number else None
-                result[url] = {
-                    "url":urllib.parse.urljoin(url,link.get("href")),
-                    "link_text": link_text.split("(")[0].strip(),
-                    "number":topic_element_number
-                }   
-            return result    
-
-
-        def get_page_param(url):
-            query_params = parse_qs(url.query)
-            return int(query_params.get('page', [0])[0])
-
-        def get_other_pages(old_url_list,soup,current_url):
-            #print(current_url)
-            
-            pages_ul = soup.find(lambda tag :tag.name == "ul" and 
-                                            tag.has_attr("class") and 
-                                            'pager' in tag['class'] and
-                                                  'clearfix' in tag['class']
-                                            )
-            next_page_li_list = pages_ul.find_all("li",attrs = {"class":"pager-item"})
-
-            new_url_list = []
-
-            for next_page_li in next_page_li_list:
-                if next_page_li:
-                    next_page_anchor = next_page_li.find("a")
-                    if next_page_anchor:
-                        next_page_url = urllib.parse.urljoin(url,
-                                                            next_page_anchor.get("href"))
-                        new_url_list.append(urllib.parse.urlparse(next_page_url))
-
-            
-
-            if not current_url in old_url_list:
-                if isinstance(current_url,str):
-                    old_url_list.append(urllib.parse.urlparse(current_url))
-                else:
-                    old_url_list.append(current_url)
-
-            
-            # To avoid the addition of the last page who will break the
-            # loop using the method  
-            old_url_list += new_url_list
-
-            #print(current_url)
-            
-            # This li element exists only on the last page of 
-            # an author, topic, scripture, etc
-            last_page_li = pages_ul.find(lambda tag: tag.name == "li" and 
-                                                tag.has_attr('class') and 
-                                                'pager-current' in tag['class'] and
-                                                  'last' in tag['class'])
-            
-            maximum_page_number = 0
-            if last_page_li:
-                maximum_page_number = int(last_page_li.get_text()) -1
-                #print(current_url,"---",maximum_page_number) 
-                if int(parse_qs(current_url.query).get("page",[0])[0]) == maximum_page_number:
-                    return []
-
-            #print(new_url_list)
-
-            return new_url_list
-
-
-        final_result = []
-
-        for url in self.url_informations:
-            
-            soup = self.url_informations[url].get("bs4_object")
-
-            # Filter by topic
-            filter_by_topic_data = parse_filter_by_ul(soup,"facetapi-facetapi-links*.facetapi-facet-field-link-topic",url)
-            
-            # Filter by format
-            filter_by_format_data = parse_filter_by_ul(soup,"facetapi-facetapi-links*.facetapi-facet-field-link-format",url)
-            
-            # Filter by genre
-            filter_by_genre_data = parse_filter_by_ul(soup,"facetapi-facetapi-links*.facetapi-facet-field-link-genres",url)
-            
-            # Filter by web site 
-            filter_by_web_site_data = parse_filter_by_ul(soup,"facetapi-facetapi-links*.facetapi-facet-field-link-website",url)
-            
-            # Filter by author 
-            filter_by_author_data = parse_filter_by_ul(soup,"facetapi-facetapi-links*.facetapi-facet-field-link-authors",url)
-
-            pages_list = []
-            new_pages_url = get_other_pages(pages_list,soup,url)
-
-            if new_pages_url:
-               pages_list += new_pages_url
-
-               while(new_pages_url):
-                   next_page_url = max(pages_list,key=get_page_param)
-                   soup = _my_tools.get_bs4soup_from_url(urllib.parse.urlunparse(next_page_url))
-                   new_pages_url = get_other_pages(pages_list,soup,next_page_url)
-                   
-            
-            pages_list = list(set(pages_list))
-
-            pages_list = sorted(pages_list,key = get_page_param)
-
-            pages_list = [urllib.parse.urlunparse(url) for url in pages_list]
-            
-            
-            name =  ""
-            name_element = soup.find_all("li",attrs = {"class":"views-row"})[0]
-            if name_element:
-                name_element =  name_element.find("small")
-                if name_element:
-                    name = name_element.get_text()
-                    name = name.split("by")[1].strip()
-
-            if name:
-                name = list(name)
-                for indice in  range(len(name)-1):
-                    if  name[indice] == " " and name[indice+1] == " ":
-                        name[indice] = ""
-
-               
-            result = {
-                "name": "".join(name),
-                "pages":pages_list[1:], # To avoid having the first url twice 
-                "filter_by_topic": filter_by_topic_data,
-                "filter_by_format":filter_by_format_data,
-                "filter_by_genre":filter_by_genre_data,
-                "filter_by_web_site":filter_by_web_site_data,
-                "filter_by_author":filter_by_author_data,
-            }
-
-
-            final_result.append(result)
-
-        return final_result 
     
 
 class MonergismScrapAuthorTopicScriptureWork(MonergismScrapAuthorTopicScripturePage):
@@ -351,7 +186,7 @@ class MonergismScrapAuthorTopicScriptureWork(MonergismScrapAuthorTopicScriptureP
         Scrap the main links of the page. See this file (documentation/documentation.odt) for more info 
         """
 
-        self.connect_to_url()
+        self.connect_to_all_url()
 
         final_result = {}
 
@@ -384,8 +219,8 @@ class MonergismScrapAuthorTopicScriptureWork(MonergismScrapAuthorTopicScriptureP
                 self.num_result = header_numbers[0]
 
                 # The index of element returned in this page. For exemple 1rst to 50th gives 1 and 50 in the two variables
-                display_index_begin = header_numbers[1]
-                display_index_end = header_numbers[2]
+                #display_index_begin = header_numbers[1]
+                #display_index_end = header_numbers[2]
 
 
                 # Get the main page links 
@@ -414,7 +249,7 @@ class MonergismScrapAuthorTopicScriptureWork(MonergismScrapAuthorTopicScriptureP
 
 
 
-class MonergismScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWebSiteAllAuthorTopicScriptures):
+class MonergismScrapWebSiteAllAuthorTopicScripturesWork(http_connexion.ParallelHttpConnexionWithLogManagement):
     def __init__(self,root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
 
         root_folder = _my_tools.process_path_according_to_cwd(root_folder)
@@ -443,9 +278,9 @@ class MonergismScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWebS
         self.root_folder = root_folder
 
 
-    def prepare_input_json_file(self,matching_subfolders):
+    def prepare_input_json_file(self,input_root_folder):
         """
-        :param matching_subfolders: The folders from wich the json files will be searched out 
+        :param input_root_folder: The folders from wich the json files will be searched out 
         """
         # List of folder in which name  :data:`my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER`
         input_json_files = []

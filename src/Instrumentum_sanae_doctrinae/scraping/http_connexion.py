@@ -1,3 +1,5 @@
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 import threading
 import datetime
 import os 
@@ -63,7 +65,7 @@ class ScrapDataFromURL():
         self.browse_by_type = browse_by_type
         
 
-    def connect_to_url(self,**kwargs):
+    def connect_to_all_url(self,**kwargs):
         """
         Connect to an html page whose url has been given 
         """
@@ -108,7 +110,7 @@ class ScrapDataFromURL():
         """
         Scrap the web page 
         """
-        self.connect_to_url()
+        self.connect_to_all_url()
         
     
 
@@ -210,7 +212,7 @@ class ScrapDataFromURL():
         """
 
 
-        self.connect_to_url()
+        self.connect_to_all_url()
     
 
     
@@ -241,6 +243,11 @@ class ParallelHttpConnexionWithLogManagement():
         """
         self.log_filepath = log_filepath
         self.element_dict = {}
+
+        if not input_root_folder:
+            raise ValueError("The value of variable input_root_folder must be given")
+
+
         self.input_root_folder = input_root_folder
 
         self.meta_informations = {}
@@ -376,7 +383,7 @@ class ParallelHttpConnexionWithLogManagement():
         and download the data that must be downloaded from it """
 
 
-    def download(self,download_batch_size):
+    async def download(self,download_batch_size):
         """
         Download the content of the input files concurrently 
         by a batch of size :data:`download_batch` 
@@ -396,11 +403,9 @@ class ParallelHttpConnexionWithLogManagement():
 
     
         for download_batch in element_to_download_splitted:
-            for element in download_batch:
-                #print(element)
-                self.download_element_data(element)
+            tasks = [self.download_element_data(element) for element in download_batch]
+            result = await asyncio.gather(*tasks)
                 
-
         self.update_downloaded_and_to_download()
       
         

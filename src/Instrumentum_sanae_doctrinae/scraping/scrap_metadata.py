@@ -54,7 +54,7 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
 
 
         """
-        self.connect_to_url()
+        self.connect_to_all_url()
 
         result = []
 
@@ -96,7 +96,7 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
         """
 
 
-        self.connect_to_url()
+        self.connect_to_all_url()
 
         if save_html_file:
             # Write the content of the html file get from the url
@@ -194,7 +194,7 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
             self.write_html_page_content()  
 
 
-        #print(*url_datascraped_list,sep="\n\n\n")      
+        #print(url_datascraped_list,sep="\n\n\n")      
 
         for url in url_datascraped_list:
             self.prepare_json_data_for_saving(element_list=url_datascraped_list[url],
@@ -203,50 +203,3 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
         # Write the json file of the data scrapped from the html file 
         self.write_json_data()
 
-
-
-
-
-
-
-      
-
-
-class ScrapWebSiteAllAuthorTopicScriptures(http_connexion.ParallelHttpConnexionWithLogManagement):
-
-    def __init__(self, log_filepath, input_root_folder,subfolder_pattern, overwrite_log=False, update_log=True):
-
-        self.input_json_root_folder = input_root_folder
-
-
-        # Get all the files of the in the folder _list of the root folder in 
-        # which we are 
-        # The files in these folders are the list of the authors, topics, scriptures, etc
-        
-        
-
-        
-        pattern = f"*{subfolder_pattern}" 
-
-        input_root_folder = pathlib.Path(input_root_folder)
-
-        matching_subfolders = [i for i  in input_root_folder.rglob(pattern) if i.is_dir()]
-
-
-        self.input_json_content_dict = {}
-
-        input_json_files_content = {}
-
-        for file in self.prepare_input_json_file(matching_subfolders):
-            input_json_files_content[str(file)] = _my_tools.read_json(file)
-       
-                
-        super().__init__(log_filepath,input_json_files_content,overwrite_log,update_log,input_root_folder)
-
-    
-
-    def prepare_input_json_file(self,matching_subfolders):
-        """
-        :param matching_subfolders: The folders from wich the json files will be searched out 
-        """
-        
