@@ -146,7 +146,7 @@ class ScrapDataFromURL():
 
         return result
     
-    def prepare_json_data_for_saving(self,element_list,version = "0.0.1",**kwargs):
+    def prepare_json_data_for_saving(self,element_list,url,version = "0.0.1",**kwargs):
         """
         :param element_list: A list of the element to save in the json file as main elements. 
         For exemple, it can be a list of dictionnary like this [{'name': 'Worry, Fear & Anxiety', 'url': 'https://www.monergism.com/topics/worry-fear-anxiety'},
@@ -156,19 +156,19 @@ class ScrapDataFromURL():
 
         #print(element_list,"\n\n\n")
 
-        for url in self.url_informations:
-            #print(self.url_informations[url]['html_filepath'],self.url_informations[url]['is_html_file_locally_saved'])
-            self.url_informations[url]["json_file_content"] = {
-                **{
-                "version":version,
-                "url":url,
-                "local_json_filepath":self.url_informations[url]['json_filepath'],
-                "local_html_filepath":self.url_informations[url]['html_filepath'] if self.url_informations[url]['is_html_file_locally_saved'] else "",
-                "request_datetime":self.url_informations[url]["request_datetime"]
-                },
-                **_my_tools.get_important_information_from_request_response(self.url_informations[url]["request"]),
-                "data":element_list
-            }
+    
+        #print(self.url_informations[url]['html_filepath'],self.url_informations[url]['is_html_file_locally_saved'])
+        self.url_informations[url]["json_file_content"] = {
+            **{
+            "version":version,
+            "url":url,
+            "local_json_filepath":self.url_informations[url]['json_filepath'],
+            "local_html_filepath":self.url_informations[url]['html_filepath'] if self.url_informations[url]['is_html_file_locally_saved'] else "",
+            "request_datetime":self.url_informations[url]["request_datetime"]
+            },
+            **_my_tools.get_important_information_from_request_response(self.url_informations[url]["request"]),
+            "data":element_list
+        }
         
 
     def write_html_page_content(self,intermediate_folders = None,**kwargs):

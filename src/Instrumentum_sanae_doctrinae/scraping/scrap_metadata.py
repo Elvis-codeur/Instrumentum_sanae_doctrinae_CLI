@@ -108,7 +108,9 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
         for url,anchor_as_dict_list in self.scrap_page_useful_links(**kwargs):
             #print(url,anchor_as_dict_list)
             anchor_as_dict_list = self.anchor_object_list_to_dict_list(anchor_as_dict_list,url)
-            self.prepare_json_data_for_saving(anchor_as_dict_list)
+            self.prepare_json_data_for_saving(
+                                            element_list=anchor_as_dict_list,
+                                            url=url)
 
 
         # Write the json file of the data scrapped from the html file 
@@ -194,8 +196,9 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
 
         #print(*url_datascraped_list,sep="\n\n\n")      
 
-        for data in url_datascraped_list:
-            self.prepare_json_data_for_saving(data)
+        for url in url_datascraped_list:
+            self.prepare_json_data_for_saving(element_list=url_datascraped_list[url],
+                                              url=url)
 
         # Write the json file of the data scrapped from the html file 
         self.write_json_data()

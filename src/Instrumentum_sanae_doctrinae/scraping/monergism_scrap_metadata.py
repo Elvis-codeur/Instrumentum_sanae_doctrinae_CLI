@@ -183,7 +183,7 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
         super().scrap_url_pages()
 
         def parse_filter_by_ul(bs4_soup,css_selector,url):
-            result = []
+            result = {}
 
             filter_by_ul = bs4_soup.find("ul",class_= re.compile(css_selector))
 
@@ -199,11 +199,11 @@ class MonergismScrapAuthorTopicScriptureMainPage(MonergismScrapAuthorTopicScript
                 topic_element_number = re.findall(r'\((\d+)\)',link_text)
 
                 topic_element_number = int(topic_element_number[0]) if topic_element_number else None
-                result.append({
+                result[url] = {
                     "url":urllib.parse.urljoin(url,link.get("href")),
                     "link_text": link_text.split("(")[0].strip(),
                     "number":topic_element_number
-                })   
+                }   
             return result    
 
 
@@ -353,7 +353,7 @@ class MonergismScrapAuthorTopicScriptureWork(MonergismScrapAuthorTopicScriptureP
 
         self.connect_to_url()
 
-        final_result = []
+        final_result = {}
 
         for url in self.url_informations:
             
@@ -407,11 +407,7 @@ class MonergismScrapAuthorTopicScriptureWork(MonergismScrapAuthorTopicScriptureP
                 
                 #print(main_links,url,"\n\n")
 
-                final_result.append(
-                    {
-                        "data": main_links
-                    }
-                    )
+                final_result[url] = main_links
 
         return final_result
 

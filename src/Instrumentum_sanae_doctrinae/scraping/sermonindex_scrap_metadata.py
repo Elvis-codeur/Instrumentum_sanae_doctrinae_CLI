@@ -627,7 +627,7 @@ class SermonIndexScrapAuthorTopicScriptureMainInformation(SermonIndexScrapAuthor
 
         
 
-        final_result = []
+        final_result = {}
 
         for url in self.url_informations:
                 
@@ -697,7 +697,7 @@ class SermonIndexScrapAuthorTopicScriptureMainInformation(SermonIndexScrapAuthor
             if not result.get("name"):
                 result["name"] = self.name 
 
-            final_result.append(result)
+            final_result[url] = result
 
         #print(final_result,self.url_list)
 
@@ -798,7 +798,7 @@ class SermonIndexAudioSermonScrapAuthorTopicScriptureWork(SermonIndexScrapAuthor
         """
         super().scrap_url_pages()
 
-        final_result = []
+        final_result = {}
 
         for current_page_url in self.url_informations:
                 
@@ -922,7 +922,7 @@ class SermonIndexAudioSermonScrapAuthorTopicScriptureWork(SermonIndexScrapAuthor
                             "comments_number": comment_number
                         })
 
-            final_result.append(result)
+            final_result[url] = result
 
         return final_result
 
