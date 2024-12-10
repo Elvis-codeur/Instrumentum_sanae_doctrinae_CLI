@@ -338,7 +338,7 @@ class ParallelHttpConnexionWithLogManagement():
                 #print(key,True)
                 downloaded[key] = element_dict[key]
             else:
-                #print(key,element_dict[key])
+                #print(key,False)
                 to_download[key] = element_dict[key]
         
         
@@ -351,22 +351,7 @@ class ParallelHttpConnexionWithLogManagement():
         This method take a json file content and create input data for download 
         that are put int dict self.element_dict
 
-        :param file_content: the content of a json file where input data will be taken 
-        :param intermediate_folders: The intermediate folders from the root folder to 
-        the json file 
-        :param file_path: The path of the json file 
         """
-
-        for element in kwargs.get("file_content").get("data"):
-                self.element_dict[element.get("name")] = {
-                    **element,
-
-                    **{"download_log":{
-                        "input_file_index":self.meta_informations["input_files_information"]\
-                                                                ["input_files"].index(kwargs.get("file_path")),
-                        "intermediate_folders":kwargs.get("intermediate_folders")}
-                      }
-                        }
 
 
 

@@ -121,6 +121,31 @@ class MonergismScrapAuthorTopicScriptureWork(MonergismScrapAuthorTopicScriptureP
                 final_result[url] = main_links
 
         return final_result
+    
+    def is_data_downloaded(self):
+
+        for url in self.url_informations:
+            file_path = self.url_informations[url].get("json_filepath")
+            if not os.path.exists(file_path):
+                return False
+            
+            
+            file_content = _my_tools.read_json(file_path)
+
+            if not file_content:
+                return False
+            
+            # Check mandatory information in the json file 
+            if not file_content.get("url"):
+                return False
+            
+
+            if not file_content.get("data"):
+                return False
+            
+        return True
+
+
 
 
 
@@ -146,13 +171,15 @@ class MonergismScrapWebSiteAllAuthorTopicScripturesWork(http_connexion.ParallelH
 
         #print(input_root_folder)
         
-        input_files = self.prepare_input_json_file(input_root_folder)
+        input_files = self.get_input_json_files(input_root_folder)
         
         input_data = {}
         
+        # Prepare the json files as input data 
         for filepath in input_files:
             file_content = _my_tools.read_json(filepath)
             input_data[str(filepath)] = file_content
+        
         
         super().__init__(log_filepath = log_filepath,
                          input_root_folder= input_root_folder,
@@ -164,7 +191,7 @@ class MonergismScrapWebSiteAllAuthorTopicScripturesWork(http_connexion.ParallelH
         self.root_folder = root_folder
 
 
-    def prepare_input_json_file(self,input_root_folder):
+    def get_input_json_files(self,input_root_folder):
         """
         :param input_root_folder: The folders from wich the json files will be searched out 
         """
@@ -228,15 +255,14 @@ class MonergismScrapWebSiteAllAuthorTopicScripturesWork(http_connexion.ParallelH
             intermdiate_folders = element.get("download_log").get("intermediate_folders")
         )
 
-
         await ob.scrap_and_write()
 
     def is_element_data_downloaded(self,element):
         ob = MonergismScrapAuthorTopicScriptureWork(
-            name = element.get("name"),
+            name = element.get("data").get("name"),
             root_folder = self.root_folder,
-            browse_by_type =self.browse_by_type,
-            url_list = element.get("url_list"),
+            browse_by_type = self.browse_by_type,
+            url_list = element.get("data").get("pages"),
             intermdiate_folders = element.get("download_log").get("intermediate_folders")
         )
         return ob.is_data_downloaded()

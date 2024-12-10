@@ -65,10 +65,9 @@ def test_get_author_all_work():
         browse_by_type,
         overwrite_log=True
     )
-    asyncio.run(ob.download(1))
+    asyncio.run(ob.download(2))
     ob.update_downloaded_and_to_download()
     ob.write_log_file()
-    #logging.debug(ob.__dict__)
 
 if __name__ == "__main__":
     
