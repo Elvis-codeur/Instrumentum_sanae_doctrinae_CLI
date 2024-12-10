@@ -1,13 +1,18 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+import io
 import threading
 import datetime
 import os 
 import urllib
 import pathlib
+import aiohttp
+from tqdm import tqdm
+
 
 import requests
 from bs4 import BeautifulSoup
+
 
 from ..scraping import my_constants
 from . import my_errors
@@ -38,6 +43,7 @@ class ScrapDataFromURL():
         self.metadata_root_folder = _my_tools.process_path_according_to_cwd(metadata_root_folder) #: The root folder where the metadata will be stored
         self.log_root_folder =  _my_tools.process_path_according_to_cwd(log_root_folder) #: The root folder where the logs of the download and scraping process will be stored
 
+        
 
         # It contains the json filepath, html filepat, etc of each url  
         self.url_informations = {i:{"json_filepath":None,"html_filepath":None,
@@ -65,7 +71,7 @@ class ScrapDataFromURL():
         self.browse_by_type = browse_by_type
         
 
-    def connect_to_all_url(self,**kwargs):
+    async def connect_to_all_url(self,**kwargs):
         """
         Connect to an html page whose url has been given 
         """
@@ -78,23 +84,28 @@ class ScrapDataFromURL():
             "Connection": "close",
         }
 
-        #print(self.url_list)
         
-        for url in self.url_list:
-            #print(url)
-            response = requests.get(url=url,
-                                    timeout=my_constants.HTTP_REQUEST_TIMEOUT,
-                                    )
-            
-            if response.status_code == 404:
-                raise my_errors.HTTP404Error(url)
-            
-            self.url_informations[url]["request"] = response
-            self.url_informations[url]["request_datetime"] = _my_tools.datetimeToGoogleFormat(datetime.datetime.now()),
-            # Create a bs4 object with the html text of the last request 
-            self.url_informations[url]["bs4_object"] = BeautifulSoup(response.text,features="html.parser") 
+        # The request session used for http connections 
+        self.main_request_session = aiohttp.ClientSession()
+        
+        
+        async with self.main_request_session as session:
+            for url in self.url_list:
+                #print(url)
+                
+                async with session.get(url=url,
+                                        timeout=my_constants.HTTP_REQUEST_TIMEOUT,) as response:
+                    html = await response.text()
 
-        #print(self.url_informations)
+                    if response.status == 404:
+                        raise my_errors.HTTP404Error(url)
+                    
+                    self.url_informations[url]["request"] = response
+                    self.url_informations[url]["request_datetime"] = _my_tools.datetimeToGoogleFormat(datetime.datetime.now()),
+                    # Create a bs4 object with the html text of the last request 
+                    self.url_informations[url]["bs4_object"] = BeautifulSoup(html,features="html.parser") 
+
+    #print(self.url_informations)
 
     def next_page(self,**kwargs):
         """
@@ -105,12 +116,12 @@ class ScrapDataFromURL():
 
 
 
-    def scrap_url_pages(self,**kwargs):
+    async def scrap_url_pages(self,**kwargs):
 
         """
         Scrap the web page 
         """
-        self.connect_to_all_url()
+       
         
     
 
@@ -173,20 +184,22 @@ class ScrapDataFromURL():
         }
         
 
-    def write_html_page_content(self,intermediate_folders = None,**kwargs):
+    async def write_html_page_content(self,intermediate_folders = None,**kwargs):
         """
         Write the content of the html files 
         """
 
         for url in self.url_informations:
-            _my_tools.write_file(self.url_informations[url]["html_filepath"],
-                                 self.url_informations[url]["request"].text)
+            html_text = await self.url_informations[url]["request"].text()
+            
+            await _my_tools.async_write_file(self.url_informations[url]["html_filepath"],
+                                 html_text)
             self.url_informations[url]['is_html_file_locally_saved'] = True
             #print(url,"write html")
 
 
 
-    def write_json_data(self,**kwargs):
+    async def write_json_data(self,**kwargs):
         """
         Write the json files 
         """
@@ -196,23 +209,20 @@ class ScrapDataFromURL():
         for url in self.url_informations:
             #print("---ELVIS---",url)
             #print(self.url_informations[url]["json_filepath"])
-            _my_tools.write_json(self.url_informations[url]["json_filepath"],
+            await _my_tools.async_write_json(self.url_informations[url]["json_filepath"],
                                  self.url_informations[url]["json_file_content"])
             self.url_informations[url]['is_json_file_locally_saved'] = True
 
 
 
 
-    def scrap_and_write(self,save_html_file= True,**kwargs):
+    async def scrap_and_write(self,save_html_file= True,**kwargs):
         """
         Connect to the url specified, scrap the right data, save the html content in a file and write the result in an json file 
         
         :param save_html_file: If true, the text of the request is saved as html. 
 
         """
-
-
-        self.connect_to_all_url()
     
 
     
@@ -235,10 +245,10 @@ class ScrapDataFromURL():
 
 
 class ParallelHttpConnexionWithLogManagement():
-    def __init__(self,log_filepath,element_list,overwrite_log = False,update_log = True,input_root_folder = ""):
+    def __init__(self,log_filepath,input_data,overwrite_log = False,update_log = True,input_root_folder = ""):
         """
         :param log_filepath: The path of the log file used to store and manage the downloaded, undownloaded, not found etc 
-        :param element_list: The list of the element to download 
+        :param input_data: A dictionnary where the keys are the file path and the value the content of the file
         :param input_root_folder: The folder from which all the json files are searched from to be used as input files 
         """
         self.log_filepath = log_filepath
@@ -255,11 +265,11 @@ class ParallelHttpConnexionWithLogManagement():
         # The information of the json input files 
         self.meta_informations["input_files_information"] = {}
 
-        self.meta_informations["input_files_information"]["input_files"] = list(element_list.keys())
+        self.meta_informations["input_files_information"]["input_files"] = list(input_data.keys())
 
 
         # Add download log the element each element 
-        for file_path in element_list:
+        for file_path in input_data:
             
             file_path_from_root_folder = _my_tools.get_uncommon_part_of_two_path(
                                                     self.input_root_folder,file_path)[1]
@@ -270,7 +280,7 @@ class ParallelHttpConnexionWithLogManagement():
             #  (the information of the author, topic, scripture, etc)
             intermediate_folders = list(file_path_from_root_folder.parts[1:])
 
-            file_content  =  element_list[file_path]
+            file_content  =  input_data[file_path]
 
             #print(self.meta_informations)
 
@@ -395,18 +405,20 @@ class ParallelHttpConnexionWithLogManagement():
          
         element_to_download = list(self.log_file_content["to_download"].values())
         
-        print(f"to_download = {len(element_to_download)} Download batch size = {download_batch_size}")
+       
         # Split it by size download_batch_size to download
         #  them in parralel 
         element_to_download_splitted = _my_tools.sample_list(element_to_download,
                                                       download_batch_size)
 
-    
+        
+        # This is used to show a progress bar 
         for download_batch in element_to_download_splitted:
             tasks = [self.download_element_data(element) for element in download_batch]
             result = await asyncio.gather(*tasks)
+            self.update_downloaded_and_to_download()
+               
                 
-        self.update_downloaded_and_to_download()
       
         
 

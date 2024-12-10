@@ -1,7 +1,12 @@
+import re 
+import aiohttp
+import bs4
+import requests 
+
 from . import _my_tools
 from .monergism_scrap_metadata import * 
 from  . import http_connexion
-import re 
+
 
 class MonergismScrapAuthorTopicScriptureGeneralInformation(MonergismScrapAuthorTopicScripturePage):
     def __init__(self, name, root_folder, url, browse_by_type,) -> None:
@@ -9,13 +14,16 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(MonergismScrapAuthorT
         super().__init__(name, root_folder, url, browse_by_type,
                          information_type_root_folder = my_constants.MAIN_INFORMATION_ROOT_FOLDER,
                          intermdiate_folders= None)
+        
+        # This session object is created to be used to connect and Get the other pages 
+        # Where the other information will be found 
+        #self.other_page_request_session = aiohttp.ClientSession() 
 
 
-    def scrap_url_pages(self):
+    async def scrap_url_pages(self):
         """
         
         """
-        super().scrap_url_pages()
 
         def parse_filter_by_ul(bs4_soup,css_selector,url):
             result = {}
@@ -130,14 +138,16 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(MonergismScrapAuthorT
             new_pages_url = get_other_pages(pages_list,soup,url)
 
             if new_pages_url:
-               pages_list += new_pages_url
-
-               while(new_pages_url):
-                   next_page_url = max(pages_list,key=get_page_param)
-                   soup = _my_tools.get_bs4soup_from_url(urllib.parse.urlunparse(next_page_url))
-                   new_pages_url = get_other_pages(pages_list,soup,next_page_url)
-                   
+                pages_list += new_pages_url
             
+
+                while(new_pages_url):
+                    next_page_url = max(pages_list,key=get_page_param)
+                    soup = await self.get_bs4soup_from_url(self.main_request_session,
+                                                            urllib.parse.urlunparse(next_page_url))
+                    new_pages_url = get_other_pages(pages_list,soup,next_page_url)
+                    
+                
             pages_list = list(set(pages_list))
 
             pages_list = sorted(pages_list,key = get_page_param)
@@ -146,12 +156,19 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(MonergismScrapAuthorT
             
             
             name =  ""
-            name_element = soup.find_all("li",attrs = {"class":"views-row"})[0]
+            name_element = soup.find(lambda tag:tag.name == "li" and 
+                                     tag.has_attr("class") and 
+                                     
+                                     ("active" in tag["class"] and
+                                      "leaf" in tag["class"] and
+                                      "first" in tag["class"])
+                                     
+                                     )
+            
+            
+            
             if name_element:
-                name_element =  name_element.find("small")
-                if name_element:
-                    name = name_element.get_text()
-                    name = name.split("by")[1].strip()
+                name =  "".join(name_element.find_all(text = True,recursive=False)).strip()
 
             if name:
                 name = list(name)
@@ -206,8 +223,17 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(MonergismScrapAuthorT
                 return False
             
         return True
-
     
+    async def get_bs4soup_from_url(self,session_object,url):
+        """
+        Take an url and return a bs4 object. 
+        """        
+        async with session_object.get(url,
+                                      timeout=my_constants.HTTP_REQUEST_TIMEOUT)  as response:
+            html = await response.text()
+            return bs4.BeautifulSoup(html,features="lxml") 
+
+        
 
 
 
@@ -290,7 +316,7 @@ class MonergismScrapGeneralInformation(http_connexion.ParallelHttpConnexionWithL
         and download the data that must be downloaded from it """
 
         #print(self.root_folder,self.browse_by_type)
-    
+        #print("\n",element.get("name"))
         ob = MonergismScrapAuthorTopicScriptureGeneralInformation(
             name = element.get("name"),
             root_folder = self.root_folder,

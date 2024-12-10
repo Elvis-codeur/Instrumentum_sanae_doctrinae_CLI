@@ -20,6 +20,7 @@ See this file :ref:`Instrumentum_sanae_doctrinae.scraping` for more information 
 
 import os 
 import pathlib
+import asyncio
 
 from . import http_connexion
 from . import _my_tools
@@ -41,7 +42,7 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
         super().__init__(metadata_root_folder, log_root_folder, url_list, browse_by_type, intermdiate_folders)
 
 
-    def scrap_page_useful_links(self,**kwargs):
+    async def scrap_page_useful_links(self,**kwargs):
         """
         This method return the useful links of the page. 
 
@@ -54,7 +55,7 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
 
 
         """
-        self.connect_to_all_url()
+        
 
         result = []
 
@@ -87,7 +88,7 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
         
         return result
         
-    def scrap_and_write(self,save_html_file= True,**kwargs):
+    async def scrap_and_write(self,save_html_file= True,**kwargs):
         """
         Connect to the url specified, scrap the right data, save the html content in a file and write the result in an json file 
         
@@ -96,16 +97,18 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
         """
 
 
-        self.connect_to_all_url()
+        await self.connect_to_all_url()
 
         if save_html_file:
             # Write the content of the html file get from the url
-            self.write_html_page_content()
+            await self.write_html_page_content()
 
 
         # A list of dictionnaries containing the information of the HTML anchor element scrapped 
         
-        for url,anchor_as_dict_list in self.scrap_page_useful_links(**kwargs):
+        useful_links = await self.scrap_page_useful_links(**kwargs)
+        
+        for url,anchor_as_dict_list in useful_links:
             #print(url,anchor_as_dict_list)
             anchor_as_dict_list = self.anchor_object_list_to_dict_list(anchor_as_dict_list,url)
             self.prepare_json_data_for_saving(
@@ -114,7 +117,7 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
 
 
         # Write the json file of the data scrapped from the html file 
-        self.write_json_data()
+        await self.write_json_data()
 
 
 
@@ -164,7 +167,7 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
 
         
 
-    def scrap_and_write(self,save_html_file= True,intermediate_folders = None):
+    async def scrap_and_write(self,save_html_file= True,intermediate_folders = None):
         """
         Connect to the url specified, scrap the right data, save the html content in a file and write the result in an json file 
         
@@ -186,12 +189,15 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
                 self.url_informations[url]["html_filepath"] = html_filepath
 
 
+        await self.connect_to_all_url()
+        
         # The data scrapped from each url 
-        url_datascraped_list = self.scrap_url_pages()
+        # This step can contain http connections 
+        url_datascraped_list = await self.scrap_url_pages()
 
         if save_html_file:
             # Write the content of the html file get from the url
-            self.write_html_page_content()  
+            await self.write_html_page_content()  
 
 
         #print(url_datascraped_list,sep="\n\n\n")      
@@ -201,5 +207,5 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
                                               url=url)
 
         # Write the json file of the data scrapped from the html file 
-        self.write_json_data()
+        await self.write_json_data()
 

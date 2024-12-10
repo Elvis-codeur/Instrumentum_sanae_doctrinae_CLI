@@ -194,10 +194,10 @@ class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
         # For example 
         self.other_page_links = []
 
-    def scrap_page_useful_links(self,**kwargs):
+    async def scrap_page_useful_links(self,**kwargs):
         
         # Connect to the url and create a beautiful soup object with the html for scraping 
-        self.connect_to_all_url()
+    
 
         result = [] 
 
@@ -791,7 +791,7 @@ class SermonIndexAudioSermonScrapAuthorTopicScriptureWork(SermonIndexScrapAuthor
         
         
 
-    def scrap_url_pages(self):
+    async def scrap_url_pages(self):
         """
         Scrap the main information of the web page. Here the description, the 
         urls of the author, topic, scripture work 
@@ -1074,7 +1074,7 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWe
 
         #print(self.root_folder,self.browse_by_type)
 
-        print(element.get("name"))
+        #print(element.get("name"))
         
         ob = SermonIndexAudioSermonScrapAuthorTopicScriptureWork(
             name = element.get("name"),

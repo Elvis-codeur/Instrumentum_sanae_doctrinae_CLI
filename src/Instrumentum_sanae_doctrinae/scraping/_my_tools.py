@@ -3,6 +3,7 @@ import os
 import random
 import string
 import json 
+import aiofiles
 import requests
 import bs4
 
@@ -159,7 +160,6 @@ def write_json(filename,data,encoding = "utf-8",mode = "w",create_path= True,cor
     f.close()
     return 1
     
-    
 
 def read_file(filename,mode = "r",encoding = "utf-8"):
     f = open(filename,mode = mode,encoding = encoding)
@@ -180,18 +180,70 @@ def write_file(filename,content,mode = "w",encoding="utf-8",create_path= True,co
     if not os.path.exists(dirname) and dirname != "":
         os.makedirs(dirname)
 
-    f = open(filename,encoding=encoding if not mode=="wb" else None,
-                mode=mode)
-    f.write(content)
-    f.close()
+    with open(filename,encoding=encoding if not mode=="wb" else None,
+                mode=mode) as f:
+        f.write(content)
+        f.close()
+        
     return 1
     
 
+async def async_read_file(filename,mode = "r",encoding = "utf-8"):
+    async with aiofiles.open(filename,mode = mode,encoding = encoding) as f:
+        result = await f.read()
+        return result 
+    
+async def async_write_file(filename,content,mode = "w",encoding="utf-8",create_path= True,correct_file_path = True):
+    if correct_file_path:
+        filename = remove_forbiden_char_in_filepath(filename)
 
-def get_important_information_from_request_response(request_response:requests.Response):
+    if create_path == False and os.path.dirname(filename) != "":
+        assert os.path.exists(os.path.dirname(filename))
+    
+    # Write the dirname if necessary
+    dirname = os.path.dirname(filename)
+    if not os.path.exists(dirname) and dirname != "":
+        os.makedirs(dirname)
+
+    async with aiofiles.open(filename,encoding=encoding if not mode=="wb" else None,
+                mode=mode) as f:
+        await f.write(content)
+    
+        
+    return 1
+
+async def async_read_json(filename,encoding = "utf-8",mode = "r"):
+    
+    async with open(filename,encoding=encoding,mode=mode) as f:    
+        result = await f.read()
+        return json.loads(result)
+
+async def async_write_json(filename,data,encoding = "utf-8",mode = "w",create_path= True,correct_file_path = True):
+    if correct_file_path:
+        filename = remove_forbiden_char_in_filepath(filename)
+        
+    if create_path == False:
+        assert os.path.exists(os.path.dirname(filename))
+        
+   
+    # Write the dirname if necessary
+    dirname = os.path.dirname(filename)
+    if str(dirname) != "":
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+
+    #print(filename,"-Elvis-")
+
+    async with aiofiles.open(filename,encoding=encoding,mode=mode) as f:
+        await f.write(json.dumps(data))
+        return 1
+    
+
+
+def get_important_information_from_request_response(request_response):
     request_history = [
                             {
-                                'status_code': r.status_code,
+                                'status_code': r.status,
                                 'url': r.url,
                                 'headers': dict(r.headers),
                                 'elapsed': r.elapsed.total_seconds()
@@ -214,7 +266,7 @@ def get_important_information_from_request_response(request_response:requests.Re
 
     result = {
         "request_header":dict(request_response.headers),
-            "request_status_code": request_response.status_code,
+            "request_status_code": request_response.status,
             "request_cookies":cookies_list,
             "request_history":request_history,
     }
