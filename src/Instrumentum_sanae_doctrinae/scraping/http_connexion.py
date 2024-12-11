@@ -69,7 +69,7 @@ class ScrapDataFromURL():
         self.url_list = url_list #: A list of all the urls of the web pages accross which the list of the speakers, topic, etc are spreaded
 
         self.browse_by_type = browse_by_type
-        
+            
 
     async def connect_to_all_url(self,**kwargs):
         """
@@ -89,21 +89,21 @@ class ScrapDataFromURL():
         self.main_request_session = aiohttp.ClientSession()
         
         
-        async with self.main_request_session as session:
-            for url in self.url_list:
-                #print(url)
-                
-                async with session.get(url=url,
-                                        timeout=my_constants.HTTP_REQUEST_TIMEOUT,) as response:
-                    html = await response.text()
+    
+        for url in self.url_list:
+            #print(url)
+            
+            async with self.main_request_session.get(url=url,
+                                    timeout=my_constants.HTTP_REQUEST_TIMEOUT,) as response:
+                html = await response.text()
 
-                    if response.status == 404:
-                        raise my_errors.HTTP404Error(url)
-                    
-                    self.url_informations[url]["request"] = response
-                    self.url_informations[url]["request_datetime"] = _my_tools.datetimeToGoogleFormat(datetime.datetime.now()),
-                    # Create a bs4 object with the html text of the last request 
-                    self.url_informations[url]["bs4_object"] = BeautifulSoup(html,features="html.parser") 
+                if response.status == 404:
+                    raise my_errors.HTTP404Error(url)
+                
+                self.url_informations[url]["request"] = response
+                self.url_informations[url]["request_datetime"] = _my_tools.datetimeToGoogleFormat(datetime.datetime.now()),
+                # Create a bs4 object with the html text of the last request 
+                self.url_informations[url]["bs4_object"] = BeautifulSoup(html,features="html.parser") 
 
     #print(self.url_informations)
 
@@ -209,6 +209,7 @@ class ScrapDataFromURL():
         for url in self.url_informations:
             #print("---ELVIS---",url)
             #print(self.url_informations[url]["json_filepath"])
+            #print(self.url_informations[url]["json_file_content"])
             await _my_tools.async_write_json(self.url_informations[url]["json_filepath"],
                                  self.url_informations[url]["json_file_content"])
             self.url_informations[url]['is_json_file_locally_saved'] = True

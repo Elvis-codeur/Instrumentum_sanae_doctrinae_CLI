@@ -244,9 +244,8 @@ def get_important_information_from_request_response(request_response):
     request_history = [
                             {
                                 'status_code': r.status,
-                                'url': r.url,
+                                'url': str(r.url),
                                 'headers': dict(r.headers),
-                                'elapsed': r.elapsed.total_seconds()
                             } for r in request_response.history
                         ]
         

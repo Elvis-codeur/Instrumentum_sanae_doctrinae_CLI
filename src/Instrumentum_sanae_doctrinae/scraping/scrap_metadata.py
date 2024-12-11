@@ -208,4 +208,6 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
 
         # Write the json file of the data scrapped from the html file 
         await self.write_json_data()
+        
+        await self.main_request_session.close()
 
