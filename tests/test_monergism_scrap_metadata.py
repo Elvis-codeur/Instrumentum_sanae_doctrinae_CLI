@@ -71,6 +71,19 @@ def test_scrap_all_author_general_information():
     #print(ob.__dict__)
     asyncio.run(ob.download(4))
     
+    
+
+def test_scrap_all_topic_general_information():
+    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
+    browse_by_type = "topic"
+
+    ob = monergism_scrap_general_information.MonergismScrapGeneralInformation_ALL(
+        root_folder = root_folder,
+        browse_by_type = browse_by_type,
+        overwrite_log=True,
+    )
+    print(ob.__dict__)
+    asyncio.run(ob.download(20))
 
 
 def test_get_author_all_work():
@@ -103,7 +116,7 @@ if __name__ == "__main__":
     #test_scripture()
     #test_scrap_author_general_information()
     
-    test_scrap_all_author_general_information()
+    test_scrap_all_topic_general_information()
     
     
     end_time = time.time()

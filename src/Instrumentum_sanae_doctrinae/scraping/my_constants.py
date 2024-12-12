@@ -57,8 +57,14 @@ WORK_INFORMATION_ROOT_FOLDER = "work"
 
 
 BY_SPEAKER_ROOT_FOLDER = "by_speaker"
+SPEAKER_NAME = "speaker"
+
 BY_TOPIC_ROOT_FOLDER = "by_topic"
+TOPIC_NAME = "topic"
+
 BY_PODCAST_ROOT_FOLDER = "by_podcast"
+PODCAST_NAME = "podcast"
+
 BY_SCRIPTURE_ROOT_FOLDER = "by_scripture"
 BY_SERIES_ROOT_FOLDER = "by_serie"
 

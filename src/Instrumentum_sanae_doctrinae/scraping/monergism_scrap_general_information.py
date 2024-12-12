@@ -146,29 +146,6 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(MonergismScrapAuthorT
         return pages_list
         
     
-    def get_the_name_of_the_author(self,bs4_soup):
-        name =  ""
-        name_element = bs4_soup.find(lambda tag:tag.name == "li" and 
-                                    tag.has_attr("class") and 
-                                    
-                                    ("active" in tag["class"] and
-                                    "leaf" in tag["class"] and
-                                    "first" in tag["class"])
-                                    
-                                    )
-        
-        
-        
-        if name_element:
-            name =  "".join(name_element.find_all(text = True,recursive=False)).strip()
-
-        if name:
-            name = list(name)
-            for indice in  range(len(name)-1):
-                if  name[indice] == " " and name[indice+1] == " ":
-                    name[indice] = ""
-                    
-        return "".join(name) 
     
     
     def scrap_filters(self,bs4_soup,main_url):
@@ -216,6 +193,7 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(MonergismScrapAuthorT
             "filter_by_genre":filter_by_genre_data,
             "filter_by_web_site":filter_by_web_site_data,
             "filter_by_author":filter_by_author_data,
+            "filter_by_serie_data":filter_by_serie_data,
         }
 
         return result 
@@ -280,6 +258,33 @@ class MonergismScrapAuthorGeneralInformation(MonergismScrapAuthorTopicScriptureG
         super().__init__(name, root_folder, url, browse_by_type)
         
         
+    
+    def get_the_name_of_the_author(self,bs4_soup):
+        name =  ""
+        name_element = bs4_soup.find(lambda tag:tag.name == "li" and 
+                                    tag.has_attr("class") and 
+                                    
+                                    ("active" in tag["class"] and
+                                    "leaf" in tag["class"] and
+                                    "first" in tag["class"])
+                                    
+                                    )
+        
+        
+        
+        if name_element:
+            name =  "".join(name_element.find_all(text = True,recursive=False)).strip()
+
+        if name:
+            name = list(name)
+            for indice in  range(len(name)-1):
+                if  name[indice] == " " and name[indice+1] == " ":
+                    name[indice] = ""
+                    
+        return "".join(name) 
+    
+        
+        
     async def scrap_url_pages(self):
         final_result = {}
 
@@ -305,6 +310,110 @@ class MonergismScrapAuthorGeneralInformation(MonergismScrapAuthorTopicScriptureG
 
         return final_result 
     
+    
+class MonergismScrapTopicGeneralInformation(MonergismScrapAuthorTopicScriptureGeneralInformation):
+    def __init__(self, name, root_folder, url, browse_by_type):
+        super().__init__(name, root_folder, url, browse_by_type)
+        
+    
+    
+    def get_subtopics(self,bs4_soup,main_url):
+        selectors = ["view", "view-term-browser", "view-id-term_browser", "view-display-id-child_topics_block"]
+        
+        div = bs4_soup.find("div",class_ = selectors)
+        content = div.find("div",class_ = "view-content")
+        
+        result = []
+        
+        if content:
+            links = content.find_all("a")
+            for i in links:
+                result.append(
+                    {
+                        "name":i.get_text(),
+                        "url":i.get("href"),
+                    }
+                )
+                
+        return result
+        
+        
+            
+           
+        
+        
+    def get_topic_description(self,bs4_soup):
+        result = []
+        
+        div = bs4_soup.find("div",class_ = 'views-field views-field-description')
+        
+        if div:    
+            div = div.find("div","field-content")
+            
+            for paragraph in div.find_all("p"):
+                result.append(paragraph.get_text())
+
+        return result        
+        
+    def recommanded_reading(self,bs4_soup):
+        result = []
+        
+        section = bs4_soup.find("section",class_ = "block block-views block-recommended-reading-block block-views-recommended-reading-block odd")
+        
+        divs = section.find_all(class_ = "views-row views-row-1 views-row-odd views-row-first")
+        
+        for div in divs:
+            
+            # The cover of the book 
+            field_cover = div.find("div",class_ = "views-field views-field-field-cover-image")
+            field_cover = field_cover.find("div",class_ = "field-content")
+            field_cover_anchor = field_cover.find("a")
+            
+            # The title of the book
+            title = div.find("div",class_ = "views-field views-field-title")
+            title = title.find("span").get_text()
+            
+            # The author of the document
+            author_name = div.find("div",class_ = "views-field views-field-field-author")
+            author_name = title.find("div").get_text()
+            
+            result.append(
+                {
+                    "url": field_cover_anchor.get("href"),
+                    "img_url":field_cover_anchor.get("img").get("src"),
+                    "title":title,
+                    "author_name":author_name,
+                    
+                }
+            )
+        
+    
+    async def scrap_url_pages(self):
+        final_result = {}
+
+        for main_url in self.url_informations:
+           
+            bs4_soup = self.url_informations[main_url].get("bs4_object")
+
+            # The pages of the topic 
+            pages_list = await self.get_all_the_other_pages(main_url,bs4_soup)
+            
+            # The subtopics of the topic
+            subtopics = self.get_subtopics(bs4_soup,main_url)
+            
+            # The text describing the topic 
+            description = self.get_topic_description(bs4_soup)
+
+            
+            result = {
+                "pages":pages_list,
+                "subtopics":subtopics,
+                "description":description,
+            }
+
+            final_result[main_url] = result
+        
+        return result
         
 
         
@@ -393,26 +502,46 @@ class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionW
 
         #print(self.root_folder,self.browse_by_type)
         #print("\n",element.get("name"))
-        ob = MonergismScrapAuthorGeneralInformation(
-            name = element.get("name"),
-            root_folder = self.root_folder,
-            browse_by_type = self.browse_by_type,
-            url = element.get("url_list"),
-            )
-        await ob.scrap_and_write()
+        
+        if self.browse_by_type == my_constants.SPEAKER_NAME:
+            ob = MonergismScrapAuthorGeneralInformation(
+                name = element.get("name"),
+                root_folder = self.root_folder,
+                browse_by_type = self.browse_by_type,
+                url = element.get("url_list"),
+                )
+            await ob.scrap_and_write()
+            
+        elif self.browse_by_type == my_constants.TOPIC_NAME:
+            ob = MonergismScrapTopicGeneralInformation(
+                name = element.get("name"),
+                root_folder = self.root_folder,
+                browse_by_type = self.browse_by_type,
+                url = element.get("url_list"),
+                )
+            await ob.scrap_and_write()
         
     def is_element_data_downloaded(self,element):
         #print(element)
-
-        ob = MonergismScrapAuthorGeneralInformation(
-            name = element.get("name"),
-            root_folder = self.root_folder,
-            browse_by_type = self.browse_by_type,
-            url = element.get("url_list"),
-            )
+        if self.browse_by_type == my_constants.SPEAKER_NAME:
+            ob = MonergismScrapAuthorGeneralInformation(
+                name = element.get("name"),
+                root_folder = self.root_folder,
+                browse_by_type = self.browse_by_type,
+                url = element.get("url_list"),
+                )
+            
+            return ob.is_data_downloaded()
         
-        return ob.is_data_downloaded()
-        
+        elif self.browse_by_type == my_constants.TOPIC_NAME:
+            ob = MonergismScrapTopicGeneralInformation(
+                name = element.get("name"),
+                root_folder = self.root_folder,
+                browse_by_type = self.browse_by_type,
+                url = element.get("url_list"),
+                )
+            
+            return ob.is_data_downloaded()
 
 
 
