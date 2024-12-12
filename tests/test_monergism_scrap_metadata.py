@@ -66,6 +66,7 @@ def test_scrap_all_author_general_information():
     ob = monergism_scrap_general_information.MonergismScrapGeneralInformation_ALL(
         root_folder = root_folder,
         browse_by_type = browse_by_type,
+        overwrite_log=True,
     )
     #print(ob.__dict__)
     asyncio.run(ob.download(4))

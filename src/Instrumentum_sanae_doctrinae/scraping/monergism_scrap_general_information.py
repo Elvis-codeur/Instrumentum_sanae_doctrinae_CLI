@@ -21,15 +21,14 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(MonergismScrapAuthorT
         #self.other_page_request_session = aiohttp.ClientSession() 
 
 
-    def parse_filter_by_ul(self,bs4_soup,css_selector,url):
+    def parse_filter_by_ul(self,section_object,url):
+       
         result = {}
+        
+        if not section_object:
+            return {}
 
-        filter_by_ul = bs4_soup.find("ul",class_= re.compile(css_selector))
-
-        if not filter_by_ul:
-            return []
-
-        filter_by_lis = filter_by_ul.find_all("li")                       
+        filter_by_lis = section_object.find_all("li")                       
                                     
         for li in filter_by_lis:
             link = li.find("a")
@@ -38,9 +37,12 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(MonergismScrapAuthorT
             topic_element_number = re.findall(r'\((\d+)\)',link_text)
 
             topic_element_number = int(topic_element_number[0]) if topic_element_number else None
-            result[url] = {
+            
+            link_text = link_text.split("(")[0].strip()
+            
+            result[link_text] = {
                 "url":urllib.parse.urljoin(url,link.get("href")),
-                "link_text": link_text.split("(")[0].strip(),
+                "link_text": link_text,
                 "number":topic_element_number
             }   
         return result    
@@ -166,7 +168,57 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(MonergismScrapAuthorT
                 if  name[indice] == " " and name[indice+1] == " ":
                     name[indice] = ""
                     
-        return name 
+        return "".join(name) 
+    
+    
+    def scrap_filters(self,bs4_soup,main_url):
+        """
+        This method scrap the topics, the authors, etc 
+        """
+        
+        filter_by_sections = bs4_soup.find("div",class_ ="region-inner region-sidebar-first-inner")
+            
+        
+        filter_by_topic_data = {}
+        filter_by_format_data = {}
+        filter_by_genre_data = {} 
+        filter_by_web_site_data = {}
+        filter_by_author_data = {}
+        filter_by_serie_data = {}
+        
+        
+        if filter_by_sections:
+            
+            filter_by_sections = filter_by_sections.find_all("section")
+
+            # Filter by topic
+            filter_by_topic_data = self.parse_filter_by_ul(filter_by_sections[1],main_url)
+            
+            # Filter by author
+            filter_by_author_data =  self.parse_filter_by_ul(filter_by_sections[2],main_url)
+            
+            # Filter by series
+            filter_by_serie_data =  self.parse_filter_by_ul(filter_by_sections[3],main_url)
+            
+            # Filter by genre
+            filter_by_genre_data =  self.parse_filter_by_ul(filter_by_sections[4],main_url)
+            
+            # Filter by format 
+            filter_by_format_data =  self.parse_filter_by_ul(filter_by_sections[5],main_url)
+
+            # Filter by web site 
+            filter_by_web_site_data =  self.parse_filter_by_ul(filter_by_sections[6],main_url)
+
+
+        result = {
+            "filter_by_topic": filter_by_topic_data,
+            "filter_by_format":filter_by_format_data,
+            "filter_by_genre":filter_by_genre_data,
+            "filter_by_web_site":filter_by_web_site_data,
+            "filter_by_author":filter_by_author_data,
+        }
+
+        return result 
 
         
         
@@ -177,47 +229,7 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(MonergismScrapAuthorT
         
         """
 
-        final_result = {}
 
-        for main_url in self.url_informations:
-           
-            
-            bs4_soup = self.url_informations[main_url].get("bs4_object")
-
-            # Filter by topic
-            filter_by_topic_data = self.parse_filter_by_ul(bs4_soup,"facetapi-facetapi-links*.facetapi-facet-field-link-topic",main_url)
-            
-            # Filter by format
-            filter_by_format_data =  self.parse_filter_by_ul(bs4_soup,"facetapi-facetapi-links*.facetapi-facet-field-link-format",main_url)
-            
-            # Filter by genre
-            filter_by_genre_data =  self.parse_filter_by_ul(bs4_soup,"facetapi-facetapi-links*.facetapi-facet-field-link-genres",main_url)
-            
-            # Filter by web site 
-            filter_by_web_site_data =  self.parse_filter_by_ul(bs4_soup,"facetapi-facetapi-links*.facetapi-facet-field-link-website",main_url)
-            
-            # Filter by author 
-            filter_by_author_data =  self.parse_filter_by_ul(bs4_soup,"facetapi-facetapi-links*.facetapi-facet-field-link-authors",main_url)
-
-            
-            pages_list = self.get_all_the_other_pages(main_url,bs4_soup)
-            author_name = self.get_the_name_of_the_author(bs4_soup)
-
-            result = {
-                "name": "".join(author_name),
-                "pages":pages_list, # To avoid having the first url twice 
-                "filter_by_topic": filter_by_topic_data,
-                "filter_by_format":filter_by_format_data,
-                "filter_by_genre":filter_by_genre_data,
-                "filter_by_web_site":filter_by_web_site_data,
-                "filter_by_author":filter_by_author_data,
-            }
-
-
-            final_result[main_url] = result
-
-        return final_result 
-    
     def is_data_downloaded(self):
 
         for url in self.url_informations:
@@ -260,6 +272,40 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(MonergismScrapAuthorT
                                       timeout=my_constants.HTTP_REQUEST_TIMEOUT)  as response:
             html = await response.text()
             return bs4.BeautifulSoup(html,features="lxml") 
+        
+        
+        
+class MonergismScrapAuthorGeneralInformation(MonergismScrapAuthorTopicScriptureGeneralInformation):
+    def __init__(self, name, root_folder, url, browse_by_type):
+        super().__init__(name, root_folder, url, browse_by_type)
+        
+        
+    async def scrap_url_pages(self):
+        final_result = {}
+
+        for main_url in self.url_informations:
+           
+            
+            
+            bs4_soup = self.url_informations[main_url].get("bs4_object")
+            
+            
+            pages_list = await self.get_all_the_other_pages(main_url,bs4_soup)
+        
+            author_name = self.get_the_name_of_the_author(bs4_soup)
+            
+            result = {
+                "pages":pages_list,
+                "name":author_name,
+                **self.scrap_filters(bs4_soup,main_url),
+                
+            }
+
+            final_result[main_url] = result
+
+        return final_result 
+    
+        
 
         
 
@@ -347,7 +393,7 @@ class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionW
 
         #print(self.root_folder,self.browse_by_type)
         #print("\n",element.get("name"))
-        ob = MonergismScrapAuthorTopicScriptureGeneralInformation(
+        ob = MonergismScrapAuthorGeneralInformation(
             name = element.get("name"),
             root_folder = self.root_folder,
             browse_by_type = self.browse_by_type,
@@ -358,7 +404,7 @@ class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionW
     def is_element_data_downloaded(self,element):
         #print(element)
 
-        ob = MonergismScrapAuthorTopicScriptureGeneralInformation(
+        ob = MonergismScrapAuthorGeneralInformation(
             name = element.get("name"),
             root_folder = self.root_folder,
             browse_by_type = self.browse_by_type,
