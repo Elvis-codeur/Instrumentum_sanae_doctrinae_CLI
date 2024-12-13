@@ -66,6 +66,8 @@ BY_PODCAST_ROOT_FOLDER = "by_podcast"
 PODCAST_NAME = "podcast"
 
 BY_SCRIPTURE_ROOT_FOLDER = "by_scripture"
+SCRIPTURE_NAME = "scripture"
+
 BY_SERIES_ROOT_FOLDER = "by_serie"
 
 

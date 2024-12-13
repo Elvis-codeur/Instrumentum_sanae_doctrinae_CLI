@@ -308,7 +308,7 @@ class MonergismScrapAuthorGeneralInformation(MonergismScrapAuthorTopicScriptureG
         return final_result 
     
     
-class MonergismScrapTopicGeneralInformation(MonergismScrapAuthorTopicScriptureGeneralInformation):
+class MonergismScrapTopicOrScriptureGeneralInformation(MonergismScrapAuthorTopicScriptureGeneralInformation):
     def __init__(self, name, root_folder, url, browse_by_type):
         super().__init__(name, root_folder, url, browse_by_type)
         
@@ -358,7 +358,7 @@ class MonergismScrapTopicGeneralInformation(MonergismScrapAuthorTopicScriptureGe
         
         if div:    
             div = div.find("div","field-content")
-            for paragraph in div.find_all("p")[1:]:
+            for paragraph in div.find_all("p"):
                 result.append(paragraph.get_text())
 
         return result        
@@ -434,7 +434,27 @@ class MonergismScrapTopicGeneralInformation(MonergismScrapAuthorTopicScriptureGe
         
 
         
+class MonergismScrapSeriesGeneralInformation(MonergismScrapAuthorTopicScriptureGeneralInformation):
+    def __init__(self, name, root_folder, url, browse_by_type):
+        super().__init__(name, root_folder, url, browse_by_type)
+        
+        
+    
+    async def scrap_url_pages(self):
+        final_result = {}
 
+        for main_url in self.url_informations:
+           
+            bs4_soup = self.url_informations[main_url].get("bs4_object")
+             
+            result = {
+                **self.scrap_filters(bs4_soup,main_url),
+            }
+
+            final_result[main_url] = result
+
+        return final_result 
+    
 
 
 class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionWithLogManagement):
@@ -529,14 +549,17 @@ class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionW
                 )
             await ob.scrap_and_write()
             
-        elif self.browse_by_type == my_constants.TOPIC_NAME:
-            ob = MonergismScrapTopicGeneralInformation(
+        elif self.browse_by_type == my_constants.TOPIC_NAME or \
+                self.browse_by_type == my_constants.SCRIPTURE_NAME:
+            ob = MonergismScrapTopicOrScriptureGeneralInformation(
                 name = element.get("name"),
                 root_folder = self.root_folder,
                 browse_by_type = self.browse_by_type,
                 url = element.get("url_list"),
                 )
             await ob.scrap_and_write()
+            
+        
         
     def is_element_data_downloaded(self,element):
         #print(element)
@@ -550,8 +573,9 @@ class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionW
             
             return ob.is_data_downloaded()
         
-        elif self.browse_by_type == my_constants.TOPIC_NAME:
-            ob = MonergismScrapTopicGeneralInformation(
+        elif self.browse_by_type == my_constants.TOPIC_NAME or \
+                self.browse_by_type == my_constants.SCRIPTURE_NAME:
+            ob = MonergismScrapTopicOrScriptureGeneralInformation(
                 name = element.get("name"),
                 root_folder = self.root_folder,
                 browse_by_type = self.browse_by_type,
