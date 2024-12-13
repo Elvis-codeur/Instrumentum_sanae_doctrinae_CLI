@@ -327,19 +327,20 @@ class MonergismScrapTopicGeneralInformation(MonergismScrapAuthorTopicScriptureGe
         
         #print(subtopic_h3.parent.next)
         
-        content = subtopic_h3.parent.find_next_sibling()
+        content = subtopic_h3.parent.find_next_sibling("div")
+        #print(content,"\n\n\n")
         
         result = []
 
         if content:
-            links = content.find_all("a",recursive = False)
+            links = content.find_all("a")
             for i in links:
                 anchor_text = i.get_text()
                 if anchor_text:
                     result.append(
                         {
                             "name":anchor_text,
-                            "url":i.get("href"),
+                            "url":urllib.parse.urljoin(main_url,i.get("href")),
                         }
                     )
                 
