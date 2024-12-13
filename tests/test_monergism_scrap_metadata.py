@@ -82,8 +82,8 @@ def test_scrap_all_topic_general_information():
         browse_by_type = browse_by_type,
         overwrite_log=True,
     )
-    print(ob.__dict__)
-    asyncio.run(ob.download(20))
+    #print(ob.__dict__)
+    asyncio.run(ob.download(2))
 
 
 def test_get_author_all_work():

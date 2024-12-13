@@ -290,11 +290,8 @@ class MonergismScrapAuthorGeneralInformation(MonergismScrapAuthorTopicScriptureG
 
         for main_url in self.url_informations:
            
-            
-            
             bs4_soup = self.url_informations[main_url].get("bs4_object")
-            
-            
+             
             pages_list = await self.get_all_the_other_pages(main_url,bs4_soup)
         
             author_name = self.get_the_name_of_the_author(bs4_soup)
@@ -318,22 +315,33 @@ class MonergismScrapTopicGeneralInformation(MonergismScrapAuthorTopicScriptureGe
     
     
     def get_subtopics(self,bs4_soup,main_url):
-        selectors = ["view", "view-term-browser", "view-id-term_browser", "view-display-id-child_topics_block"]
         
-        div = bs4_soup.find("div",class_ = selectors)
-        content = div.find("div",class_ = "view-content")
+        h3_list = [i for i in bs4_soup.find_all("h3")]
+        
+        subtopic_h3 = [h3_object for h3_object in h3_list if h3_object.get_text() == "Subtopics"]
+        
+        if not subtopic_h3:
+            return []
+        
+        subtopic_h3 = subtopic_h3[0]
+        
+        #print(subtopic_h3.parent.next)
+        
+        content = subtopic_h3.parent.find_next_sibling()
         
         result = []
-        
+
         if content:
-            links = content.find_all("a")
+            links = content.find_all("a",recursive = False)
             for i in links:
-                result.append(
-                    {
-                        "name":i.get_text(),
-                        "url":i.get("href"),
-                    }
-                )
+                anchor_text = i.get_text()
+                if anchor_text:
+                    result.append(
+                        {
+                            "name":anchor_text,
+                            "url":i.get("href"),
+                        }
+                    )
                 
         return result
         
@@ -349,49 +357,53 @@ class MonergismScrapTopicGeneralInformation(MonergismScrapAuthorTopicScriptureGe
         
         if div:    
             div = div.find("div","field-content")
-            
-            for paragraph in div.find_all("p"):
+            for paragraph in div.find_all("p")[1:]:
                 result.append(paragraph.get_text())
 
         return result        
         
-    def recommanded_reading(self,bs4_soup):
+    def get_recommanded_reading(self,bs4_soup):
         result = []
         
-        section = bs4_soup.find("section",class_ = "block block-views block-recommended-reading-block block-views-recommended-reading-block odd")
+        section = bs4_soup.find("section",
+                                class_ = "block block-views block-recommended-reading-block block-views-recommended-reading-block odd",
+                                id = "block-views-recommended-reading-block")
+        if not section:
+            return []
         
-        divs = section.find_all(class_ = "views-row views-row-1 views-row-odd views-row-first")
+        divs = section.find("div",class_ = "view-content").find_all("div",recursive = False)
         
         for div in divs:
             
-            # The cover of the book 
-            field_cover = div.find("div",class_ = "views-field views-field-field-cover-image")
-            field_cover = field_cover.find("div",class_ = "field-content")
-            field_cover_anchor = field_cover.find("a")
+            #print(div,"\n\n\n")
             
             # The title of the book
             title = div.find("div",class_ = "views-field views-field-title")
-            title = title.find("span").get_text()
+            
+            title_span = title.find("span")
+            title = title_span.get_text()
             
             # The author of the document
             author_name = div.find("div",class_ = "views-field views-field-field-author")
-            author_name = title.find("div").get_text()
+            author_name = author_name.find("div").get_text()
             
             result.append(
                 {
-                    "url": field_cover_anchor.get("href"),
-                    "img_url":field_cover_anchor.get("img").get("src"),
+                    "url": title_span.find("a").get("href"),
+                    #"cover_image_url":field_cover_anchor.find("img").get("src"),
                     "title":title,
                     "author_name":author_name,
                     
                 }
             )
-        
+        return result 
     
     async def scrap_url_pages(self):
         final_result = {}
 
         for main_url in self.url_informations:
+            
+            print(main_url)
            
             bs4_soup = self.url_informations[main_url].get("bs4_object")
 
@@ -403,17 +415,21 @@ class MonergismScrapTopicGeneralInformation(MonergismScrapAuthorTopicScriptureGe
             
             # The text describing the topic 
             description = self.get_topic_description(bs4_soup)
+            
+            # The books recommanded
+            recommanded_books =  self.get_recommanded_reading(bs4_soup)
 
             
             result = {
                 "pages":pages_list,
                 "subtopics":subtopics,
+                "recommanded_reading":recommanded_books,
                 "description":description,
             }
 
             final_result[main_url] = result
         
-        return result
+        return final_result
         
 
         

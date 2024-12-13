@@ -168,7 +168,7 @@ class ScrapDataFromURL():
         """
 
         #print(element_list,"\n\n\n")
-
+        #print(url)
     
         #print(self.url_informations[url]['html_filepath'],self.url_informations[url]['is_html_file_locally_saved'])
         self.url_informations[url]["json_file_content"] = {
