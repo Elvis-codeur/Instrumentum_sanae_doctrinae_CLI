@@ -87,4 +87,4 @@ def test_scrap_series_general_information():
 if __name__ == '__main__':
     if sys.platform == 'win32':
 	    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    test_scrap_series_general_information()
+    test_scrap_all_author_general_information()

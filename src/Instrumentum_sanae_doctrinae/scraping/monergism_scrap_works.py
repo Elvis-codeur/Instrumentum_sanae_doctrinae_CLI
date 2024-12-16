@@ -110,7 +110,7 @@ class MonergismScrapAuthorTopicScriptureWork(MonergismScrapAuthorTopicScriptureP
 
 
 
-class MonergismScrapWebSiteAllAuthorTopicScripturesWork(http_connexion.ParallelHttpConnexionWithLogManagement):
+class MonergismScrapWebSiteAuthorTopicScripturesWork_All(http_connexion.ParallelHttpConnexionWithLogManagement):
     def __init__(self,root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
 
         root_folder = _my_tools.process_path_according_to_cwd(root_folder)
@@ -161,11 +161,16 @@ class MonergismScrapWebSiteAllAuthorTopicScripturesWork(http_connexion.ParallelH
         input_json_files = []
 
         # The folder where the works of the author are 
-        folder = pathlib.Path(os.path.join(
-                                input_root_folder,
-                                my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER))
+        folder_path = os.path.join(input_root_folder,
+                                my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER)
         
-        for file in [i for i in pathlib.Path(folder).rglob("*.json") if i.is_file()]:
+        
+        # List to store paths to all JSON files
+        json_files = [i for i in pathlib.Path(folder_path).rglob("*.json") if i.is_file()]
+
+                
+        for file in json_files:
+            #print(file)
             if str(file.parent).endswith(my_constants.MAIN_INFORMATION_ROOT_FOLDER):
                 input_json_files.append(file)
 
@@ -208,10 +213,10 @@ class MonergismScrapWebSiteAllAuthorTopicScripturesWork(http_connexion.ParallelH
 
         #print(self.root_folder,self.browse_by_type)
 
-        #print(element.get("data"))
+        print(element.get("data"))
         
         ob = MonergismScrapAuthorTopicScriptureWork(
-            name = _my_tools.remove_forbiden_char_in_text(element.get("data").get("name")),
+            name = element.get("data").get("name"),
             root_folder = self.root_folder,
             browse_by_type = self.browse_by_type,
             url_list = element.get("data").get("pages"),
