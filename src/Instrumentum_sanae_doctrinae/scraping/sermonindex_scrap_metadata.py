@@ -712,8 +712,10 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation(scrap_metad
 
         log_filepath = os.path.join(root_folder,my_constants.LOGS_ROOT_FOLDER,
                                        my_constants.SERMONINDEX_NAME,
-                                       material_root_folder,browse_by_type,
+                                       material_root_folder,
                                        my_constants.ELABORATED_DATA_FOLDER,
+                                       browse_by_type,
+                                       
                                        my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER,
                                        my_constants.get_default_json_filename(0))
         
@@ -1002,8 +1004,10 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWe
 
         log_filepath = os.path.join(root_folder,my_constants.LOGS_ROOT_FOLDER,
                                        my_constants.SERMONINDEX_NAME,
-                                       material_root_folder,browse_by_type,
+                                       material_root_folder,
                                        my_constants.ELABORATED_DATA_FOLDER,
+                                       browse_by_type,
+                                       
                                        my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
                                        my_constants.get_default_json_filename(0))
         

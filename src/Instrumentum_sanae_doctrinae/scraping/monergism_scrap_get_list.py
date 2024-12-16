@@ -5,7 +5,6 @@ from ..scraping import scrap_metadata
 
 
 
-
 def get_monergism_metadata_and_log_folder(root_folder):
     metadata_root_folder = os.path.join(root_folder,my_constants.MONERGISM_METADATA_ROOT_FOLDER)
     log_root_folder = os.path.join(root_folder,my_constants.MONERGISM_LOG_ROOT_FOLDER)
@@ -130,3 +129,5 @@ class GetSpeakerList(GetTopicOrAuthorOrScriptureList):
         super().__init__(root_folder, 
                          "https://www.monergism.com/authors",
                          "speaker")
+        
+        

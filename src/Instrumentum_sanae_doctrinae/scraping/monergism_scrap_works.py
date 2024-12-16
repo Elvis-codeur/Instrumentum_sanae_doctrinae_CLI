@@ -115,18 +115,20 @@ class MonergismScrapWebSiteAllAuthorTopicScripturesWork(http_connexion.ParallelH
 
         root_folder = _my_tools.process_path_according_to_cwd(root_folder)
 
-        log_filepath = os.path.join(root_folder,my_constants.LOGS_ROOT_FOLDER,
-                                       my_constants.MONERGISM_NAME,
-                                       browse_by_type,
-                                       my_constants.ELABORATED_DATA_FOLDER,
-                                       my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
-                                       my_constants.get_default_json_filename(0))
+        log_filepath = os.path.join(root_folder,
+                                    my_constants.LOGS_ROOT_FOLDER,
+                                    my_constants.MONERGISM_NAME,
+                                    my_constants.ELABORATED_DATA_FOLDER,
+                                    browse_by_type,
+                                    my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
+                                    my_constants.get_default_json_filename(0))
         
         input_root_folder = os.path.join(root_folder,
                                          my_constants.METADATA_ROOT_FOLDER,
                                          my_constants.MONERGISM_NAME,
                                          my_constants.ELABORATED_DATA_FOLDER,
-                                         browse_by_type)
+                                         browse_by_type
+                                         )
         
 
         #print(input_root_folder)
@@ -159,14 +161,15 @@ class MonergismScrapWebSiteAllAuthorTopicScripturesWork(http_connexion.ParallelH
         input_json_files = []
 
         # The folder where the works of the author are 
-        folder = pathlib.Path(input_root_folder,
-                               my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER)
+        folder = pathlib.Path(os.path.join(
+                                input_root_folder,
+                                my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER))
         
         for file in [i for i in pathlib.Path(folder).rglob("*.json") if i.is_file()]:
             if str(file.parent).endswith(my_constants.MAIN_INFORMATION_ROOT_FOLDER):
                 input_json_files.append(file)
 
-        #print(input_json_files)
+        
 
         return input_json_files
     
@@ -208,7 +211,7 @@ class MonergismScrapWebSiteAllAuthorTopicScripturesWork(http_connexion.ParallelH
         #print(element.get("data"))
         
         ob = MonergismScrapAuthorTopicScriptureWork(
-            name = element.get("data").get("name"),
+            name = _my_tools.remove_forbiden_char_in_text(element.get("data").get("name")),
             root_folder = self.root_folder,
             browse_by_type = self.browse_by_type,
             url_list = element.get("data").get("pages"),

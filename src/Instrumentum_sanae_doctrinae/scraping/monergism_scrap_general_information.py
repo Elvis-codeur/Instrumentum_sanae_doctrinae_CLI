@@ -435,8 +435,21 @@ class MonergismScrapTopicOrScriptureGeneralInformation(MonergismScrapAuthorTopic
 
         
 class MonergismScrapSeriesGeneralInformation(MonergismScrapAuthorTopicScriptureGeneralInformation):
+    
     def __init__(self, name, root_folder, url, browse_by_type):
         super().__init__(name, root_folder, url, browse_by_type)
+        
+        
+    
+    def prepare_intermdiate_folders(self,intermdiate_folders,browse_by_type,name,information_type_root_folder):
+        if intermdiate_folders:
+            intermdiate_folders = [browse_by_type,my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER,]\
+                                 + intermdiate_folders +[name] 
+            return intermdiate_folders
+        else:
+            intermdiate_folders = [browse_by_type,my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER
+                                   ,name]
+            return intermdiate_folders
         
         
     

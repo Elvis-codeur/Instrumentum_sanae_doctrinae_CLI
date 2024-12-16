@@ -129,16 +129,21 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
         """
         self.name = name 
 
+        intermdiate_folders = self.prepare_intermdiate_folders(intermdiate_folders,browse_by_type,name,information_type_root_folder)
+        
+        super().__init__(metadata_root_folder, log_root_folder, url_list, browse_by_type, intermdiate_folders)
+    
 
+    def prepare_intermdiate_folders(self,intermdiate_folders,browse_by_type,name,information_type_root_folder):
         if intermdiate_folders:
             intermdiate_folders = [browse_by_type,my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,]\
                                  + intermdiate_folders +[name,information_type_root_folder] 
+            return intermdiate_folders
         else:
             intermdiate_folders = [browse_by_type,my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER
                                    ,name,information_type_root_folder]
-    
-        super().__init__(metadata_root_folder, log_root_folder, url_list, browse_by_type, intermdiate_folders)
-    
+            return intermdiate_folders
+        
 
 
     def is_data_downloaded(self):
