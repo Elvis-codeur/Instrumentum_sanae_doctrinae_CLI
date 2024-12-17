@@ -275,13 +275,10 @@ class MonergismScrapAuthorGeneralInformation(MonergismScrapAuthorTopicScriptureG
         if name_element:
             name =  "".join(name_element.find_all(text = True,recursive=False)).strip()
 
+        # Remove any consecutive space like "   " from the name of the author 
         if name:
-            name = list(name)
-            for indice in  range(len(name)-1):
-                if  name[indice] == " " and name[indice+1] == " ":
-                    name[indice] = ""
-                    
-        return "".join(name) 
+            return _my_tools.remove_consecutive_spaces(name)
+            
     
         
         

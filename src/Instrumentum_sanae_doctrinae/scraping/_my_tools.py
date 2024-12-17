@@ -84,6 +84,15 @@ def replace_forbiden_char_in_text(text):
                 .replace("*","_g_").replace("/","_h_").replace("\\","_i_")
 
 
+def remove_consecutive_spaces(text):
+    name = list(text)
+    for indice in  range(len(name)-1):
+        if  name[indice] == " " and name[indice+1] == " ":
+            name[indice] = ""
+            
+    return "".join(name).strip()
+    
+
 
 
 def generateID(prefix = "",suffix = "",length = 20):

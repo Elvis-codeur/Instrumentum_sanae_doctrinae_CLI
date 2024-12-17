@@ -153,7 +153,8 @@ class ScrapDataFromURL():
 
             result.append({
                 "version":version,
-                "name" : _my_tools.remove_forbiden_char_in_text(name_list[0]),
+                "name" : _my_tools.replace_forbiden_char_in_text(
+                        _my_tools.remove_consecutive_spaces(name_list[0])),
                 "url_list" :url_list 
             })
 
