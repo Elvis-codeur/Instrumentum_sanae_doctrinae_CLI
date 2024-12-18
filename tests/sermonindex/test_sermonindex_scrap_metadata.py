@@ -9,28 +9,6 @@ from Instrumentum_sanae_doctrinae.scraping import scrap_metadata
 
 
 
-        
-        
-
-def test_audio_sermon_topic():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder' 
-    ob = sermonindex_scrap_metadata.GetAudioSermonTopicList(root_folder)
-    ob.scrap_and_write(get_useful_link_method = ob.get_useful_anchor_object_list)
-
-def test_audio_sermon_scripture():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder' 
-    ob = sermonindex_scrap_metadata.GetAudioSermonScriptureList(root_folder)
-    ob.scrap_and_write(get_useful_link_method = ob.get_useful_anchor_object_list)
-
-def test_audio_sermon_christian_book():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder' 
-    ob = sermonindex_scrap_metadata.GetAudioSermonChristianBookList(root_folder)
-    ob.scrap_and_write(get_useful_link_method = ob.get_useful_anchor_object_list)
-
-def test_audio_sermon_podcast():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder' 
-    ob = sermonindex_scrap_metadata.GetAudioSermonPodcastList(root_folder)
-    ob.scrap_and_write(get_useful_link_method = ob.get_useful_anchor_object_list)
 
 
 
