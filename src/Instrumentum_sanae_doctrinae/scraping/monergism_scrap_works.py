@@ -1,3 +1,4 @@
+import json
 import os 
 import pathlib
 import re
@@ -88,12 +89,23 @@ class MonergismScrapAuthorTopicScriptureWork(MonergismScrapAuthorTopicScriptureP
 
         for url in self.url_informations:
             file_path = self.url_informations[url].get("json_filepath")
+            
             if not os.path.exists(file_path):
                 return False
             
             
-            file_content = _my_tools.read_json(file_path)
-
+            
+            file_content = _my_tools.read_file(file_path)
+            
+            if not file_content:
+                return False 
+            
+            try:
+                file_content = json.loads(file_content)
+            except:
+                return False
+            
+            
             if not file_content:
                 return False
             
@@ -213,7 +225,8 @@ class MonergismScrapWebSiteAuthorTopicScripturesWork_All(http_connexion.Parallel
 
         #print(self.root_folder,self.browse_by_type)
 
-        print(element.get("data"))
+        #print(element.get("data"))
+        print(element.get("data").get("name"))
         
         ob = MonergismScrapAuthorTopicScriptureWork(
             name = element.get("data").get("name"),

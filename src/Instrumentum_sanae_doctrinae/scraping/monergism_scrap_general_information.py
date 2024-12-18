@@ -401,7 +401,7 @@ class MonergismScrapTopicOrScriptureGeneralInformation(MonergismScrapAuthorTopic
 
         for main_url in self.url_informations:
             
-            print(main_url)
+            #print(main_url)
            
             bs4_soup = self.url_informations[main_url].get("bs4_object")
 
@@ -464,6 +464,110 @@ class MonergismScrapSeriesGeneralInformation(MonergismScrapAuthorTopicScriptureG
             final_result[main_url] = result
 
         return final_result 
+    
+    
+    
+class MonergismScrapRCSproulGeneralInformation(MonergismScrapAuthorTopicScriptureGeneralInformation):
+    def __init__(self,root_folder, url, browse_by_type = my_constants.SPEAKER_NAME, name = 'R C Sproul'):
+        super().__init__(name, root_folder, url, browse_by_type)
+        
+
+    
+    def get_main_quote(self,article_object):
+        quote = article_object.find("blockquote")
+        return quote.get_text()
+    
+    def get_tributes(self,tributes_p):
+        result = []
+        
+    
+        for anchor_element in tributes_p.find_all("a"):
+            result.append(
+                {
+                    "name":_my_tools.remove_consecutive_spaces(anchor_element.get_text()),
+                    "url":anchor_element.get("href")
+                }
+            )
+        return result
+    
+
+    
+    def anchor_object_to_dict(self,anchor_object):
+        return {
+                "name":anchor_object.get_text(),
+                "url":anchor_object.get("href")
+            }
+        
+        
+    async def scrap_url_pages(self):
+        final_result = {}
+        for main_url in self.url_informations:
+            
+            bs4_soup = self.url_informations[main_url].get("bs4_object")
+            
+            main_article_class_name = "node node-page node-published node-not-promoted node-not-sticky author-john-hendryx odd clearfix"
+            
+            main_article = bs4_soup.find("article",class_ = main_article_class_name)
+            
+            main_div = main_article.find("div",class_ = "field field-name-field-body field-type-text-long field-label-hidden")
+            
+            main_div = main_article.find("div",class_ = "field-item even")
+            
+            main_div_direct_children = main_div.contents 
+            
+            main_div_direct_children = [i for i in main_div_direct_children if i.name]
+            
+            
+            quote = self.get_main_quote(main_div)
+            tributes = self.get_tributes(main_div_direct_children[1])
+            theology = main_div_direct_children[2].get_text()
+            bibliography_paragraph =  []
+            selected_lectures = []
+            sermon_by_scripture = []
+            sermon_by_topic = []
+            selected_essay = []
+            
+            actual_h3_text = ''
+            for child in main_div_direct_children[2:]:
+                if child.name =="h3":
+                    actual_h3_text = child.get_text().strip()
+                    
+                if child.name == "p":
+                    if actual_h3_text == "Biographical Sketch":
+                        bibliography_paragraph.append(child)
+                        
+                    elif actual_h3_text == "Selected Lecture Series (MP3 Format)":
+                        anchor_object = child.find("a")
+                        selected_lectures.append(self.anchor_object_to_dict(anchor_object))
+                        
+                    elif actual_h3_text == "Sermon Series by Scripture":
+                        for li in child.find_all("li"):
+                            anchor_object = li.find("a")
+                            sermon_by_scripture.append(self.anchor_object_to_dict(anchor_object))
+                    
+                    elif actual_h3_text == "Sermon Series by Topic":
+                        for li in child.find_all("li"):
+                            anchor_object = li.find("a")
+                            sermon_by_topic.append(self.anchor_object_to_dict(anchor_object))
+                    
+                    elif actual_h3_text == "Selected Essays":
+                        anchor_object = child.find("a")
+                        if anchor_object:
+                            selected_essay.append(self.anchor_object_to_dict(anchor_object))
+                            
+                        
+                            
+                        
+                        
+                    
+                    
+                    
+            
+            
+                       
+            
+
+    
     
 
 

@@ -84,7 +84,21 @@ def test_scrap_series_general_information():
     asyncio.run(ob.scrap_and_write())
     
     
+def test_scrap_rc_sproul_page():
+    
+    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
+    url = "https://www.monergism.com/r-c-sproul"
+    ob = monergism_scrap_general_information.MonergismScrapRCSproulGeneralInformation(
+        root_folder=root_folder,
+        url= url
+    )
+    asyncio.run(ob.scrap_and_write())
+  
+    
 if __name__ == '__main__':
     if sys.platform == 'win32':
 	    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    test_scrap_all_author_general_information()
+    #test_scrap_all_author_general_information()
+    
+    
+    test_scrap_rc_sproul_page()

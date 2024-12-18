@@ -25,6 +25,7 @@ class ScrapDataFromURL():
     This class is abstract and meant to be inherited of.  
         
     """
+    
     def __init__(self,metadata_root_folder,log_root_folder,url_list,browse_by_type,intermdiate_folders) -> None:
         """
         :param metadata_root_folder: The folder where the metadata will be stored
@@ -69,6 +70,15 @@ class ScrapDataFromURL():
         self.url_list = url_list #: A list of all the urls of the web pages accross which the list of the speakers, topic, etc are spreaded
 
         self.browse_by_type = browse_by_type
+        
+        self.main_request_session = None
+        
+    
+        
+    async def close(self):
+        if self.main_request_session:
+            self.main_request_session.close()
+            self.main_request_session = None
             
 
     async def connect_to_all_url(self,**kwargs):
@@ -83,18 +93,13 @@ class ScrapDataFromURL():
             "Accept-Language": "en-US,en;q=0.9",
             "Connection": "close",
         }
-
         
-        # The request session used for http connections 
         self.main_request_session = aiohttp.ClientSession()
-        
-        
     
         for url in self.url_list:
             #print(url)
-            
-            async with self.main_request_session.get(url=url,
-                                    timeout=my_constants.HTTP_REQUEST_TIMEOUT,) as response:
+            #timeout = aiohttp.ClientTimeout(total=15)
+            async with self.main_request_session.get(url=url) as response:
                 html = await response.text()
 
                 if response.status == 404:
@@ -226,6 +231,12 @@ class ScrapDataFromURL():
 
         """
     
+    
+    
+    def __del__(self):
+        if self.main_request_session:
+            asyncio.run(self.main_request_session.close())
+            
 
     
 

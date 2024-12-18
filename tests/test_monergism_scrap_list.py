@@ -17,6 +17,7 @@ from Instrumentum_sanae_doctrinae.scraping import monergism_scrap_works
 
 def test_topic():
     root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder' 
+    
     ob = monergism_scrap_get_list.GetTopicList(root_folder)
     asyncio.run(ob.scrap_and_write())
 
