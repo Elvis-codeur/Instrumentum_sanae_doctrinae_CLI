@@ -9,7 +9,7 @@ import unittest
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-from Instrumentum_sanae_doctrinae.scraping import monergism_scrap_works
+from Instrumentum_sanae_doctrinae.web_scraping import monergism_scrap_works
 
 
 

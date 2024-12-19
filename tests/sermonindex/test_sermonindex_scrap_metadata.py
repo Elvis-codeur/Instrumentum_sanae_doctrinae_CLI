@@ -4,8 +4,9 @@ import pathlib
 
 import unittest
 
-from Instrumentum_sanae_doctrinae.scraping import sermonindex_scrap_metadata
-from Instrumentum_sanae_doctrinae.scraping import scrap_metadata
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex import sermonindex_scrap_general_information
+from Instrumentum_sanae_doctrinae.web_scraping import scrap_metadata
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex import sermonindex_scrap_get_list 
 
 
 
@@ -15,9 +16,9 @@ from Instrumentum_sanae_doctrinae.scraping import scrap_metadata
 
 
 
-def test_audio_sermon_speaker():
+def test_get_all_audio_sermon_speaker():
     root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder' 
-    ob = sermonindex_scrap_metadata.GetAudioSermonSpeakerList(root_folder)
+    ob = sermonindex_scrap_get_list.GetAudioSermonSpeakerList(root_folder)
     ob.scrap_and_write()
 
 def test_text_sermon_speaker():
@@ -192,4 +193,4 @@ if __name__ == "__main__":
     #test_scrap_all_audio_sermon_scripture_main_info_sermoindex()
     #test_scrap_all_audio_sermon_topic_main_info_sermoindex()
     #test_vintage_image_scrap_all_speaker_main_info_sermoindex()
-    test_audio_sermon_get_scripture_work()  
+    test_get_all_audio_sermon_speaker()

@@ -1,5 +1,23 @@
 
-from ..scraping import scrap_metadata
+from concurrent.futures import ThreadPoolExecutor
+import os 
+import urllib
+import urllib.parse
+import pathlib
+import traceback
+
+from bs4 import BeautifulSoup
+import requests
+
+
+from ...web_scraping import scrap_metadata
+from ...web_scraping import my_constants
+from ...web_scraping import _my_tools
+
+
+
+
+
 
 
 class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
@@ -211,27 +229,8 @@ class GetVideoSermonsSpeakerLinks(GetSpeakerLinks):
         container = container.find("td").find("table")
         
         return container.find_all("a")
-    
 
 
-class GetTextSermonsChristianBook(GetTopicOrScriptureOrPodcastOrChristianBooks):
-    def __init__(self, root_folder, 
-                 url = "https://www.sermonindex.net/modules/bible_books/?view=books_list",
-                  browse_by_type = "Christian Book", is_text= True):
-        
-        super().__init__(root_folder, url, browse_by_type, is_text)
-
-
-    def get_useful_anchor_object_list(self,bs4_container):
-        """
-        :param bs4_container: a <div>,<center> or anithing that contain the anchor elements 
-        """    
-
-        container = bs4_container.find("div",
-                                       attrs = {"class":"bookContentsPage"})
-        return container.find_all("a")
-    
-    
 
 class GetVintageImageSpeakerLinks(GetSpeakerLinks):
     def __init__(self, metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders=None) -> None:
@@ -287,3 +286,112 @@ class GetVintageImageSpeakerLinks(GetSpeakerLinks):
         
         return container.find_all("a")
     
+
+
+
+
+
+
+
+
+class GetSpeakerList():
+    def __init__(self,root_folder,material_type,url) -> None:
+
+        self.material_type = material_type
+        
+        if material_type == "audio":
+            material_root_folder =  my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
+        elif material_type == "video":
+            material_root_folder =  my_constants.SERMONINDEX_VIDEO_SERMONS_ROOT_FOLDER
+        elif material_type == "text":
+            material_root_folder = my_constants.SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER
+        elif material_type == "vintage_image":
+            material_root_folder = my_constants.SERMONINDEX_VINTAGE_IMAGE_ROOT_FOLDER
+        else:
+            raise ValueError(f"The material type {material_type} is not allowed. The allowed are [audio, video,text,vintage_image]")
+        
+
+        root_folder = _my_tools.process_path_according_to_cwd(root_folder)
+
+
+        self.metadata_root_folder = os.path.join(root_folder,
+                            my_constants.SERMONINDEX_METADATA_ROOT_FOLDER,material_root_folder)
+
+
+        self.log_root_folder = os.path.join(root_folder,
+                            my_constants.SERMONINDEX_LOG_ROOT_FOLDER, material_root_folder)
+
+        self.url = url
+
+    def scrap_and_write(self):
+
+        if self.material_type == "audio":
+            ob_class = GetAudioSermonsSpeakerLinks
+        elif self.material_type == "text":
+            ob_class = GetTextSermonsSpeakerLinks
+        elif self.material_type == "video":
+            ob_class = GetVideoSermonsSpeakerLinks
+        elif self.material_type == "vintage_image":
+            ob_class = GetVintageImageSpeakerLinks
+    
+        ob = ob_class(self.metadata_root_folder,
+                       self.log_root_folder,
+                       self.url,
+                       "speaker",)
+        
+        # The parent of the anchor object containing the 
+        # url of author topic or scripture depends on the 
+        # material type. The structure of the pages are not 
+        # the same for all the type of material 
+        # In the page of the of the text sermons ( https://www.sermonindex.net/modules/articles/)
+        # The useful anchor objects are in <b> object 
+        # while in the page of the audio sermons (https://www.sermonindex.net/modules/articles/)
+        # The useful anchor object are in <td> object 
+        
+        
+        ob.scrap_and_write(get_useful_link_method = 
+                            ob.get_useful_anchor_object_list_on_main_page)
+       
+        #print(ob.other_page_links)
+        for other_page_per_url in ob.other_page_links:
+            for url,url_text in other_page_per_url:
+                other_page_ob = ob_class(self.metadata_root_folder,
+                            self.log_root_folder,
+                            url,
+                            "speaker",
+                            intermdiate_folders = [url_text.strip()]
+                                )
+                
+                other_page_ob.scrap_and_write(get_useful_link_method = 
+                                                  ob.get_useful_anchor_object_list_on_other_page)
+
+            
+        
+
+
+
+class GetAudioSermonSpeakerList(GetSpeakerList):
+    def __init__(self, root_folder, material_type = "audio", url="https://www.sermonindex.net/modules/mydownloads/") -> None:
+        """"""
+        super().__init__(root_folder, material_type, url)
+
+
+class GetTextSermonSpeakerList(GetSpeakerList):
+    def __init__(self, root_folder, material_type = "text", url="https://www.sermonindex.net/modules/articles/") -> None:
+        """"""
+        super().__init__(root_folder, material_type, url)
+
+class GetVideoSermonSpeakerList(GetSpeakerList):
+    def __init__(self, root_folder, material_type = "video", url="https://www.sermonindex.net/modules/myvideo/") -> None:
+        """"""
+        super().__init__(root_folder, material_type, url)
+
+
+class GetVintageImageSpeakerList(GetSpeakerList):
+    def __init__(self, root_folder, material_type = "vintage_image", url="https://www.sermonindex.net/modules/myalbum/index.php") -> None:
+        """"""
+        super().__init__(root_folder, material_type, url)
+
+
+
+

@@ -14,9 +14,9 @@ import requests
 from bs4 import BeautifulSoup
 
 
-from ..scraping import my_constants
+from ..web_scraping import my_constants
 from . import my_errors
-from ..scraping import _my_tools
+from ..web_scraping import _my_tools
 
 
 class ScrapDataFromURL():

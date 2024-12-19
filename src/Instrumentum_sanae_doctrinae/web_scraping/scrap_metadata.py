@@ -22,9 +22,9 @@ import os
 import pathlib
 import asyncio
 
-from . import http_connexion
-from . import _my_tools
-from . import my_constants
+from ..web_scraping import http_connexion
+from ..web_scraping import _my_tools
+from ..web_scraping import my_constants
 
 
 

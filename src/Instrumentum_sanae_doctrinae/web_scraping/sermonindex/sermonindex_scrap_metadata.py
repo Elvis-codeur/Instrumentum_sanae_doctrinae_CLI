@@ -9,11 +9,13 @@ import traceback
 from bs4 import BeautifulSoup
 import requests
 
+from Instrumentum_sanae_doctrinae.web_scraping import http_connexion
 
 
-from ..scraping import scrap_metadata
-from ..scraping import my_constants
-from ..scraping import _my_tools
+
+from Instrumentum_sanae_doctrinae.web_scraping import scrap_metadata
+from Instrumentum_sanae_doctrinae.web_scraping import my_constants
+from Instrumentum_sanae_doctrinae.web_scraping import _my_tools
 
 
 
@@ -35,49 +37,6 @@ def get_sermonindex_auth_top_scrip_list_json_filepath(root_folder,material_root_
     
     return os.path.join(metadata_root_folder,my_constants.ELABORATED_DATA_FOLDER,browse_by_type,
                         f"{browse_by_type}_list",my_constants.get_default_json_filename(0))
-
-    
-
-class GetTopicOrScriptureOrPodcastOrChristianBooks(scrap_metadata.GetAnyBrowseByListFromManyPages):
-    """
-    This class is created to get the list of all the scriptures, podcasts, christian books
-      and topics from sermonindex. \n
-
-    topic page : https://www.sermonindex.net/modules/mydownloads/scr_index.php?act=topicsList
-    scripture page : https://www.sermonindex.net/modules/mydownloads/scr_index.php?act=booksList
-    podcast page : https://www.sermonindex.net/podcast.php
-    christian book page : https://www.sermonindex.net/modules/bible_books/?view=books_list
-    """
-    def __init__(self,root_folder,url,browse_by_type,is_text) -> None:
-        """
-        :param root_folder: The folder where the logs folder, metadata, download 
-        folder will be created. It is the folder where everything will be placed. 
-        If left empty,the current working directory will be used  
-        :param url: The url of the web page to scrap 
-        :param browse_by_type: The type of browse by used targeted. Either topics, speakers, or others
-        :param is_text: If the data to be scrapped has to deal with audio sermons or text sermons
-        """
-        if not root_folder:
-            root_folder = os.getcwd()
-        
-        material_root_folder = my_constants.SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER if is_text else my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
-    
-        metadata_root_folder,log_root_folder = get_sermonindex_metadata_and_log_folder(root_folder,material_root_folder)        
-
-        super().__init__(metadata_root_folder,log_root_folder,
-                            url_list = [url],
-                            browse_by_type=browse_by_type)
-        
-
-
-
-    
-
-
-
-    
-    
-
 
 
 
@@ -218,7 +177,7 @@ class SermonIndexScrapAuthorTopicScriptureMainInformation(SermonIndexScrapAuthor
     
 
 # Download the main information of each author, topic, etc 
-class SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation(scrap_metadata.ScrapWebSiteAllAuthorTopicScriptures):
+class SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation(http_connexion.ParallelHttpConnexionWithLogManagement):
     def __init__(self,root_folder,material_root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
         
         root_folder = _my_tools.process_path_according_to_cwd(root_folder)
@@ -510,7 +469,7 @@ class SermonIndexAudioSermonScrapAuthorTopicScriptureWork(SermonIndexScrapAuthor
     
 
 
-class SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWebSiteAllAuthorTopicScriptures):
+class SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(http_connexion.ParallelHttpConnexionWithLogManagement):
     def __init__(self,root_folder,material_root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
         
         root_folder = _my_tools.process_path_according_to_cwd(root_folder)
@@ -527,7 +486,8 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(scrap_metadata.ScrapWe
         input_root_folder = os.path.join(root_folder,
                                          my_constants.METADATA_ROOT_FOLDER,
                                          my_constants.SERMONINDEX_NAME,
-                                         material_root_folder,my_constants.ELABORATED_DATA_FOLDER,
+                                         material_root_folder,
+                                         my_constants.ELABORATED_DATA_FOLDER,
                                          browse_by_type)
         
 
