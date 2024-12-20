@@ -77,8 +77,8 @@ class ScrapDataFromURL():
         
     async def close(self):
         if self.main_request_session:
-            self.main_request_session.close()
-            self.main_request_session = None
+            await self.main_request_session.close()
+            
             
 
     async def connect_to_all_url(self,**kwargs):
@@ -100,12 +100,21 @@ class ScrapDataFromURL():
             #print(url)
             #timeout = aiohttp.ClientTimeout(total=15)
             async with self.main_request_session.get(url=url) as response:
-                html = await response.text()
-
+                
+                
                 if response.status == 404:
                     raise my_errors.HTTP404Error(url)
                 
+                try:
+                    html = await response.text()
+                except UnicodeDecodeError:
+                    raw_data = await response.read()
+                    html = raw_data.decode("utf-8",errors="replace")
+
+                #print(response.headers)            
+                
                 self.url_informations[url]["request"] = response
+                self.url_informations[url]["html_text"] = html
                 self.url_informations[url]["request_datetime"] = _my_tools.datetimeToGoogleFormat(datetime.datetime.now()),
                 # Create a bs4 object with the html text of the last request 
                 self.url_informations[url]["bs4_object"] = BeautifulSoup(html,features="html.parser") 
@@ -195,9 +204,10 @@ class ScrapDataFromURL():
         Write the content of the html files 
         """
 
-        for url in self.url_informations:
-            html_text = await self.url_informations[url]["request"].text()
-            
+        for url in self.url_informations: 
+                           
+            html_text = self.url_informations[url]["html_text"]
+                
             await _my_tools.async_write_file(self.url_informations[url]["html_filepath"],
                                  html_text)
             self.url_informations[url]['is_html_file_locally_saved'] = True
@@ -233,9 +243,7 @@ class ScrapDataFromURL():
     
     
     
-    def __del__(self):
-        if self.main_request_session:
-            asyncio.run(self.main_request_session.close())
+   
             
 
     

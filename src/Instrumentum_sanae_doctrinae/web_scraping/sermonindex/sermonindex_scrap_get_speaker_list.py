@@ -10,11 +10,20 @@ from bs4 import BeautifulSoup
 import requests
 
 
-from ...web_scraping import scrap_metadata
-from ...web_scraping import my_constants
-from ...web_scraping import _my_tools
+from .. import scrap_metadata
+from .. import my_constants
+from .. import _my_tools
 
 
+
+"""
+This file contains the class that get the list of all the authors. This include 
+
+    - The authors of audio sermon https://www.sermonindex.net/modules/mydownloads/
+    - The authors of text sermon https://www.sermonindex.net/modules/articles/
+    - The authors of video sermon https://www.sermonindex.net/modules/myvideo/
+    - The authors of vintage https://www.sermonindex.net/modules/myalbum/index.php
+"""
 
 
 
@@ -323,8 +332,10 @@ class GetSpeakerList():
 
         self.url = url
 
-    def scrap_and_write(self):
+    async def scrap_and_write(self):
 
+        ob_class = None
+        
         if self.material_type == "audio":
             ob_class = GetAudioSermonsSpeakerLinks
         elif self.material_type == "text":
@@ -349,8 +360,10 @@ class GetSpeakerList():
         # The useful anchor object are in <td> object 
         
         
-        ob.scrap_and_write(get_useful_link_method = 
+        await ob.scrap_and_write(get_useful_link_method = 
                             ob.get_useful_anchor_object_list_on_main_page)
+        
+        await ob.close()
        
         #print(ob.other_page_links)
         for other_page_per_url in ob.other_page_links:
@@ -362,10 +375,10 @@ class GetSpeakerList():
                             intermdiate_folders = [url_text.strip()]
                                 )
                 
-                other_page_ob.scrap_and_write(get_useful_link_method = 
+                await other_page_ob.scrap_and_write(get_useful_link_method = 
                                                   ob.get_useful_anchor_object_list_on_other_page)
 
-            
+                await other_page_ob.close()
         
 
 

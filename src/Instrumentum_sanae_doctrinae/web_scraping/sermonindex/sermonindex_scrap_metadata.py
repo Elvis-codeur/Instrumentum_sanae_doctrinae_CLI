@@ -1,5 +1,6 @@
 
 from concurrent.futures import ThreadPoolExecutor
+import json
 import os 
 import urllib
 import urllib.parse
@@ -68,189 +69,6 @@ class SermonIndexScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicSc
 
 
 
-class SermonIndexAudioSermonScrapAuthorTopicScripturePage(SermonIndexScrapAuthorTopicScripturePage):
-    def __init__(self, name, root_folder, url):
-        
-        super().__init__(name, root_folder, url,browse_by_type = "speaker",
-                        material_root_folder =  my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER,
-                        information_type_root_folder = my_constants.MAIN_INFORMATION_ROOT_FOLDER)
-        
-    def scrap_page(self):
-        """
-        
-        """
-
-
-class SermonIndexScrapAuthorTopicScriptureMainInformation(SermonIndexScrapAuthorTopicScripturePage):
-    def __init__(self, name, root_folder,browse_by_type, url_list,material_root_folder,intermdiate_folders=None):
-        
-        super().__init__(name, root_folder, url_list,browse_by_type,
-                         information_type_root_folder = my_constants.MAIN_INFORMATION_ROOT_FOLDER,
-                         material_root_folder = material_root_folder,
-                         intermdiate_folders = intermdiate_folders)
-        
-        
-    def scrap_url_pages(self):
-        """
-        Scrap the main information of the web page. Here the description, the 
-        urls of the author, topic, scripture work 
-        """
-        super().scrap_url_pages()
-
-        
-
-        final_result = {}
-
-        for url in self.url_informations:
-                
-            soup = self.url_informations[url].get("bs4_object")
-
-            result = {}
-
-            # The author presentation 
-            author_presentation_element = soup.find("table",{"cellspacing":"0",
-                                                            "cellpadding":"20",
-                                                            "width":"550",
-                                                            "bgcolor": "#f7f7e0"})
-            
-
-            if  author_presentation_element:
-
-                author_img = author_presentation_element.find("img")
-                #print(author_img)
-                if author_img:
-                    result["img_url"] =  author_img.get("src")
-                
-                author_name = author_presentation_element.find("h1")
-                if author_name:
-                    result['name'] = author_name.get_text()
-
-                author_description = author_presentation_element.find_all("tr")[1]
-
-                if author_description:
-                    author_description = author_description.find("td")
-                
-                if author_description:
-                    author_description_text = "".join(author_description.find_all(string = True,recursive = False))
-
-                author_description_text2 = ""
-
-                if author_description.find("p"):
-                    author_description_text2 = "".join(author_description.find("p").find_all(string = True,recursive = False))
-
-                result["description"] = [author_description_text,author_description_text2] 
-
-                result["recomandation"] = []
-
-                author_recomandations =  author_description.find("p")
-
-                if author_recomandations:
-                    author_recomandations = author_recomandations.find_all("a")
-                else:
-                    author_recomandations = []
-
-                if author_recomandations:
-                    for link in author_recomandations:
-                        result["recomandation"].append({"url":link.get("href"),"text":link.get_text()})
-                
-
-            # Get the list of the pages of the works of the author, topic, scripture ... 
-            other_page_url_list = soup.findAll("a")
-            # The link to the other page text are digits
-            other_page_url_list = [i.get("href") for i in other_page_url_list 
-                                            if i.get_text().isdigit()]
-            
-            other_page_url_list = [url] + [urllib.parse.urljoin(url,i) for i in other_page_url_list]
-
-            #print(other_page_url_list)
-
-            result["pages"] = other_page_url_list
-
-            if not result.get("name"):
-                result["name"] = self.name 
-
-            final_result[url] = result
-
-        #print(final_result,self.url_list)
-
-        return final_result
-    
-
-# Download the main information of each author, topic, etc 
-class SermonIndexScrapWebSiteAllAuthorTopicScripturesMainInformation(http_connexion.ParallelHttpConnexionWithLogManagement):
-    def __init__(self,root_folder,material_root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
-        
-        root_folder = _my_tools.process_path_according_to_cwd(root_folder)
-
-        log_filepath = os.path.join(root_folder,my_constants.LOGS_ROOT_FOLDER,
-                                       my_constants.SERMONINDEX_NAME,
-                                       material_root_folder,
-                                       my_constants.ELABORATED_DATA_FOLDER,
-                                       browse_by_type,
-                                       
-                                       my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER,
-                                       my_constants.get_default_json_filename(0))
-        
-        input_root_folder = os.path.join(root_folder,my_constants.METADATA_ROOT_FOLDER,
-                                         my_constants.SERMONINDEX_NAME,
-                                         material_root_folder,my_constants.ELABORATED_DATA_FOLDER,
-                                         browse_by_type)
-
-        super().__init__(log_filepath = log_filepath,
-                         input_root_folder = input_root_folder,
-                         subfolder_pattern = my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER,
-                         overwrite_log = overwrite_log,
-                         update_log = update_log)
-        
-        self.material_root_folder = material_root_folder
-        self.browse_by_type = browse_by_type
-        self.root_folder = root_folder
-    
-
-    def prepare_input_json_file(self,matching_subfolders):
-        """
-        :param matching_subfolders: The folders from wich the json files will be searched out 
-        """
-        # List of folder in which name  :data:`my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER`
-        input_json_files = []
-        for folder in matching_subfolders:
-            for file in [i for i in pathlib.Path(folder).rglob("*.json") if i.is_file()]:
-                input_json_files.append(file)
-
-        #print(input_json_files,"\n\n\n")
-
-        return input_json_files
-    
-    
-    def download_element_data(self,element):
-        """This element take an element ( for example the information of an author or topic) 
-        and download the data that must be downloaded from it """
-
-
-        ob = SermonIndexScrapAuthorTopicScriptureMainInformation(
-            name = element.get("name"),
-            root_folder = self.root_folder,
-            browse_by_type = self.browse_by_type,
-            url_list = element.get("url_list"),
-            intermdiate_folders = element.get("download_log").get("intermediate_folders"),
-            material_root_folder = self.material_root_folder
-        )
-
-        ob.scrap_and_write()
-
-    def is_element_data_downloaded(self,element):
-        ob = SermonIndexScrapAuthorTopicScriptureMainInformation(
-            name = element.get("name"),
-            root_folder = self.root_folder,
-            browse_by_type =self.browse_by_type,
-            url_list = element.get("url_list"),
-            intermdiate_folders = element.get("download_log").get("intermediate_folders"),
-            material_root_folder = self.material_root_folder
-        )
-        return ob.is_data_downloaded()
-        
-
-
 # Scrap the works on the page of each author, topic, etc
 # This class works for the audio sermons 
 
@@ -270,7 +88,7 @@ class SermonIndexAudioSermonScrapAuthorTopicScriptureWork(SermonIndexScrapAuthor
         Scrap the main information of the web page. Here the description, the 
         urls of the author, topic, scripture work 
         """
-        super().scrap_url_pages()
+       
 
         final_result = {}
 
@@ -451,13 +269,18 @@ class SermonIndexAudioSermonScrapAuthorTopicScriptureWork(SermonIndexScrapAuthor
                 return False
             
             
-            file_content = _my_tools.read_json(file_path)
+            file_content = _my_tools.read_file(file_path)
+            
+            if not file_content:
+                return False
+            
+            try:
+                file_content = json.loads(file_content)
+            except:
+                return False
 
             #print(file_content,file_path)
 
-
-            if not file_content:
-                return False
             
             # Check mandatory information in the json file 
 
@@ -479,7 +302,6 @@ class SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(http_connexion.Paralle
                                        material_root_folder,
                                        my_constants.ELABORATED_DATA_FOLDER,
                                        browse_by_type,
-                                       
                                        my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
                                        my_constants.get_default_json_filename(0))
         
