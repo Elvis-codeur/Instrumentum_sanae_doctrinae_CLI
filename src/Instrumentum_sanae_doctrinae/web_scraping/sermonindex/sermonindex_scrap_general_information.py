@@ -123,7 +123,7 @@ class SermonIndexScrapSpeakerMainInformation_ALL(http_connexion.ParallelHttpConn
                                        material_root_folder,
                                        my_constants.ELABORATED_DATA_FOLDER,
                                        browse_by_type,
-                                       my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
+                                       my_constants.GENERAL_INFORMATION_NAME,
                                        my_constants.get_default_json_filename(0))
         
         input_root_folder = os.path.join(root_folder,

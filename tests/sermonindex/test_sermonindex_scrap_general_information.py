@@ -80,4 +80,4 @@ if __name__ == '__main__':
     if sys.platform == 'win32':
 	    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     
-    test_video_sermon_scrap_all_speaker_main_info_sermoindex()
+    test_vintage_image_scrap_all_speaker_main_info_sermoindex()

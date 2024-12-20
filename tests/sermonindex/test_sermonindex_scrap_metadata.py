@@ -10,22 +10,6 @@ from Instrumentum_sanae_doctrinae.web_scraping.sermonindex import sermonindex_sc
 
 
 
-
-
-def test_audio_sermon_get_scripture_work():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
-    material_folder = "audio_sermon"
-    browse_by_type = "scripture"
-    ob = sermonindex_scrap_metadata.SermonIndexScrapWebSiteAllAuthorTopicScripturesWork(
-        root_folder,
-        material_folder,
-        browse_by_type,
-        overwrite_log=True
-    )
-    
-    ob.download(30)
-    ob.update_downloaded_and_to_download()
-    ob.write_log_file()
     
 
 if __name__ == "__main__":

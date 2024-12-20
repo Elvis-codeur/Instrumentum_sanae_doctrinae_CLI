@@ -79,6 +79,7 @@ SERIE_NAME = "serie"
 
 
 SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER = "_list"
+GENERAL_INFORMATION_NAME = "_general_information"
 SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER = "_work"
 
 SERMONINDEX_NAME = "sermonindex" #: The name of sermonindex

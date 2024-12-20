@@ -74,6 +74,7 @@ def replace_forbiden_char_in_text(text):
     * by _g_
     / by _h_
     \\ by _i_
+    ... by _k_
     """
     #invalid = '<>:"|?*/\\'
     if not text:
@@ -81,7 +82,7 @@ def replace_forbiden_char_in_text(text):
     
     return text.replace("<","_a_").replace(">","_b_").replace(":","_c_")\
                 .replace('"',"_d_").replace("|","_e_").replace("?","_f_")\
-                .replace("*","_g_").replace("/","_h_").replace("\\","_i_")
+                .replace("*","_g_").replace("/","_h_").replace("\\","_i_").replace("...","_k_")
 
 
 def remove_consecutive_spaces(text):
