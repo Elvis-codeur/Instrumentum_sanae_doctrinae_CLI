@@ -231,11 +231,37 @@ class SermonIndexAudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
                 return False
             
         return True
-
     
+    async def async_is_data_downloaded(self):
+
+        for url in self.url_informations:
+            file_path = self.url_informations[url].get("json_filepath")
+            if not os.path.exists(file_path):
+                return False
+            
+            
+            file_content = _my_tools.async_read_file(file_path)
+            
+            if not file_content:
+                return False
+            
+            try:
+                file_content = json.loads(file_content)
+            except:
+                return False
+
+            #print(file_content,file_path)
+
+            
+            # Check mandatory information in the json file 
+
+            if not file_content.get("url"):
+                return False
+            
+        return True
 
 
-class SermonIndexScrapScripturesWork_ALL(http_connexion.ParallelHttpConnexionWithLogManagement):
+class SI_ScrapWork_ALL(http_connexion.ParallelHttpConnexionWithLogManagement):
     def __init__(self,root_folder,material_root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
         
         root_folder = _my_tools.process_path_according_to_cwd(root_folder)
@@ -256,6 +282,8 @@ class SermonIndexScrapScripturesWork_ALL(http_connexion.ParallelHttpConnexionWit
                                          browse_by_type)
         
         input_data = {}
+        
+        self.input_root_folder = input_root_folder
         
         for file in self.prepare_input_json_file(input_root_folder):
             input_data[file.as_posix()] = _my_tools.read_json(file)
@@ -303,6 +331,7 @@ class SermonIndexScrapScripturesWork_ALL(http_connexion.ParallelHttpConnexionWit
         element = kwargs.get("file_content").get("data")
         
         name  = pathlib.Path(kwargs.get("file_path")).parent.parent.as_posix()
+        
         name = name.split("/")[-1]
         
         self.element_dict[name] = {
@@ -322,7 +351,6 @@ class SermonIndexScrapScripturesWork_ALL(http_connexion.ParallelHttpConnexionWit
 
         #print(self.root_folder,self.browse_by_type)
 
-        print(element.get("name"))
         
         ob = SermonIndexAudioSermonWork(
             name = element.get("name"),
@@ -333,6 +361,8 @@ class SermonIndexScrapScripturesWork_ALL(http_connexion.ParallelHttpConnexionWit
             material_root_folder = self.material_root_folder
         )
 
+        print(element.get("name"))
+        
 
         await ob.scrap_and_write()
 
@@ -347,4 +377,3 @@ class SermonIndexScrapScripturesWork_ALL(http_connexion.ParallelHttpConnexionWit
         )
         return ob.is_data_downloaded()
         
-

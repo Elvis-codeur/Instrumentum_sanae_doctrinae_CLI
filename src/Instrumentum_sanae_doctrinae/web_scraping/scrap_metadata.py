@@ -21,6 +21,7 @@ See this file :ref:`Instrumentum_sanae_doctrinae.scraping` for more information 
 import os 
 import pathlib
 import asyncio
+import json 
 
 from ..web_scraping import http_connexion
 from ..web_scraping import _my_tools
@@ -154,10 +155,14 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
                 return False
             
             
-            file_content = _my_tools.read_json(file_path)
+            file_content = _my_tools.read_file(file_path)
+            
+            
 
             if not file_content:
                 return False
+            
+            file_content = json.loads(file_content)
             
             # Check mandatory information in the json file 
 
