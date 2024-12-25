@@ -383,16 +383,6 @@ class GetSpeakerList():
 
 
 
-class GetAudioSermonSpeakerList(GetSpeakerList):
-    def __init__(self, root_folder, material_type = "audio", url="https://www.sermonindex.net/modules/mydownloads/") -> None:
-        """"""
-        super().__init__(root_folder, material_type, url)
-
-
-class GetTextSermonSpeakerList(GetSpeakerList):
-    def __init__(self, root_folder, material_type = "text", url="https://www.sermonindex.net/modules/articles/") -> None:
-        """"""
-        super().__init__(root_folder, material_type, url)
 
 class GetVideoSermonSpeakerList(GetSpeakerList):
     def __init__(self, root_folder, material_type = "video", url="https://www.sermonindex.net/modules/myvideo/") -> None:

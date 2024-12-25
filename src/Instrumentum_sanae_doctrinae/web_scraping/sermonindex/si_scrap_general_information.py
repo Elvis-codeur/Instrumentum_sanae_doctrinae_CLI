@@ -10,7 +10,7 @@ import pathlib
 import urllib
 
 from Instrumentum_sanae_doctrinae.web_scraping import _my_tools, http_connexion, my_constants
-from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.sermonindex_scrap_metadata import SermonIndexScrapAuthorTopicScripturePage
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_metadata import SermonIndexScrapAuthorTopicScripturePage
 
 
 class SermonIndexScrapGeneralInformation(SermonIndexScrapAuthorTopicScripturePage):
@@ -159,6 +159,8 @@ class SermonIndexScrapSpeakerMainInformation_ALL(http_connexion.ParallelHttpConn
         
         input_json_files = []
         input_json_files = [i for i in pathlib.Path(folder).rglob("*.json") if i.is_file()]
+        
+        #print(folder,input_json_files)
         
         return input_json_files
     

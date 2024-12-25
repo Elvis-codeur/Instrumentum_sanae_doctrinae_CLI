@@ -10,10 +10,10 @@ import pathlib
 from bs4 import BeautifulSoup
 import urllib
 from Instrumentum_sanae_doctrinae.web_scraping import _my_tools, http_connexion, my_constants
-from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.sermonindex_scrap_metadata import SermonIndexScrapAuthorTopicScripturePage
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_metadata import SermonIndexScrapAuthorTopicScripturePage
 
 
-class SermonIndexAudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
+class SermonIndexTextSermonWork(SermonIndexScrapAuthorTopicScripturePage):
     def __init__(self, name, root_folder,browse_by_type, url_list,material_root_folder,intermdiate_folders=None):
         
         super().__init__(name, root_folder, url_list,browse_by_type,
