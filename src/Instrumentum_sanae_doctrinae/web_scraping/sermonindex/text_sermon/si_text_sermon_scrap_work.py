@@ -47,7 +47,7 @@ class SermonIndexScrapTextSermonWork(SermonIndexScrapAuthorTopicScripturePage):
                     if "index.php?view=article&aid=" in anchor_obj_href:
                         result.append(
                             {
-                                "url":urllib.parse.urljoin(current_page_url,anchor_obj_href)
+                                "url":urllib.parse.urljoin(current_page_url,anchor_obj_href),
                                 "link_text":anchor_obj.get_text()
                             }
                         )
@@ -202,7 +202,7 @@ class SI_ScrapTextSermonWork_ALL(http_connexion.ParallelHttpConnexionWithLogMana
         #print(self.root_folder,self.browse_by_type)
 
         
-        ob = SermonIndexAudioSermonWork(
+        ob = SermonIndexScrapTextSermonWork(
             name = element.get("name"),
             root_folder = self.root_folder,
             browse_by_type = self.browse_by_type,
@@ -217,7 +217,7 @@ class SI_ScrapTextSermonWork_ALL(http_connexion.ParallelHttpConnexionWithLogMana
         await ob.scrap_and_write()
 
     def is_element_data_downloaded(self,element):
-        ob = SermonIndexAudioSermonWork(
+        ob = SermonIndexScrapTextSermonWork(
             name = element.get("name"),
             root_folder = self.root_folder,
             browse_by_type =self.browse_by_type,

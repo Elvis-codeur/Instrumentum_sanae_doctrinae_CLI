@@ -14,8 +14,8 @@ def test_text_sermon_get_speaker_work():
         browse_by_type,
         overwrite_log=True
     )
-    print(ob.__dict__)
-    #asyncio.run(ob.download(2))
+    #print(ob.__dict__)
+    asyncio.run(ob.download(2))
     #ob.update_downloaded_and_to_download()
     #ob.write_log_file()
     
