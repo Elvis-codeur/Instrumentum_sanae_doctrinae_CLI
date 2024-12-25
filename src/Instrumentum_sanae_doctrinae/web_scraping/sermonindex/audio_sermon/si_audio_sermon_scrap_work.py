@@ -261,7 +261,7 @@ class SermonIndexAudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
         return True
 
 
-class SI_ScrapWork_ALL(http_connexion.ParallelHttpConnexionWithLogManagement):
+class SI_ScrapAudioSermonWork_ALL(http_connexion.ParallelHttpConnexionWithLogManagement):
     def __init__(self,root_folder,material_root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
         
         root_folder = _my_tools.process_path_according_to_cwd(root_folder)

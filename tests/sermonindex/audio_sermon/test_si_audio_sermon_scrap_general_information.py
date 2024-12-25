@@ -1,14 +1,14 @@
 import asyncio
 import sys
 from Instrumentum_sanae_doctrinae.web_scraping import my_constants
-from Instrumentum_sanae_doctrinae.web_scraping.sermonindex import sermonindex_scrap_general_information
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex import si_scrap_general_information
 
 # Test on one author 
 def test_scrap_author_work():
     root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     url = "https://www.sermonindex.net/modules/mydownloads/viewcat.php?cid=1"
     name = "Leonard Ravenhill"
-    ob = sermonindex_scrap_general_information.SermonIndexScrapGeneralInformation(
+    ob = si_scrap_general_information.SermonIndexScrapGeneralInformation(
         name=name,root_folder=root_folder,
         browse_by_type="speaker",url_list=[url],
         material_root_folder=my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER,intermdiate_folders=[],
