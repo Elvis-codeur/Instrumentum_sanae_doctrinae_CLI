@@ -380,21 +380,3 @@ class GetSpeakerList():
 
                 await other_page_ob.close()
         
-
-
-
-
-class GetVideoSermonSpeakerList(GetSpeakerList):
-    def __init__(self, root_folder, material_type = "video", url="https://www.sermonindex.net/modules/myvideo/") -> None:
-        """"""
-        super().__init__(root_folder, material_type, url)
-
-
-class GetVintageImageSpeakerList(GetSpeakerList):
-    def __init__(self, root_folder, material_type = "vintage_image", url="https://www.sermonindex.net/modules/myalbum/index.php") -> None:
-        """"""
-        super().__init__(root_folder, material_type, url)
-
-
-
-
