@@ -1,7 +1,10 @@
 import os 
 
-from  ..scraping import my_constants
-from ..scraping import scrap_metadata
+
+
+from Instrumentum_sanae_doctrinae.web_scraping import _my_tools, http_connexion, my_constants,scrap_metadata
+from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadata
+
 
 
 

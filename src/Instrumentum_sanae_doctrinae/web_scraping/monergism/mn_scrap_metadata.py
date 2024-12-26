@@ -12,10 +12,8 @@ import urllib.parse
 from urllib.parse import urlparse, parse_qs
 
 
-from ..scraping import scrap_metadata
-from ..scraping import my_constants
-from ..scraping import http_connexion
-from ..scraping import _my_tools
+from Instrumentum_sanae_doctrinae.web_scraping import _my_tools, http_connexion, my_constants,scrap_metadata
+
 
 
 

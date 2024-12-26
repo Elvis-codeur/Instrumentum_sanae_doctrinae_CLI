@@ -3,12 +3,8 @@ import os
 import pathlib
 import re
 
-
-from ..scraping import http_connexion
-from ..scraping import my_constants
-from  ..scraping import _my_tools
-
-from ..scraping.monergism_scrap_metadata import MonergismScrapAuthorTopicScripturePage
+from Instrumentum_sanae_doctrinae.web_scraping import _my_tools, http_connexion, my_constants
+from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadata
 
 
 

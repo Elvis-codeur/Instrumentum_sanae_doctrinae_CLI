@@ -1,15 +1,20 @@
 import json
 import re 
 import aiohttp
+import urllib
 import bs4
+import os 
+import pathlib
+from urllib.parse import parse_qs
 import requests 
 
-from . import _my_tools
-from .monergism_scrap_metadata import * 
-from  . import http_connexion
+
+from Instrumentum_sanae_doctrinae.web_scraping import _my_tools, http_connexion, my_constants
+from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadata
 
 
-class MonergismScrapAuthorTopicScriptureGeneralInformation(MonergismScrapAuthorTopicScripturePage):
+
+class MonergismScrapAuthorTopicScriptureGeneralInformation(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage):
     def __init__(self, name, root_folder, url, browse_by_type,) -> None:
 
         super().__init__(name, root_folder, url, browse_by_type,
@@ -141,7 +146,7 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(MonergismScrapAuthorT
         if not pages_list:
             pages_list = [main_url]
         else:
-            pages_list = pages_list[1:]
+            pages_list = [main_url] + pages_list[1:]
         
         return pages_list
         
@@ -416,9 +421,20 @@ class MonergismScrapTopicOrScriptureGeneralInformation(MonergismScrapAuthorTopic
             
             # The books recommanded
             recommanded_books =  self.get_recommanded_reading(bs4_soup)
-
+            
+            
+            # The name of the topic or the bible book 
+            title_h1 = bs4_soup.find("h1",id = "page-title")
+            name =  title_h1.get_text().strip()
+            if "-" in name:
+                name = name.split("-")[-1].strip()
+                
+            name = _my_tools.remove_consecutive_spaces(name)
+            name = _my_tools.replace_forbiden_char_in_text(name)
+            
             
             result = {
+                "name":name,
                 "pages":pages_list,
                 "subtopics":subtopics,
                 "recommanded_reading":recommanded_books,
