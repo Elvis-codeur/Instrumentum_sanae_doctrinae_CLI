@@ -45,17 +45,22 @@ class ScrapDataFromURL():
         self.log_root_folder =  _my_tools.process_path_according_to_cwd(log_root_folder) #: The root folder where the logs of the download and scraping process will be stored
 
         
+        self.url_info_list = url_info_list
+        
+        self.browse_by_type = browse_by_type
+        
+        self.intermdiate_folders = intermdiate_folders
+        
 
         # It contains the json filepath, html filepat, etc of each url  
-        self.url_informations = {i:{"json_filepath":None,"html_filepath":None,
+        self.url_informations = {i.get("url"):{"json_filepath":None,"html_filepath":None,
                                     "request":None,"bs4_object":None,
                                     "is_html_file_locally_saved":False,
                                     "is_json_file_locally_saved":False,
-                                    "json_file_content":None} for i in url_list} #: A dict for each url 
+                                    "json_file_content":None} for i in self.url_info_list} #: A dict for each url 
 
         
-        self.url_info_list = url_info_list
-        self.intermdiate_folders = intermdiate_folders
+        
         
         self.prepare_url_informations()
         
@@ -64,20 +69,18 @@ class ScrapDataFromURL():
         intermdiate_folders = [_my_tools.replace_forbiden_char_in_text(i) for i in self.intermdiate_folders]
     
         for indice,element in enumerate(self.url_info_list):
-            print(url_list[i])
-            self.url_informations[url_list[i].get("url")]['json_filepath'] =  os.path.join(self.metadata_root_folder,
+            print(element)
+            self.url_informations[element.get("url")]['json_filepath'] =  os.path.join(self.metadata_root_folder,
                                                                                 my_constants.ELABORATED_DATA_FOLDER,
                                                                                 *intermdiate_folders,
-                                                                                my_constants.get_default_json_filename(i))
+                                                                                my_constants.get_default_json_filename(indice))
             
-            self.url_informations[url_list[i].get("url")]['html_filepath']  = os.path.join(self.metadata_root_folder,
+            self.url_informations[element.get("url")]['html_filepath']  = os.path.join(self.metadata_root_folder,
                                                                                 my_constants.RAW_DATA_FOLDER,
                                                                                 *intermdiate_folders,
-                                                                                my_constants.get_default_html_filename(i))
+                                                                                my_constants.get_default_html_filename(indice))
     
-        self.url_list = url_list #: A list of all the urls of the web pages accross which the list of the speakers, topic, etc are spreaded
 
-        self.browse_by_type = browse_by_type
         
         self.main_request_session = None
         
@@ -104,8 +107,8 @@ class ScrapDataFromURL():
         
         self.main_request_session = aiohttp.ClientSession()
     
-        for url in self.url_list:
-            #print(url)
+        for url_dict in self.url_info_list:
+            url = url_dict.get("url")
             #timeout = aiohttp.ClientTimeout(total=15)
             async with self.main_request_session.get(url=url) as response:
                 
@@ -235,6 +238,9 @@ class ScrapDataFromURL():
         #print(*[i.get("json_file_content") for i in self.url_informations.values()],sep="\n\n\n")
 
         for url in self.url_informations:
+            
+            
+            
             #print("---ELVIS---",url)
             #print(self.url_informations[url]["json_filepath"])
             #print(self.url_informations[url]["json_file_content"])

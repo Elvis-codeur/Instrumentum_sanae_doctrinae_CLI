@@ -40,7 +40,7 @@ class GetTopicOrAuthorOrScriptureList(scrap_metadata.GetAnyBrowseByListFromManyP
         metadata_root_folder,log_root_folder = get_monergism_metadata_and_log_folder(root_folder)
 
         super().__init__(metadata_root_folder,log_root_folder,
-                          url_list = [url],
+                          url_list = [{"url":url}],
                             browse_by_type=browse_by_type)
         
 
