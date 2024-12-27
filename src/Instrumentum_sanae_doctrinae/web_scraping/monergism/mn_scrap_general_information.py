@@ -146,7 +146,11 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(mn_scrap_metadata.Mon
         if not pages_list:
             pages_list = [main_url]
         else:
-            pages_list = [main_url] + pages_list[1:]
+            if main_url not in pages_list[1:]:
+                pages_list = [main_url] + pages_list[1:]
+            else:
+                pages_list = pages_list[1:]
+                
         
         return pages_list
         
@@ -428,6 +432,9 @@ class MonergismScrapTopicOrScriptureGeneralInformation(MonergismScrapAuthorTopic
             name =  title_h1.get_text().strip()
             if "-" in name:
                 name = name.split("-")[-1].strip()
+                
+            if "by" in name:
+                name = name.split("by")[0].strip()
                 
             name = _my_tools.remove_consecutive_spaces(name)
             name = _my_tools.replace_forbiden_char_in_text(name)

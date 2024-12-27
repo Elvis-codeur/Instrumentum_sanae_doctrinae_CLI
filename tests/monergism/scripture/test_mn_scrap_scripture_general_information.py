@@ -1,24 +1,8 @@
 import asyncio
-import os 
 import sys 
-import pathlib
 
-import time
-import unittest
-
-import logging
-logging.basicConfig(level=logging.DEBUG)
 
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_general_information
-
-        
-
-
-    
-    
-
-    
-    
 
 def test_scrap_all_scripture_general_information():
     root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
@@ -30,7 +14,7 @@ def test_scrap_all_scripture_general_information():
         overwrite_log=True,
     )
     #print(ob.__dict__)
-    asyncio.run(ob.download(20))
+    asyncio.run(ob.download(4))
     
 
   
@@ -41,4 +25,4 @@ if __name__ == '__main__':
     #test_scrap_all_author_general_information()
     
     
-    test_scrap_all_topic_general_information()
+    test_scrap_all_scripture_general_information()

@@ -26,11 +26,11 @@ class ScrapDataFromURL():
         
     """
     
-    def __init__(self,metadata_root_folder,log_root_folder,url_list,browse_by_type,intermdiate_folders) -> None:
+    def __init__(self,metadata_root_folder,log_root_folder,url_info_list,browse_by_type,intermdiate_folders) -> None:
         """
         :param metadata_root_folder: The folder where the metadata will be stored
         :param log_root_folder: The folder where the log of the download and scraping process will be stored
-        :param url_list: The list of  url of the page where the list of the authors, topics, etc
+        :param url_info_list: The list of the dict containing url of the page and other information
         will be found. This class focus on the case where all the topics, authors, etc are 
         on a single page. What is the case on monergism and sermonindex in most of the situation. You an provide many url. Each url is scrapped  
         :param browse_by_type: The type of browse by used targeted. Either topics, speakers, or others
@@ -53,16 +53,24 @@ class ScrapDataFromURL():
                                     "is_json_file_locally_saved":False,
                                     "json_file_content":None} for i in url_list} #: A dict for each url 
 
-
-        intermdiate_folders = [_my_tools.replace_forbiden_char_in_text(i) for i in intermdiate_folders]
+        
+        self.url_info_list = url_info_list
+        self.intermdiate_folders = intermdiate_folders
+        
+        self.prepare_url_informations()
+        
+    def prepare_url_informations(self):
     
-        for i in range(len(url_list)):
-            self.url_informations[url_list[i]]['json_filepath'] =  os.path.join(self.metadata_root_folder,
+        intermdiate_folders = [_my_tools.replace_forbiden_char_in_text(i) for i in self.intermdiate_folders]
+    
+        for indice,element in enumerate(self.url_info_list):
+            print(url_list[i])
+            self.url_informations[url_list[i].get("url")]['json_filepath'] =  os.path.join(self.metadata_root_folder,
                                                                                 my_constants.ELABORATED_DATA_FOLDER,
                                                                                 *intermdiate_folders,
                                                                                 my_constants.get_default_json_filename(i))
             
-            self.url_informations[url_list[i]]['html_filepath']  = os.path.join(self.metadata_root_folder,
+            self.url_informations[url_list[i].get("url")]['html_filepath']  = os.path.join(self.metadata_root_folder,
                                                                                 my_constants.RAW_DATA_FOLDER,
                                                                                 *intermdiate_folders,
                                                                                 my_constants.get_default_html_filename(i))
@@ -140,35 +148,39 @@ class ScrapDataFromURL():
     
 
 
-    def anchor_object_list_to_dict_list(self,anchor_object_list,url,version = "0.0.1",**kwargs):
+    def anchor_object_list_to_dict_list(self,anchor_dict_list,url,version = "0.0.1",**kwargs):
         """
-        :param anchor_object_list: The list of a the bs4 HTML anchor objects
+        :param anchor_dict_list: The list of a dict containing the text to 
+            associate to the anchor elements and the anchor elements 
         :param url: The url of the web page where the  anchor elements are taken of 
         :param version: The version of the data structure of the dict who contains the information taken 
         from the anchor object   
         """
         result = []
-        for anchor_object in anchor_object_list:
+        for anchor_dict in anchor_dict_list:
             url_list = []
             name_list = []
+            
+            #print(anchor_dict)
 
-            for anchor_ob in anchor_object:
-                url_list.append(urllib.parse.urljoin(url,anchor_ob.get("href")))
-                name_list.append(anchor_ob.get_text().strip())
-
-            # Ensure that all the string in name list are the same 
-            # All the anchor objects must have the same text
-            # The href parameters can be different 
-            if len(name_list) > 1:
-                first_name = name_list[0]
-                for i in name_list[1:]:
-                    if i != first_name:
-                        raise ValueError(f"The string in name list {name_list} must be the same not different")
+            for anchor_ob in anchor_dict.get("url_list"):
+                
+                link_text = anchor_ob.get_text().strip() 
+                
+                link_text = _my_tools.replace_forbiden_char_in_text(
+                        _my_tools.remove_consecutive_spaces(link_text))
+                
+                url_list.append(
+                    {
+                        "url":urllib.parse.urljoin(url,anchor_ob.get("href")),
+                        "link_text": link_text                 
+                    }
+                    )
 
             result.append({
                 "version":version,
                 "name" : _my_tools.replace_forbiden_char_in_text(
-                        _my_tools.remove_consecutive_spaces(name_list[0])),
+                        _my_tools.remove_consecutive_spaces(anchor_dict.get("name"))),
                 "url_list" :url_list 
             })
 
@@ -423,6 +435,7 @@ class ParallelHttpConnexionWithLogManagement():
             tasks = [self.download_element_data(element) for element in download_batch]
             result = await asyncio.gather(*tasks)
             self.update_downloaded_and_to_download()
+            break 
                
                 
       

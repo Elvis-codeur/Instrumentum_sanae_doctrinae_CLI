@@ -52,21 +52,30 @@ class GetTopicOrAuthorOrScriptureList(scrap_metadata.GetAnyBrowseByListFromManyP
         https://www.monergism.com/authors The useful link are the <a> element
         of authors or topics as **<a href="/search?f[0]=author:39115">H.B. Charles Jr.</a>**
         """
-
         
-
-        result = []
+        final_result = []
 
         for url in self.url_informations:
             # Get the links (<a> </a>) which leads to the authors main page. 
             links = self.url_informations[url]["bs4_object"].find("div",{"id","region-content"}).findAll("a")#"section",{"id","block-views-36de325f9945b74b1c08af31b5376c02"}).find_all("a",{"class":None})
             links = [i for i in links if i.attrs.get("href")]
     
-            authors_links = [[i] for i in links if self.useful_link_validation_function(i)]
+            authors_links = [i for i in links if self.useful_link_validation_function(i)]
 
-            result.append((url,authors_links))
+            result = []
+            for anchor_object in authors_links:
+                link_text = _my_tools.replace_forbiden_char_in_text(
+                        _my_tools.remove_consecutive_spaces(anchor_object.get_text()))
+                result.append(
+                    {
+                        "name": link_text,
+                        "url_list":[anchor_object]
+                    }
+                )
+                
+            final_result.append((url,result))
 
-        return result
+        return final_result
     
     def useful_link_validation_function(self,link):
         """
@@ -92,30 +101,24 @@ class GetScriptureList(GetTopicOrAuthorOrScriptureList):
         for url in self.url_informations:
             links_div_list = self.url_informations[url]['bs4_object'].findAll("div",{"class":"view-grouping"})
             url_links = []
+            
+            # The bible book to which the links refer to
+            
 
             for link_div in links_div_list:
+                name = link_div.find("div",class_="view-grouping-header").get_text().strip()
+                
 
                 # Take the anchor list and modify their string to correspond to the 
                 # string of div containing them I do it because the anchor elements 
                 # text do not correspond to leviticus, chronicles or any book in 
                 # in the bible but to the type of the material (audio, book, etc)
                 anchor_object_list = link_div.findAll("a")
-                for anchor_object in anchor_object_list:
-                    anchor_new_string = link_div.get_text().split("\n")
-                    if anchor_new_string:
-                        anchor_object.string = anchor_new_string[0]
-                    else:
-                        anchor_object.string = ""
-                url_links.append(anchor_object_list)
+                    
+                url_links.append({"name":name,"url_list": anchor_object_list})
 
-            # Remove the duplicates
-            final_url_links_url = []
-            final_url_links = []
-            for anchor_list in url_links:
-                if anchor_list[0].get("href") not in final_url_links_url:
-                    final_url_links.append(anchor_list)
             
-            result.append((url,final_url_links))
+            result.append((url,url_links))
 
         return result
 

@@ -31,7 +31,7 @@ class MN_ScrapTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage
             
             bs4_object = self.url_informations[url].get("bs4_object")
             
-            main_content = None 
+           
             
                      
             

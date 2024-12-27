@@ -43,4 +43,4 @@ if __name__ == '__main__':
     #test_scrap_all_author_general_information()
     
     
-    test_scrap_all_topic_general_information()
+    test_scrap_all_author_general_information()

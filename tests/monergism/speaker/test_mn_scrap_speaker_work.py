@@ -22,8 +22,8 @@ def test_scrap_all_author_work():
         browse_by_type=browse_by_type,
         overwrite_log=True,
     )
-    print(ob.__dict__)
-    asyncio.run(ob.download(2))
+    #print(ob.__dict__)
+    asyncio.run(ob.download(4))
 
     
     

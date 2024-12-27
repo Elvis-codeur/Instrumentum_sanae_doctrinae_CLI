@@ -8,7 +8,7 @@ from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadat
 
 
 
-class MN_ScriptureWork(MonergismScrapAuthorTopicScripturePage):
+class MN_ScriptureWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage):
     def __init__(self, name, root_folder, url_list, browse_by_type,intermdiate_folders = None):
 
         super().__init__(name, root_folder, url_list, browse_by_type,
@@ -29,55 +29,47 @@ class MN_ScriptureWork(MonergismScrapAuthorTopicScripturePage):
             
             # Take the div containing the links of the author 
             
-            bs4_obect = self.url_informations[url].get("bs4_object")
+            bs4_object = self.url_informations[url].get("bs4_object")
             
-            links_div = bs4_obect.find_all("div",
-                                            class_=re.compile("view.*view-link-search.*view-id-link_search.*view-display-id-page.*view-dom-id-")) 
+             
+                     
             
-            if(len(links_div) != 0):
-                links_div = links_div[0]
-
-                # The header where this text isYour Search Yielded <n> Results
-                # Displaying <a> Through <b> where <n> is the total number of links about the author and <a> and <b> the range of links displayed 
-                header = links_div.find("div",{"class":"view-header"})
-
-                header_text = header.get_text()
-                header_text = header_text.split(" ")
+            main_links = []
+            
+            for div_element in bs4_object.find_all("div"):
+                div_class = div_element.get("class")
                 
-                header_numbers = []
-
-                for text in header_text:
-                    if text.strip().isdigit():
-                        header_numbers.append(int(text.strip()))
-
-                # The number of element monergism has on the author
-                self.num_result = header_numbers[0]
-
-                # The index of element returned in this page. For exemple 1rst to 50th gives 1 and 50 in the two variables
-                #display_index_begin = header_numbers[1]
-                #display_index_end = header_numbers[2]
-
-
-                # Get the main page links 
-                main_content = links_div.find("div",{"class":"view-content"})
-                main_links_li = main_content.find_all("li",{"class":"views-row"})
-                main_links = []
-
-                for li in main_links_li:
-                    li = li.find("div").find("span")
-                    link_type = li.get("class")[1]
-                    link_href = li.find("a").get("href")
-                    link_text = li.find("a").get_text()
-                    main_links.append({
-                        "link_type":link_type,
-                        "url":link_href,
-                        "link_text":link_text
-                    })
-
+                if div_class:
+                    div_class = " ".join(div_class).strip()
+                    if div_class.startswith("views-row views-row-"):
+                    
+                        span_object = div_element.find("span")
+                        
+                        if span_object:
+                        
+                            span_object_class = span_object.get("class")
+                            
+                            if len(span_object_class) >= 2:
+                                #print(span_object)
+                                
+                                anchor_object = span_object.find('a')
+                                author_em = div_element.find("em")
+                            
+                                link_type = span_object_class[1].strip()
+                                link_href = anchor_object.get("href")
+                                link_text = anchor_object.get_text()
+                                
+                                main_links.append(
+                                    {
+                                        "link_type":link_type,
+                                        "url":link_href,
+                                        "link_text":link_text,
+                                        "author":author_em.get_text().split("by")[-1].strip()
+                                    }
+                                )    
                 
-                #print(main_links,url,"\n\n")
-
-                final_result[url] = main_links
+            
+            final_result[url] = main_links
 
         return final_result
     

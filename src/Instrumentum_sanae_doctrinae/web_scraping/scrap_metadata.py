@@ -151,7 +151,7 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
 
         for url in self.url_informations:
             file_path = self.url_informations[url].get("json_filepath")
-            print(file_path)
+            #print(file_path)
             if not os.path.exists(file_path):
                 return False
             
