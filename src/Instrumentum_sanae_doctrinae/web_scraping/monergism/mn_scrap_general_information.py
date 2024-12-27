@@ -15,15 +15,42 @@ from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadat
 
 
 class MonergismScrapAuthorTopicScriptureGeneralInformation(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage):
-    def __init__(self, name, root_folder, url, browse_by_type,) -> None:
-
-        super().__init__(name, root_folder, url, browse_by_type,
+    def __init__(self, name, root_folder, url_list, browse_by_type,) -> None:
+        
+        
+        
+        super().__init__(name, root_folder, url_list, browse_by_type,
                          information_type_root_folder = my_constants.MAIN_INFORMATION_ROOT_FOLDER,
                          intermdiate_folders= None)
         
         # This session object is created to be used to connect and Get the other pages 
         # Where the other information will be found 
         #self.other_page_request_session = aiohttp.ClientSession() 
+        
+    
+         
+    def prepare_url_informations(self):
+        
+        intermdiate_folders = [_my_tools.replace_forbiden_char_in_text(i) for i in self.intermdiate_folders]
+    
+        for indice,url_dict in enumerate(self.url_info_list):
+            url_intermediate_folders = url_dict.get("intermediate_folders")                
+            
+            #print("Elvis",self.name,url_intermediate_folders)
+            
+            self.url_informations[url_dict.get("url")]['json_filepath'] =  os.path.join(self.metadata_root_folder,
+                                                                                my_constants.ELABORATED_DATA_FOLDER,
+                                                                                *intermdiate_folders,
+                                                                                *url_intermediate_folders,
+                                                                                my_constants.get_default_json_filename(indice))
+            
+            self.url_informations[url_dict.get("url")]['html_filepath']  = os.path.join(self.metadata_root_folder,
+                                                                                my_constants.RAW_DATA_FOLDER,
+                                                                                *intermdiate_folders,
+                                                                                *url_intermediate_folders,
+                                                                                my_constants.get_default_html_filename(indice))
+        
+        self.main_request_session = None
 
 
     def parse_filter_by_ul(self,section_object,url):
@@ -218,6 +245,10 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(mn_scrap_metadata.Mon
 
 
     def is_data_downloaded(self):
+        #print(self.name)
+        
+        if not self.url_informations:
+            return False
 
         for url in self.url_informations:
             file_path = self.url_informations[url].get("json_filepath")
@@ -248,8 +279,9 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(mn_scrap_metadata.Mon
             
             if not file_content.get("data").get("pages"):
                 return False
-            
-        return True
+        
+        return True 
+        
     
     async def get_bs4soup_from_url(self,session_object,url):
         """
@@ -263,8 +295,8 @@ class MonergismScrapAuthorTopicScriptureGeneralInformation(mn_scrap_metadata.Mon
         
         
 class MonergismScrapAuthorGeneralInformation(MonergismScrapAuthorTopicScriptureGeneralInformation):
-    def __init__(self, name, root_folder, url, browse_by_type):
-        super().__init__(name, root_folder, url, browse_by_type)
+    def __init__(self, name, root_folder, url_list, browse_by_type):
+        super().__init__(name, root_folder, url_list, browse_by_type)
         
         
     
@@ -315,10 +347,10 @@ class MonergismScrapAuthorGeneralInformation(MonergismScrapAuthorTopicScriptureG
     
     
 class MonergismScrapTopicOrScriptureGeneralInformation(MonergismScrapAuthorTopicScriptureGeneralInformation):
-    def __init__(self, name, root_folder, url, browse_by_type):
-        super().__init__(name, root_folder, url, browse_by_type)
+    def __init__(self, name, root_folder, url_list, browse_by_type):
+        super().__init__(name, root_folder, url_list, browse_by_type)
         
-    
+        
     
     def get_subtopics(self,bs4_soup,main_url):
         
@@ -677,12 +709,16 @@ class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionW
         #print(self.root_folder,self.browse_by_type)
         #print("\n",element.get("name"))
         
+        intermediate_folders = self.get_element_intermidiate_folders(element)
+        
+        #print(intermediate_folders)
+        
         if self.browse_by_type == my_constants.SPEAKER_NAME:
             ob = MonergismScrapAuthorGeneralInformation(
                 name = element.get("name"),
                 root_folder = self.root_folder,
                 browse_by_type = self.browse_by_type,
-                url = element.get("url_list"),
+                url_list = [{**i,**u} for i,u in zip(element.get("url_list"),intermediate_folders)],
                 )
             await ob.scrap_and_write()
             
@@ -692,32 +728,56 @@ class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionW
                 name = element.get("name"),
                 root_folder = self.root_folder,
                 browse_by_type = self.browse_by_type,
-                url = element.get("url_list"),
+                url_list = [{**i,**u} for i,u in zip(element.get("url_list"),intermediate_folders)],
                 )
             await ob.scrap_and_write()
             
+    
+    def get_element_intermidiate_folders(self,element):
+        element_url_list = element.get("url_list")
+        element_name = element.get("name")
         
+        result = []
+        
+        for url_object in element_url_list:
+            if element_name != url_object.get("link_text"):
+                result.append({"intermediate_folders":[url_object.get("link_text")]})
+            else:
+                result.append({"intermediate_folders":[]})
+                
+        return result 
         
     def is_element_data_downloaded(self,element):
+        
+        intermediate_folders = self.get_element_intermidiate_folders(element)
+        
         #print(element)
+        
         if self.browse_by_type == my_constants.SPEAKER_NAME:
             ob = MonergismScrapAuthorGeneralInformation(
                 name = element.get("name"),
                 root_folder = self.root_folder,
                 browse_by_type = self.browse_by_type,
-                url = element.get("url_list"),
+                url_list = [{**i,**u} for i,u in zip(element.get("url_list"),intermediate_folders)],
                 )
+            
+            #if element.get("name") in ["K. Scott Oliphint","H.B. Charles Jr.",]:
+            #    print(element.get("name"),ob.is_data_downloaded(),ob.__dict__,"\n\n")
+            
             
             return ob.is_data_downloaded()
         
         elif self.browse_by_type == my_constants.TOPIC_NAME or \
                 self.browse_by_type == my_constants.SCRIPTURE_NAME:
+            
+            
             ob = MonergismScrapTopicOrScriptureGeneralInformation(
                 name = element.get("name"),
                 root_folder = self.root_folder,
                 browse_by_type = self.browse_by_type,
-                url = element.get("url_list"),
+                url_list = [{**i,**u} for i,u in zip(element.get("url_list"),intermediate_folders)],
                 )
+            
             
             return ob.is_data_downloaded()
 

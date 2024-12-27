@@ -79,8 +79,6 @@ class ScrapDataFromURL():
                                                                                 my_constants.RAW_DATA_FOLDER,
                                                                                 *intermdiate_folders,
                                                                                 my_constants.get_default_html_filename(indice))
-    
-
         
         self.main_request_session = None
         
