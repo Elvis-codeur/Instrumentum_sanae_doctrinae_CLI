@@ -199,8 +199,10 @@ class MN_ScrapAuthorWork_All(http_connexion.ParallelHttpConnexionWithLogManageme
 
         element = kwargs.get("file_content").get("data")
         
+        if not element.get("name") in self.element_dict.keys():
+            self.element_dict[element.get("name")]  = []
         
-        self.element_dict[element.get("name")] = {
+        self.element_dict[element.get("name")].append({
             **{
                 "data":{
                     "name":element.get("name"),
@@ -212,36 +214,45 @@ class MN_ScrapAuthorWork_All(http_connexion.ParallelHttpConnexionWithLogManageme
                                                         ["input_files"].index(kwargs.get("file_path")),
                 "intermediate_folders":[]} #kwargs.get("intermediate_folders")
                 }
-                }
+                })
         
 
-    async def download_element_data(self,element):
+    async def download_element_data(self,element_list):
         """This element take an element ( for example the information of an author or topic) 
         and download the data that must be downloaded from it """
 
         #print(self.root_folder,self.browse_by_type)
 
         #print(element.get("data"))
-        print(element.get("data").get("name"))
         
-        ob = MN_ScrapAuthorWork(
-            name = element.get("data").get("name"),
-            root_folder = self.root_folder,
-            browse_by_type = self.browse_by_type,
-            url_list = element.get("data").get("pages"),
-            intermdiate_folders = element.get("download_log").get("intermediate_folders")
-        )
+        for element in element_list:
+            
+            print(element.get("data").get("name"))
+            
+            ob = MN_ScrapAuthorWork(
+                name = element.get("data").get("name"),
+                root_folder = self.root_folder,
+                browse_by_type = self.browse_by_type,
+                url_list = [{'url':i} for i in element.get("data").get("pages")],
+                intermdiate_folders = element.get("download_log").get("intermediate_folders")
+            )
 
-        await ob.scrap_and_write()
+            await ob.scrap_and_write()
 
-    def is_element_data_downloaded(self,element):
-        ob = MN_ScrapAuthorWork(
-            name = element.get("data").get("name"),
-            root_folder = self.root_folder,
-            browse_by_type = self.browse_by_type,
-            url_list = element.get("data").get("pages"),
-            intermdiate_folders = element.get("download_log").get("intermediate_folders")
-        )
-        return ob.is_data_downloaded()
+    def is_element_data_downloaded(self,element_list):
         
+        for element in element_list:
+            
+            ob = MN_ScrapAuthorWork(
+                name = element.get("data").get("name"),
+                root_folder = self.root_folder,
+                browse_by_type = self.browse_by_type,
+                url_list = [{'url':i} for i in element.get("data").get("pages")],
+                intermdiate_folders = element.get("download_log").get("intermediate_folders")
+            )
+            if not ob.is_data_downloaded():
+                return False 
+            
+        return True 
+            
 

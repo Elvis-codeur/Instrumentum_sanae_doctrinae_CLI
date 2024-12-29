@@ -163,19 +163,16 @@ class MN_ScriptureWork_All(http_connexion.ParallelHttpConnexionWithLogManagement
         # The folder where the works of the author are 
         folder_path = os.path.join(input_root_folder,
                                 my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER)
-        
-        
+                
         # List to store paths to all JSON files
         json_files = [i for i in pathlib.Path(folder_path).rglob("*.json") if i.is_file()]
 
-                
         for file in json_files:
-            #print(file)
-            if str(file.parent).endswith(my_constants.MAIN_INFORMATION_ROOT_FOLDER):
+            filename = file.as_posix()
+            if my_constants.MAIN_INFORMATION_ROOT_FOLDER in filename:
                 input_json_files.append(file)
 
-        
-
+        #print(input_json_files)
         return input_json_files
     
     def prepare_input_data(self,**kwargs):
@@ -192,7 +189,11 @@ class MN_ScriptureWork_All(http_connexion.ParallelHttpConnexionWithLogManagement
         element = kwargs.get("file_content").get("data")
         
         
-        self.element_dict[element.get("name")] = {
+        if not element.get("name") in self.element_dict.keys():
+            self.element_dict[element.get("name")]  = []
+
+                
+        self.element_dict[element.get("name")].append({
             **{
                 "data":{
                     "name":element.get("name"),
@@ -202,38 +203,52 @@ class MN_ScriptureWork_All(http_connexion.ParallelHttpConnexionWithLogManagement
             **{"download_log":{
                 "input_file_index":self.meta_informations["input_files_information"]\
                                                         ["input_files"].index(kwargs.get("file_path")),
-                "intermediate_folders":[]} #kwargs.get("intermediate_folders")
+                "intermediate_folders":kwargs.get("intermediate_folders")[2:]}
                 }
                 }
+        )
+        
         
 
-    async def download_element_data(self,element):
+    async def download_element_data(self,element_list):
         """This element take an element ( for example the information of an author or topic) 
         and download the data that must be downloaded from it """
 
         #print(self.root_folder,self.browse_by_type)
 
         #print(element.get("data"))
-        print(element.get("data").get("name"))
         
-        ob = MN_ScriptureWork(
-            name = element.get("data").get("name"),
-            root_folder = self.root_folder,
-            browse_by_type = self.browse_by_type,
-            url_list = element.get("data").get("pages"),
-            intermdiate_folders = element.get("download_log").get("intermediate_folders")
-        )
+        #print(element)
+        
+        #print(element.get("data").get("name"),element.get("download_log").get("intermediate_folders"))
+        
+        for element in element_list:
+            ob = MN_ScriptureWork(
+                name = element.get("data").get("name"),
+                root_folder = self.root_folder,
+                browse_by_type = self.browse_by_type,
+                url_list = [{"url":i} for i in element.get("data").get("pages")],
+                intermdiate_folders = element.get("download_log").get("intermediate_folders")
+            )
 
-        await ob.scrap_and_write()
+            await ob.scrap_and_write()
 
-    def is_element_data_downloaded(self,element):
-        ob = MN_ScriptureWork(
-            name = element.get("data").get("name"),
-            root_folder = self.root_folder,
-            browse_by_type = self.browse_by_type,
-            url_list = element.get("data").get("pages"),
-            intermdiate_folders = element.get("download_log").get("intermediate_folders")
-        )
-        return ob.is_data_downloaded()
+    def is_element_data_downloaded(self,element_list):
+        
+        #print(element)
+        #print(element.get("data").get("name"),element.get("download_log").get("intermediate_folders"))
+        
+        for element in element_list:
+            ob = MN_ScriptureWork(
+                name = element.get("data").get("name"),
+                root_folder = self.root_folder,
+                browse_by_type = self.browse_by_type,
+                url_list = [{"url":i} for i in element.get("data").get("pages")],
+                intermdiate_folders = element.get("download_log").get("intermediate_folders")
+            )
+            if not ob.is_data_downloaded():
+                return False 
+        
+        return True 
         
 

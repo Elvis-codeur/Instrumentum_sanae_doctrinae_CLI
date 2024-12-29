@@ -12,9 +12,6 @@ logging.basicConfig(level=logging.DEBUG)
 from Instrumentum_sanae_doctrinae.web_scraping.monergism.scripture import mn_scrap_scripture_works
 
 
-
-
-
 def test_scrap_all_scripture_work():
     root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     browse_by_type = "scripture"

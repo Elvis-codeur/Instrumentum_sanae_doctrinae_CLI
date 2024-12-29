@@ -40,6 +40,17 @@ class MonergismScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicScri
 
         super().__init__(name, metadata_root_folder, log_root_folder,url_list,
                           browse_by_type,information_type_root_folder,intermdiate_folders)
+        
+        
+    def prepare_intermdiate_folders(self,intermdiate_folders,browse_by_type,name,information_type_root_folder):
+        if intermdiate_folders:
+            intermdiate_folders = [browse_by_type,my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,]\
+                                 + [name,information_type_root_folder] + intermdiate_folders 
+            return intermdiate_folders
+        else:
+            intermdiate_folders = [browse_by_type,my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER
+                                   ,name,information_type_root_folder]
+            return intermdiate_folders
 
        
     
