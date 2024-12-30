@@ -59,9 +59,13 @@ class SermonIndexScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicSc
         #print(intermdiate_folders)
 
         if not isinstance(url,list):
-            url = [url]
+            url_list = [url]
+            for indice,url in enumerate(url_list):
+                if not isinstance(url,dict):
+                    url_list[indice] = {"url":url}
+                    
 
         metadata_root_folder,log_root_folder = get_sermonindex_metadata_and_log_folder(root_folder,material_root_folder)
-        super().__init__(name,metadata_root_folder,log_root_folder,url,
+        super().__init__(name,metadata_root_folder,log_root_folder,url_list,
                          browse_by_type,information_type_root_folder,
                          intermdiate_folders)

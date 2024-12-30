@@ -6,12 +6,6 @@ from ..sermonindex_scrap_metadata import get_sermonindex_metadata_and_log_folder
 
 
 
-class GetAudioSermonSpeakerList(GetSpeakerList):
-    def __init__(self, root_folder, material_type = "audio", url="https://www.sermonindex.net/modules/mydownloads/") -> None:
-        """"""
-        super().__init__(root_folder, material_type, url)
-
-
 
 
 #####################################

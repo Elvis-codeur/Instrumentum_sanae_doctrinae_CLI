@@ -31,7 +31,18 @@ This file contains the class that get the list of all the authors. This include
 
 class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
     def __init__(self, metadata_root_folder, log_root_folder, url, browse_by_type, intermdiate_folders=None) -> None:
-        super().__init__(metadata_root_folder, log_root_folder, [url], browse_by_type, intermdiate_folders)
+        
+        url_list = []
+        if not isinstance(url,list):
+            url_list = [url]
+        else:
+            url_list = url.copy()
+            
+        for indice,url in enumerate(url_list):
+            if not isinstance(url,dict):
+                url_list[indice] = {"url":url}
+                
+        super().__init__(metadata_root_folder, log_root_folder, url_list, browse_by_type, intermdiate_folders)
 
         # A list of the other pages. For sermonindex, it is the links who's text begin with ~
         # See this pages for more 
@@ -57,15 +68,27 @@ class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
             bs4_object = self.url_informations[url]['bs4_object']
             anchor_list =  kwargs.get("get_useful_link_method")(bs4_object)
            
-            for i in anchor_list:
+            for anchor_object in anchor_list:
+                link_text = _my_tools.replace_forbiden_char_in_text(
+                        _my_tools.remove_consecutive_spaces(anchor_object.get_text()))
                 
-                if "~" not in i.get_text():
-                    if i.get_text():
-                        links.append([i])
+                if "~" not in link_text:
+                    if link_text:
+                        links.append(
+                            {
+                                "name": link_text,
+                                "url_list":[anchor_object]
+                            }
+                        )
+                        
                 else:
-                    other_page_list.append((urllib.parse.urljoin(url, i.attrs.get("href")),i.get_text().strip()))
+                    other_page_list.append((urllib.parse.urljoin(url, anchor_object.attrs.get("href")),anchor_object.get_text().strip()))
+            
             self.other_page_links.append(other_page_list)
+            
             result.append((url,links))
+            
+            print(links)
         return result
     
 
@@ -380,3 +403,23 @@ class GetSpeakerList():
 
                 await other_page_ob.close()
         
+
+class GetAudioSermonSpeakerList(GetSpeakerList):
+    def __init__(self, root_folder, material_type = "audio", url="https://www.sermonindex.net/modules/mydownloads/") -> None:
+        """"""
+        super().__init__(root_folder, material_type, url)
+
+class GetTextSermonSpeakerList(GetSpeakerList):
+    def __init__(self, root_folder, material_type = "text", url="https://www.sermonindex.net/modules/articles/") -> None:
+        """"""
+        super().__init__(root_folder, material_type, url)
+
+class GetVideoSermonSpeakerList(GetSpeakerList):
+    def __init__(self, root_folder, material_type = "video", url="https://www.sermonindex.net/modules/myvideo/") -> None:
+        """"""
+        super().__init__(root_folder, material_type, url)
+    
+class GetVintageImageSpeakerList(GetSpeakerList):
+    def __init__(self, root_folder, material_type = "vintage_image", url="https://www.sermonindex.net/modules/myalbum/index.php") -> None:
+        """"""
+        super().__init__(root_folder, material_type, url)
