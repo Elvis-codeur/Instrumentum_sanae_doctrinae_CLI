@@ -36,13 +36,13 @@ def test_scrap_all_audio_sermon_author_main_info_sermoindex():
     root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
     browse_by_type = my_constants.SPEAKER_NAME
-    ob = sermonindex_scrap_general_information.SermonIndexScrapSpeakerMainInformation_ALL(
+    ob = si_scrap_general_information.SermonIndexScrapSpeakerMainInformation_ALL(
         root_folder,
         material_folder,
         browse_by_type,
         overwrite_log=True
     )    
-    asyncio.run(ob.download(100))
+    asyncio.run(ob.download(2))
     ob.update_downloaded_and_to_download()
     ob.write_log_file()
 
@@ -51,13 +51,13 @@ def test_scrap_all_audio_sermon_topic_main_info_sermoindex():
     root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
     browse_by_type = my_constants.TOPIC_NAME
-    ob = sermonindex_scrap_general_information.SermonIndexScrapSpeakerMainInformation_ALL(
+    ob = si_scrap_general_information.SermonIndexScrapSpeakerMainInformation_ALL(
         root_folder,
         material_folder,
         browse_by_type,
         overwrite_log=True
     )    
-    asyncio.run(ob.download(100))
+    asyncio.run(ob.download(2))
     ob.update_downloaded_and_to_download()
     ob.write_log_file()
     
@@ -67,13 +67,13 @@ def test_scrap_all_audio_sermon_scripture_main_info_sermoindex():
     root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
     browse_by_type = my_constants.SCRIPTURE_NAME
-    ob = sermonindex_scrap_general_information.SermonIndexScrapSpeakerMainInformation_ALL(
+    ob = si_scrap_general_information.SermonIndexScrapSpeakerMainInformation_ALL(
         root_folder,
         material_folder,
         browse_by_type,
         overwrite_log=True
     )    
-    asyncio.run(ob.download(30))
+    asyncio.run(ob.download(2))
     ob.update_downloaded_and_to_download()
     ob.write_log_file()
 
@@ -82,4 +82,4 @@ if __name__ == '__main__':
     if sys.platform == 'win32':
 	    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     
-    ()
+    test_scrap_all_audio_sermon_author_main_info_sermoindex()

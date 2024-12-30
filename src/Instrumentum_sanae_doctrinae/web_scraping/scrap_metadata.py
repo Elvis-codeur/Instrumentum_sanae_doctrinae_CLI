@@ -42,6 +42,19 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
         
         super().__init__(metadata_root_folder, log_root_folder, url_list, browse_by_type, intermdiate_folders)
 
+    
+    def anchor_list_to_dict_list(self,anchor_object_list):
+        result = []
+        for anchor_object in anchor_object_list:
+            link_text = _my_tools.replace_forbiden_char_in_text(
+                        _my_tools.remove_consecutive_spaces(anchor_object.get_text()))
+            result.append(
+                {
+                    "name": link_text,
+                    "url_list":[anchor_object]
+                }
+            )
+        return result 
 
     async def scrap_page_useful_links(self,**kwargs):
         """
@@ -68,7 +81,7 @@ class GetAnyBrowseByListFromManyPages(http_connexion.ScrapDataFromURL):
             
             links = kwargs.get("get_useful_link_method")(bs4_object)
            
-            links = [[i] for i in links]
+            links = self.anchor_list_to_dict_list(links)
 
             result.append((url,links))
 

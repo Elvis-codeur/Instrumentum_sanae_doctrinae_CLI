@@ -56,16 +56,9 @@ class SermonIndexScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicSc
         :param material_root_folder: On sermonindex, there are audio sermons, text sermons, video sermons and \
         vintage image. Each material has his own root folder. See here for more \
         """
-        #print(intermdiate_folders)
-
-        if not isinstance(url,list):
-            url_list = [url]
-            for indice,url in enumerate(url_list):
-                if not isinstance(url,dict):
-                    url_list[indice] = {"url":url}
-                    
+        #print(intermdiate_folders)            
 
         metadata_root_folder,log_root_folder = get_sermonindex_metadata_and_log_folder(root_folder,material_root_folder)
-        super().__init__(name,metadata_root_folder,log_root_folder,url_list,
+        super().__init__(name,metadata_root_folder,log_root_folder,url,
                          browse_by_type,information_type_root_folder,
                          intermdiate_folders)

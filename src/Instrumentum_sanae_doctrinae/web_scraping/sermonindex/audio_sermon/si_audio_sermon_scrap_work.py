@@ -13,7 +13,7 @@ from Instrumentum_sanae_doctrinae.web_scraping import _my_tools, http_connexion,
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_metadata import SermonIndexScrapAuthorTopicScripturePage
 
 
-class SermonIndexAudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
+class SI_AudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
     def __init__(self, name, root_folder,browse_by_type, url_list,material_root_folder,intermdiate_folders=None):
         
         super().__init__(name, root_folder, url_list,browse_by_type,
@@ -42,7 +42,7 @@ class SermonIndexAudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
                                             "cellpadding":10,"width":"100%"})
             
             if main_links_element:
-                main_links_element = main_links_element.find_all("tr")
+                main_links_element = main_links_element.find_all("tr",recursive = False)
             else:
                 return []
             
@@ -67,7 +67,7 @@ class SermonIndexAudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
 
 
                     url = a_element.get("href")
-                    link_text  = a_element.get_text()
+                    link_text  = a_element.get_text().strip()
 
                     element_content = element.contents[-1].findAll("tr")[1:]
 
@@ -89,20 +89,20 @@ class SermonIndexAudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
                                 author_name = comp.get_text().split(" ")
                                 if len(author_name) > 1:
 
-                                    author_name = " ".join(author_name[1:])
+                                    author_name = " ".join(author_name[1:]).strip()
 
-                            if  "Topic:" in comp.get_text():
+                            if  "topic" in comp.get_text().lower():
                                 add_element_to_topic = True
 
-                            if "Scripture" in comp.get_text():
+                            if "scripture" in comp.get_text().lower():
                                 add_element_to_scriptures = True
                                 add_element_to_topic = False
 
                             if comp.name == 'i' and add_element_to_topic:
-                                topic_list.append(comp.get_text())
+                                topic_list.append(comp.get_text().strip())
 
                             if comp.name == 'i' and add_element_to_scriptures:
-                                scripture_list.append(comp.get_text())
+                                scripture_list.append(comp.get_text().strip())
 
                         
                         link_description = "".join(element_content[2].find("td").find_all(string = True,recursive = False))
@@ -148,7 +148,7 @@ class SermonIndexAudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
                             "topics":topic_list,
                             "scriptures":scripture_list,
                             "link_text":link_text,
-                            "link_description":link_description,
+                            "link_description":link_description.strip(),
                             "comments_url":element_comment_url,
                             "comments":comments,
                             "comments_number": comment_number
@@ -193,8 +193,8 @@ class SermonIndexAudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
             for i in range(2,len(comments),3):
                 comments_list.append(
                     {
-                        "title":comments[i-2].find("strong").get_text(),
-                        "text":comments[i].get_text(),
+                        "title":comments[i-2].find("strong").get_text().strip(),
+                        "text":comments[i].get_text().strip(),
                     }
                 )
 
@@ -352,7 +352,7 @@ class SI_ScrapAudioSermonWork_ALL(http_connexion.ParallelHttpConnexionWithLogMan
         #print(self.root_folder,self.browse_by_type)
 
         
-        ob = SermonIndexAudioSermonWork(
+        ob = SI_AudioSermonWork(
             name = element.get("name"),
             root_folder = self.root_folder,
             browse_by_type = self.browse_by_type,
@@ -367,7 +367,7 @@ class SI_ScrapAudioSermonWork_ALL(http_connexion.ParallelHttpConnexionWithLogMan
         await ob.scrap_and_write()
 
     def is_element_data_downloaded(self,element):
-        ob = SermonIndexAudioSermonWork(
+        ob = SI_AudioSermonWork(
             name = element.get("name"),
             root_folder = self.root_folder,
             browse_by_type =self.browse_by_type,

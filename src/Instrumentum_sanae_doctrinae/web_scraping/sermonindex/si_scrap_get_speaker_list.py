@@ -88,7 +88,7 @@ class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
             
             result.append((url,links))
             
-            print(links)
+            #print(links)
         return result
     
 

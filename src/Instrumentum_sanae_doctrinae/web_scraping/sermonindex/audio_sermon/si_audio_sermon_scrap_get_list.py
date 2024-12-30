@@ -1,10 +1,8 @@
 
 
 import os
-from Instrumentum_sanae_doctrinae.web_scraping import my_constants, scrap_metadata
-from ..sermonindex_scrap_metadata import get_sermonindex_metadata_and_log_folder
-
-
+from Instrumentum_sanae_doctrinae.web_scraping import my_constants, scrap_metadata,_my_tools
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_metadata import get_sermonindex_metadata_and_log_folder
 
 
 
@@ -34,6 +32,7 @@ class GetAudioSermonList(scrap_metadata.GetAnyBrowseByListFromManyPages):
                          url_list = [url],
                          browse_by_type = browse_by_type,
                          intermdiate_folders = [])
+        
         
 
 class GetAudioSermonTopicList(GetAudioSermonList):
@@ -84,7 +83,7 @@ class GetAudioSermonPodcastList(GetAudioSermonList):
         #result = [i for i in result if 
         #          urllib.parse.urlparse(i.get("href")).netloc == "archive.org"]
 
-        return result 
+        return result
 
 
 class GetAudioSermonScriptureList(GetAudioSermonList):

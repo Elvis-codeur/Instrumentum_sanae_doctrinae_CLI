@@ -1,14 +1,14 @@
 import asyncio
 import sys
 from Instrumentum_sanae_doctrinae.web_scraping import my_constants
-from Instrumentum_sanae_doctrinae.web_scraping.sermonindex import sermonindex_audio_sermon_scrap_work 
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.audio_sermon import si_audio_sermon_scrap_work 
 
 
 def test_audio_sermon_get_speaker_work():
     root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
     browse_by_type = my_constants.SPEAKER_NAME
-    ob = sermonindex_audio_sermon_scrap_work.SI_ScrapWork_ALL(
+    ob = si_audio_sermon_scrap_work.SI_ScrapAudioSermonWork_ALL(
         root_folder,
         material_folder,
         browse_by_type,
@@ -24,7 +24,7 @@ def test_audio_sermon_get_topic_work():
     root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
     browse_by_type = my_constants.TOPIC_NAME
-    ob = sermonindex_audio_sermon_scrap_work.SI_ScrapWork_ALL(
+    ob = si_audio_sermon_scrap_work.SI_ScrapAudioSermonWork_ALL(
         root_folder,
         material_folder,
         browse_by_type,
@@ -40,7 +40,7 @@ def test_audio_sermon_get_scripture_work():
     root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
     browse_by_type = my_constants.SCRIPTURE_NAME
-    ob = sermonindex_audio_sermon_scrap_work.SermonIndexScrapWork_ALL(
+    ob = si_audio_sermon_scrap_work.SI_ScrapAudioSermonWork_ALL(
         root_folder,
         material_folder,
         browse_by_type,
@@ -55,7 +55,7 @@ def test_audio_sermon_get_podcast_work():
     root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
     browse_by_type = my_constants.PODCAST_NAME
-    ob = sermonindex_audio_sermon_scrap_work.SermonIndexScrapWork_ALL(
+    ob = si_audio_sermon_scrap_work.SI_ScrapAudioSermonWork_ALL(
         root_folder,
         material_folder,
         browse_by_type,

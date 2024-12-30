@@ -45,8 +45,18 @@ class ScrapDataFromURL():
         self.log_root_folder =  _my_tools.process_path_according_to_cwd(log_root_folder) #: The root folder where the logs of the download and scraping process will be stored
 
         
-        self.url_info_list = url_info_list
-        
+        # Ensure that url_info_list is a list of dict in the form {"url":"value",...}
+        if not isinstance(url_info_list,list):
+            self.url_info_list = [url_info_list]
+        else:
+            self.url_info_list = url_info_list
+            
+        for indice,url_info in enumerate(self.url_info_list):
+            if not isinstance(url_info,dict):
+                 self.url_info_list[indice] = {"url":url_info}
+                 
+            
+         
         self.browse_by_type = browse_by_type
         
         self.intermdiate_folders = intermdiate_folders
@@ -160,7 +170,6 @@ class ScrapDataFromURL():
         result = []
         for anchor_dict in anchor_dict_list:
             url_list = []
-            name_list = []
             
             #print(anchor_dict)
 

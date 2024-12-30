@@ -5,7 +5,7 @@ import asyncio
 
 import unittest
 
-from Instrumentum_sanae_doctrinae.web_scraping.sermonindex import si_audio_sermon_scrap_get_list 
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.audio_sermon import si_audio_sermon_scrap_get_list 
 from Instrumentum_sanae_doctrinae.web_scraping import my_constants 
 
         
