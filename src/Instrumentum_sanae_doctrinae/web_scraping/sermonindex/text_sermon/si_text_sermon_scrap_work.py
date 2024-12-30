@@ -48,14 +48,9 @@ class SermonIndexScrapTextSermonWork(SermonIndexScrapAuthorTopicScripturePage):
                         result.append(
                             {
                                 "url":urllib.parse.urljoin(current_page_url,anchor_obj_href),
-                                "link_text":anchor_obj.get_text()
+                                "link_text":anchor_obj.get_text().strip()
                             }
                         )
-                        
-            
-            
-           
-
 
             final_result[current_page_url] = result
 

@@ -7,6 +7,7 @@ import json
 import os
 import pathlib
 
+import bs4 
 from bs4 import BeautifulSoup
 import urllib
 from Instrumentum_sanae_doctrinae.web_scraping import _my_tools, http_connexion, my_constants
@@ -52,14 +53,35 @@ class SI_ScrapVideoSermonWork(SermonIndexScrapAuthorTopicScripturePage):
                 
                 anchor_element = td_element.find_all("a")[1]
                 
-                b_elements = td_element.find_all("b",recursive = False)
+                b_element_list = td_element.find_all("b",recursive = False)
                 
+                description_text = ""
+                number_of_views = ""
+                
+                for b_element in b_element_list:
+                    if "description:" in b_element.get_text().lower():
+                        for next_element in b_element.next_siblings:
+                            if next_element.name == "br":
+                                break 
+                            
+                            if isinstance(next_element,bs4.NavigableString):    
+                                description_text += next_element.get_text()
+                    
+                    if "views:" in b_element.get_text().lower():
+                        for next_element in b_element.next_siblings:
+                            if next_element.name == "br":
+                                break 
+                            
+                            if isinstance(next_element,bs4.NavigableString):    
+                                number_of_views += next_element.get_text()    
+                
+                                
                 result.append(
                     {
                         "url":anchor_element.get("href"),
                         "link_text":anchor_element.get_text(),
-                        "description":b_elements[0].get_text(),
-                        "views":b_elements[1].get_text(),
+                        "description":description_text.strip(),
+                        "views":number_of_views.strip(),
                         
                     }
                 )
