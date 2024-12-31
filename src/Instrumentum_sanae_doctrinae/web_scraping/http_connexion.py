@@ -61,20 +61,22 @@ class ScrapDataFromURL():
         
         self.intermdiate_folders = intermdiate_folders
         
-
-        # It contains the json filepath, html filepat, etc of each url  
+        self.url_informations = {}
+       
+        
+        
+        
+        self.prepare_url_informations()
+        
+    def prepare_url_informations(self,**kwargs):
+        
+         # It contains the json filepath, html filepat, etc of each url  
         self.url_informations = {i.get("url"):{"json_filepath":None,"html_filepath":None,
                                     "request":None,"bs4_object":None,
                                     "is_html_file_locally_saved":False,
                                     "is_json_file_locally_saved":False,
                                     "json_file_content":None} for i in self.url_info_list} #: A dict for each url 
 
-        
-        
-        
-        self.prepare_url_informations()
-        
-    def prepare_url_informations(self):
     
         intermdiate_folders = [_my_tools.replace_forbiden_char_in_text(i) for i in self.intermdiate_folders]
     
