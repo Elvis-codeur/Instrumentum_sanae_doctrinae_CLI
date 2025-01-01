@@ -300,13 +300,14 @@ class ParallelHttpConnexionWithLogManagement():
         :param input_root_folder: The folder from which all the json files are searched from to be used as input files 
         """
         self.log_filepath = log_filepath
+        self.input_root_folder = input_root_folder
+        
         self.element_dict = {}
 
         if not input_root_folder:
             raise ValueError("The value of variable input_root_folder must be given")
 
 
-        self.input_root_folder = input_root_folder
 
         self.meta_informations = {}
         
@@ -352,21 +353,26 @@ class ParallelHttpConnexionWithLogManagement():
                 
                 self.log_file_content = self.create_default_log_file_content()
 
-                 # A list of the url of of the link object which have been already downloaded 
-                downloaded_link_url_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
-                to_downlaod_link_url_list = [i for i in self.log_file_content.get("to_download")] if self.log_file_content.get("to_download") else []
-
-                # We take "element_list" variable because it contains the link of the author, scripture or topic
-                for element_name in self.element_dict:
-                    for url in self.element_dict[element_name]:
-                        if url not in downloaded_link_url_list: # If it is not already downloaded 
-                            if url not in to_downlaod_link_url_list: # It is not in the link prepared to for download. 
-                                self.log_file_content["to_download"][url] = self.element_dict[url]
-                            else: # If the element is already in the "to_download" list, there is no need to add it 
-                                pass 
-                        else: # If the link is already downlaed. There is no need of modification of anything 
-                            pass 
+                self.update_to_download_list()        
         
+    def update_to_download_list(self,):
+        # A list of the url of of the link object which have been already downloaded 
+        downloaded_link_url_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
+        to_downlaod_link_url_list = [i for i in self.log_file_content.get("to_download")] if self.log_file_content.get("to_download") else []
+
+        # We take "element_list" variable because it contains the link of the author, scripture or topic
+        for element_name in self.element_dict:
+            for url in self.element_dict[element_name]:
+                if url not in downloaded_link_url_list: # If it is not already downloaded 
+                    if url not in to_downlaod_link_url_list: # It is not in the link prepared to for download. 
+                        print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",url,element_name)
+                        
+                        self.log_file_content["to_download"][url] = self.element_dict[url]
+                    else: # If the element is already in the "to_download" list, there is no need to add it 
+                        pass 
+                else: # If the link is already downlaed. There is no need of modification of anything 
+                    pass 
+
 
     def update_downloaded_and_to_download(self):
         """

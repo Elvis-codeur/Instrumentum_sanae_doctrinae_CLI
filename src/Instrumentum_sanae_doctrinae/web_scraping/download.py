@@ -8,7 +8,7 @@ class DownloadFromUrl():
     def __init__(self,url,output_file_path,aiohttp_session):
         self.url = url 
         self.output_file_path = output_file_path
-        self.session = aiohttp_session
+        self.aiohttp_session = aiohttp_session
         
     async def download(self):
         pass 
