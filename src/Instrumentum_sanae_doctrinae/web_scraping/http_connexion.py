@@ -301,6 +301,7 @@ class ParallelHttpConnexionWithLogManagement():
         """
         self.log_filepath = log_filepath
         self.input_root_folder = input_root_folder
+        self.overwrite_log = overwrite_log
         
         self.element_dict = {}
 
@@ -341,21 +342,32 @@ class ParallelHttpConnexionWithLogManagement():
 
         self.log_file_content = {}
 
-        
-
-        if overwrite_log:
+                        
+                
+    async def init_log_data(self):
+        """
+        Open the log file and update to download and downloaded informations 
+        """
+        if self.overwrite_log:
             self.log_file_content = self.create_default_log_file_content()
             _my_tools.write_json(self.log_filepath,self.log_file_content)
         else:
             if not os.path.exists(self.log_filepath):
                 _my_tools.write_json(self.log_filepath,self.create_default_log_file_content())
             else:
-                
                 self.log_file_content = self.create_default_log_file_content()
-
-                self.update_to_download_list()        
+                await self.update_to_download_list()   
         
-    def update_to_download_list(self,):
+    async def update_log_data(self):
+        """
+        Open the log file and update to download and downloaded informations 
+        """
+        await self.update_downloaded_and_to_download()
+        await _my_tools.async_write_json(self.log_filepath,self.create_default_log_file_content())
+        
+                
+        
+    async def update_to_download_list(self):
         # A list of the url of of the link object which have been already downloaded 
         downloaded_link_url_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
         to_downlaod_link_url_list = [i for i in self.log_file_content.get("to_download")] if self.log_file_content.get("to_download") else []
@@ -374,7 +386,7 @@ class ParallelHttpConnexionWithLogManagement():
                     pass 
 
 
-    def update_downloaded_and_to_download(self):
+    async def update_downloaded_and_to_download(self):
         """
         This function verify if the data of the links in "downloaded" list are truly downloaded. 
         If not this link is put back in the "to_download" list. 
@@ -389,7 +401,7 @@ class ParallelHttpConnexionWithLogManagement():
                      ** self.log_file_content["downloaded"]}
 
         for key in element_dict:
-            if self.is_element_data_downloaded(element_dict[key]):
+            if await self.is_element_data_downloaded(element_dict[key]):
                 #print(key,True)
                 downloaded[key] = element_dict[key]
             else:
@@ -441,7 +453,7 @@ class ParallelHttpConnexionWithLogManagement():
         result = []
 
         # Update before the begining of downloads
-        self.update_downloaded_and_to_download() 
+        await self.update_downloaded_and_to_download() 
          
         element_to_download = list(self.log_file_content["to_download"].values())
         
@@ -456,7 +468,7 @@ class ParallelHttpConnexionWithLogManagement():
         for download_batch in element_to_download_splitted:
             tasks = [self.download_element_data(element) for element in download_batch]
             result = await asyncio.gather(*tasks)
-            self.update_downloaded_and_to_download()
+            await self.update_downloaded_and_to_download()
             break 
                
                 

@@ -11,13 +11,17 @@ def test_download():
     browse_by_type = "scripture"
     name = "Genesis"
     ob = mn_download.MN_Download_Work(name,root_folder,browse_by_type)
-    ob.update_downloaded_and_to_download()
     #print("Elvis")
     async def init_and_download():
         await ob.init_aiohttp_session()
-        #print("Elvis--")
+        await ob.init_log_data()
         await ob.download(1)
+        await ob.update_downloaded_and_to_download()
+        await ob.update_log_data()
         await ob.close_aiohttp_session()
+
+        
+        
         
     asyncio.run(init_and_download())
     

@@ -19,9 +19,9 @@ class DownloadFromUrl():
 
     
     
-    def get_file_extension_from_header(self,content_type):
+    def get_file_extension_from_content_type(self,content_type):
         """
-        Get file extension based on the Content-Type in aiohttp response headers.
+        Get file extension based on the Content-Type in aiohttp  headers content type.
 
         Args:
             headers (dict): The headers dictionary from an aiohttp response.

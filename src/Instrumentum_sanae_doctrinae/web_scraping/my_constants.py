@@ -81,6 +81,7 @@ SERIE_NAME = "serie"
 SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER = "_list"
 GENERAL_INFORMATION_NAME = "_general_information"
 SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER = "_work"
+SPEAKER_TOPIC_OR_SCRIPTURE_DOWNLOAD_FOLDER = "_download"
 
 SERMONINDEX_NAME = "sermonindex" #: The name of sermonindex
 SERMONINDEX_ROOT_FOLDER = "sermonindex" #: The root folder for sermonindex

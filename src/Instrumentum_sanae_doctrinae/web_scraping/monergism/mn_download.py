@@ -30,8 +30,28 @@ class MN_DownloadFromUrl(download.DownloadFromUrl):
     def __repr__(self):
         return f"{self.__class__.__name__}({str(self.__dict__)})"
         
+    
+    async def is_downloaded(self):
         
+        async with self.aiohttp_session.get(self.url,allow_redirects=True) as response:
+            content_type = response.headers.get("Content-Type", "").split(";")[0].strip()
+            self.prepare_the_output_file_path(content_type)
+            
+        #print(self.output_file_path,"----")
+        return os.path.exists(self.output_file_path)
         
+    def prepare_the_output_file_path(self,content_type):
+            
+            file_extension = self.get_file_extension_from_content_type(content_type)
+            
+            if self.separe_file_based_on_format:
+                self.output_file_path = os.path.join(self.output_folder,
+                                                        file_extension[1:].upper(),
+                                                        self.output_file_name + file_extension)
+            else:
+                self.output_file_path = os.path.join(self.output_folder,
+                                                        self.output_file_name + file_extension)
+            
     async def download(self,):
         """
        
@@ -48,7 +68,11 @@ class MN_DownloadFromUrl(download.DownloadFromUrl):
         
         async with self.aiohttp_session.get(self.url,allow_redirects=True) as response:
             request_datetime =  _my_tools.datetimeToGoogleFormat(datetime.datetime.now())
-
+            content_type = response.headers.get("Content-Type", "").split(";")[0].strip()
+            
+            # Prepare the output file path so that the file downloaded 
+            # can be saved 
+            self.prepare_the_output_file_path(content_type)
             
             if response.status  == 404:
                 result = {"success":0,"status_code":404}
@@ -59,24 +83,16 @@ class MN_DownloadFromUrl(download.DownloadFromUrl):
                 file_size_mega_byte = math.ceil(int(response.headers.get("content-Length"))) # File size in byte (octet)
                 
             # Extract the Content-Type from headers
-            content_type = response.headers.get("Content-Type", "").split(";")[0].strip()
             
-            file_extension = self.get_file_extension_from_header(content_type)
-            
-            
-            if self.separe_file_based_on_format:
-                self.output_file_path = os.path.join(self.output_folder,
-                                                        file_extension[1:].upper(),
-                                                        self.output_file_name + file_extension)
-            else:
-                self.output_file_path = os.path.join(self.output_folder,
-                                                        self.output_file_name + file_extension)
-            
-            #print(self.output_file_path)
+            if not self.output_file_path:
+                raise ValueError(f"The parameters given are wrong. {self.__class__.__name__}({self.__dict__})")
             
             # Create file folder it does not exists 
-            if not os.path.exists(self.output_file_path):
-                os.makedirs(os.path.dirname(self.output_file_path))
+            file_folder = os.path.dirname(self.output_file_path)
+            if not os.path.exists(file_folder):
+                os.makedirs(file_folder)
+                
+            
             
             if self.is_binary_content(content_type):
                 
@@ -95,7 +111,7 @@ class MN_DownloadFromUrl(download.DownloadFromUrl):
             else:
                 content = await response.text()
                 
-                async with aiofile.open(self.output_file_path,mode = "w", encoding = "utf-8") as file:
+                async with aiofile.async_open(self.output_file_path,mode = "w", encoding = "utf-8") as file:
                     await  file.write(content)
                     
                     
@@ -128,10 +144,11 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
         log_filepath = os.path.join(root_folder,
                                     my_constants.LOGS_ROOT_FOLDER,
                                     my_constants.MONERGISM_NAME,
-                                    my_constants.DOWNLOAD_ROOT_FOLDER,
-                                    browse_by_type,
-                                    self.name,
-                                    my_constants.get_default_json_filename(0))
+                                    my_constants.ELABORATED_DATA_FOLDER,
+                                    browse_by_type, 
+                                    my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_DOWNLOAD_FOLDER, 
+                                    my_constants.get_default_json_filename(0)
+                                    )
         
         input_root_folder = os.path.join(root_folder,
                                          my_constants.METADATA_ROOT_FOLDER,
@@ -145,10 +162,9 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
         download_output_root_folder = os.path.join(root_folder,
                                          my_constants.DOWNLOAD_ROOT_FOLDER,
                                          my_constants.MONERGISM_NAME,
-                                         my_constants.DOWNLOAD_ROOT_FOLDER,
                                          browse_by_type, 
-                                         my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
-                                         self.name
+                                         self.name,
+                                         my_constants.DOWNLOAD_ROOT_FOLDER,                             
                                          )
         
         
@@ -274,8 +290,15 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
 
     def is_element_data_downloaded(self,element):
         
-        #print(element)
-        #print(element.get("data").get("name"),element.get("download_log").get("intermediate_folders"))
+        element_value =  list(element.values())[0]
         
-        return False 
+        ob = MN_DownloadFromUrl(
+            url = element_value.get("url"),
+            output_folder = element_value.get('output_folder'),
+            output_file_name = _my_tools.replace_forbiden_char_in_text(
+                _my_tools.remove_consecutive_spaces(element_value.get("link_text"))),
+            aiohttp_session= self.aiohttp_session
+        )
+         
+        return ob.is_downloaded()
     
