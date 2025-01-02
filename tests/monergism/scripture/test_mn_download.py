@@ -12,7 +12,15 @@ def test_download():
     name = "Genesis"
     ob = mn_download.MN_Download_Work(name,root_folder,browse_by_type)
     ob.update_downloaded_and_to_download()
-    asyncio.run(ob.download(4))
+    #print("Elvis")
+    async def init_and_download():
+        await ob.init_aiohttp_session()
+        #print("Elvis--")
+        await ob.download(1)
+        await ob.close_aiohttp_session()
+        
+    asyncio.run(init_and_download())
+    
 
 
 if __name__ == "__main__":

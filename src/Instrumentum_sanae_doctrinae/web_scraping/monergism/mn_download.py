@@ -2,6 +2,8 @@ import datetime
 import aiofile 
 import math 
 import pathlib 
+import aiohttp
+import asyncio 
 import os 
 from Instrumentum_sanae_doctrinae.web_scraping import download
 from Instrumentum_sanae_doctrinae.web_scraping import _my_tools,my_constants,http_connexion
@@ -9,24 +11,32 @@ from Instrumentum_sanae_doctrinae.web_scraping import _my_tools,my_constants,htt
 
 class MN_DownloadFromUrl(download.DownloadFromUrl):
     
-    def __init__(self, url, output_folder,output_file_name,aiohttp_session):
+    def __init__(self, url, output_folder,output_file_name,aiohttp_session,separe_file_based_on_format = True):
         """
         :param output_file_name: The name of the file without its extension .html or .pdf, etc
-        """
-        self.output_folder = output_folder
-        self.output_file_name = output_file_name
-        
-        super().__init__(url, "",aiohttp_session)
-        
-        
-        
-    async def download(self,separe_file_based_on_format = True):
-        """
         :param separe_file_based_on_format: If true, the pdf files are saved in the subfolder PDF, the html files 
         in the subfolder HTML, etc. If false, all the files are downloaded in the same folder not matter what 
         their format is 
         """
+        self.output_folder = output_folder
+        self.output_file_name = output_file_name
+        self.separe_file_based_on_format = separe_file_based_on_format
         
+                     
+        
+        super().__init__(url, "",aiohttp_session)
+        
+        
+    def __repr__(self):
+        return f"{self.__class__.__name__}({str(self.__dict__)})"
+        
+        
+        
+    async def download(self,):
+        """
+       
+        """
+        #print("Elvis")
         # The size of the file in Mb
         file_size_mega_byte = 0 
         
@@ -53,19 +63,28 @@ class MN_DownloadFromUrl(download.DownloadFromUrl):
             
             file_extension = self.get_file_extension_from_header(content_type)
             
-            if separe_file_based_on_format:
+            
+            if self.separe_file_based_on_format:
                 self.output_file_path = os.path.join(self.output_folder,
                                                         file_extension[1:].upper(),
                                                         self.output_file_name + file_extension)
-                                                        
+            else:
+                self.output_file_path = os.path.join(self.output_folder,
+                                                        self.output_file_name + file_extension)
+            
+            #print(self.output_file_path)
+            
+            # Create file folder it does not exists 
+            if not os.path.exists(self.output_file_path):
+                os.makedirs(os.path.dirname(self.output_file_path))
             
             if self.is_binary_content(content_type):
                 
-                async with aiofile.open(self.output_file_path,mode = "wb") as file:
+                async with aiofile.async_open(self.output_file_path,mode = "wb") as file:
                     
                     # Big file 
                     if file_size_mega_byte > file_chunck_size_MB:
-                        async for chunck in response.content.iter_chuncked(file_chunck_size_MB):
+                        async for chunck in response.content.iter_chunked(file_chunck_size_MB):
                             await file.write(chunck)
                             
                     # Small file 
@@ -123,6 +142,14 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
                                          self.name
                                          )
         
+        download_output_root_folder = os.path.join(root_folder,
+                                         my_constants.DOWNLOAD_ROOT_FOLDER,
+                                         my_constants.MONERGISM_NAME,
+                                         my_constants.DOWNLOAD_ROOT_FOLDER,
+                                         browse_by_type, 
+                                         my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
+                                         self.name
+                                         )
         
         
         input_files = self.get_input_json_files(input_root_folder)
@@ -133,6 +160,12 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
         for filepath in input_files:
             file_content = _my_tools.read_json(filepath)
             input_data[str(filepath)] = file_content
+            
+        
+        self.browse_by_type = browse_by_type
+        self.root_folder = root_folder
+        self.download_output_root_folder = download_output_root_folder
+        
         
         
         super().__init__(log_filepath = log_filepath,
@@ -141,8 +174,8 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
                          overwrite_log = overwrite_log,
                          update_log = update_log)
         
-        self.browse_by_type = browse_by_type
-        self.root_folder = root_folder
+       
+        self.aiohttp_session = None 
 
 
     def get_input_json_files(self,input_root_folder):
@@ -158,7 +191,7 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
         # List to store paths to all JSON files
         json_files = [i for i in pathlib.Path(folder_path).rglob("*.json") if i.is_file()]
 
-        #print(json_files)
+        #print("kaka",json_files,input_root_folder)
         
         for file in json_files:
             filename = file.as_posix()
@@ -191,7 +224,7 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
                 **{
                     "link_text":element.get("link_text"),
                     "url":element.get("url"),
-                    "output_folder":self.input_root_folder,
+                    "output_folder":self.download_output_root_folder,
                 } 
                 ,
                 **{"download_log":{
@@ -202,6 +235,15 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
             }
     
         #print(self.element_dict)
+        
+        
+    async def init_aiohttp_session(self):
+        if self.aiohttp_session == None:
+            self.aiohttp_session = aiohttp.ClientSession()
+            
+    async def close_aiohttp_session(self):
+        if self.aiohttp_session != None:
+            await self.aiohttp_session.close()
     
 
     async def download_element_data(self,element):
@@ -212,7 +254,19 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
 
         #print(element.get("data"))
         
-        print(element)
+        element_value =  list(element.values())[0]
+        
+        ob = MN_DownloadFromUrl(
+            url = element_value.get("url"),
+            output_folder = element_value.get('output_folder'),
+            output_file_name = _my_tools.replace_forbiden_char_in_text(
+                _my_tools.remove_consecutive_spaces(element_value.get("link_text"))),
+            aiohttp_session= self.aiohttp_session
+        )
+        #print(element_value,"\n\n")
+        result = await ob.download()
+        return result 
+        
         
         #print(element.get("data").get("name"),element.get("download_log").get("intermediate_folders"))
         
@@ -223,7 +277,5 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
         #print(element)
         #print(element.get("data").get("name"),element.get("download_log").get("intermediate_folders"))
         
-        
         return False 
-        
-
+    
