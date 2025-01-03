@@ -363,7 +363,8 @@ class ParallelHttpConnexionWithLogManagement():
         Open the log file and update to download and downloaded informations 
         """
         await self.update_downloaded_and_to_download()
-        await _my_tools.async_write_json(self.log_filepath,self.create_default_log_file_content())
+        
+        await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
         
                 
         
@@ -398,10 +399,13 @@ class ParallelHttpConnexionWithLogManagement():
         to_download = {}
 
         element_dict = {**self.log_file_content["to_download"],
-                     ** self.log_file_content["downloaded"]}
+                     ** self.log_file_content["downloaded"],
+                     ** self.log_file_content["not_found_404"]}
 
         for key in element_dict:
-            if await self.is_element_data_downloaded(element_dict[key]):
+            is_downloaded = await self.is_element_data_downloaded(element_dict[key])
+            #print(key,is_downloaded)
+            if is_downloaded:
                 #print(key,True)
                 downloaded[key] = element_dict[key]
             else:

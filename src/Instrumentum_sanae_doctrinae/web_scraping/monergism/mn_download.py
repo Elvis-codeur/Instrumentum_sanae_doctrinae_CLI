@@ -4,6 +4,8 @@ import math
 import pathlib 
 import aiohttp
 import asyncio 
+import traceback 
+from charset_normalizer import detect as detect_encoding
 import os 
 from Instrumentum_sanae_doctrinae.web_scraping import download
 from Instrumentum_sanae_doctrinae.web_scraping import _my_tools,my_constants,http_connexion
@@ -33,12 +35,26 @@ class MN_DownloadFromUrl(download.DownloadFromUrl):
     
     async def is_downloaded(self):
         
+        # Check if there is a file with the same name as the name given to the object
+        
+        files = pathlib.Path(self.output_folder).rglob("*")
+        files = [file for file in files if file.is_file()]
+        
+        for file in files:
+            file_basename = os.path.basename(file)
+            if file_basename.startswith(self.output_file_name):
+                #print(file_basename,self.output_file_name)
+                return True 
+        
+        return False 
+    
+        """
         async with self.aiohttp_session.get(self.url,allow_redirects=True) as response:
             content_type = response.headers.get("Content-Type", "").split(";")[0].strip()
             self.prepare_the_output_file_path(content_type)
-            
+        """ 
         #print(self.output_file_path,"----")
-        return os.path.exists(self.output_file_path)
+        #return os.path.exists(self.output_file_path)
         
     def prepare_the_output_file_path(self,content_type):
             
@@ -51,8 +67,16 @@ class MN_DownloadFromUrl(download.DownloadFromUrl):
             else:
                 self.output_file_path = os.path.join(self.output_folder,
                                                         self.output_file_name + file_extension)
+    
+    async def download(self):
+        try:
+            result = await self.download_internal_version()
+            return result
+        except Exception as e:
+            result = {"success":0,"error":"" .join(traceback.format_exception(e))}
+            return result 
             
-    async def download(self,):
+    async def download_internal_version(self):
         """
        
         """
@@ -64,10 +88,10 @@ class MN_DownloadFromUrl(download.DownloadFromUrl):
         file_chunck_size_MB = 4*1024*1024 #Mega Byte # 
         
         result = {}
-        request_datetime = None 
+        download_begin_time = None 
         
         async with self.aiohttp_session.get(self.url,allow_redirects=True) as response:
-            request_datetime =  _my_tools.datetimeToGoogleFormat(datetime.datetime.now())
+            download_begin_time =  _my_tools.datetimeToGoogleFormat(datetime.datetime.now())
             content_type = response.headers.get("Content-Type", "").split(";")[0].strip()
             
             # Prepare the output file path so that the file downloaded 
@@ -109,12 +133,30 @@ class MN_DownloadFromUrl(download.DownloadFromUrl):
                         await file.write(content)
                 
             else:
-                content = await response.text()
                 
-                async with aiofile.async_open(self.output_file_path,mode = "w", encoding = "utf-8") as file:
-                    await  file.write(content)
+                # Read body as binary       
+                content = await response.read()
+                
+                try:
+                    content = content.decode(encoding = "utf-8")
+                except:
+                    pass 
+                
+                
+                if type(content) == str:
+                    async with aiofile.async_open(self.output_file_path,mode = "w", encoding = "utf-8") as file:
+                        # Decode the body with the enconding 
+                        await  file.write(content)
+                elif type(content) == bytes:
+                    async with aiofile.async_open(self.output_file_path,mode = "wb") as file:
+                        await  file.write(content)
                     
+               
+                
+                
                     
+            download_end_time =  _my_tools.datetimeToGoogleFormat(datetime.datetime.now())
+            
             result = {
                 "success":1,
                 "status_code":response.status,
@@ -122,7 +164,8 @@ class MN_DownloadFromUrl(download.DownloadFromUrl):
                     "version": "0.0.1",
                     "url": self.url,
                     "filepath": self.output_file_path,
-                    "request_datetime":request_datetime,
+                    "download_begin_time":download_begin_time,
+                    "download_end_time":download_end_time,
                 **_my_tools.get_important_information_from_request_response(response)
             
             }}
@@ -234,9 +277,7 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
        
         
         for element in element_list:        
-            self.element_dict[element.get("url")] =  {element.get("url"):None}
-            
-            self.element_dict[element.get("url")][element.get("url")] = {
+            self.element_dict[element.get("url")] = {
                 **{
                     "link_text":element.get("link_text"),
                     "url":element.get("url"),
@@ -270,35 +311,115 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
 
         #print(element.get("data"))
         
-        element_value =  list(element.values())[0]
-        
         ob = MN_DownloadFromUrl(
-            url = element_value.get("url"),
-            output_folder = element_value.get('output_folder'),
+            url = element.get("url"),
+            output_folder = element.get('output_folder'),
             output_file_name = _my_tools.replace_forbiden_char_in_text(
-                _my_tools.remove_consecutive_spaces(element_value.get("link_text"))),
+                _my_tools.remove_consecutive_spaces(element.get("link_text"))),
             aiohttp_session= self.aiohttp_session
         )
         #print(element_value,"\n\n")
         result = await ob.download()
         return result 
         
-        
-        #print(element.get("data").get("name"),element.get("download_log").get("intermediate_folders"))
-        
-        
+      
 
-    def is_element_data_downloaded(self,element):
-        
-        element_value =  list(element.values())[0]
-        
+    async def is_element_data_downloaded(self,element):
+        #print(element)
         ob = MN_DownloadFromUrl(
-            url = element_value.get("url"),
-            output_folder = element_value.get('output_folder'),
+            url = element.get("url"),
+            output_folder = element.get('output_folder'),
             output_file_name = _my_tools.replace_forbiden_char_in_text(
-                _my_tools.remove_consecutive_spaces(element_value.get("link_text"))),
+                _my_tools.remove_consecutive_spaces(element.get("link_text"))),
             aiohttp_session= self.aiohttp_session
         )
-         
-        return ob.is_downloaded()
+        is_downloaded = await ob.is_downloaded()
+        
+        return is_downloaded and element.get("download_log").get("download_data") != None
     
+    
+    async def download(self,download_batch_size):
+        """
+        Download the content of the input files concurrently 
+        by a batch of size :data:`download_batch` 
+        """
+        result = []
+
+        # Update before the begining of downloads
+        await self.update_log_data()
+         
+        element_to_download = list(self.log_file_content["to_download"].values())
+        
+       
+        # Split it by size download_batch_size to download
+        #  them in parralel 
+        element_to_download_splitted = _my_tools.sample_list(element_to_download,
+                                                      download_batch_size)
+
+        
+        # This is used to show a progress bar 
+        for download_batch in element_to_download_splitted:
+            tasks = [self.download_element_data(element) for element in download_batch]
+            result_list = await asyncio.gather(*tasks)
+            
+            for result,element in zip(result_list,download_batch):
+                succes = result.get("success")
+                status_code = result.get("status_code")
+                url = element.get("url")
+                
+                element_for_log =  element.copy()
+                
+                if succes:
+                    # Update the download log informations 
+                
+                    #print(element,element_for_log["download_log"],result.get("download_data"),"\n\n\n")
+                    
+                    element_for_log["download_log"]["download_data"] = result.get("download_data")
+                    
+                    self.log_file_content["downloaded"][url] = element_for_log
+                    
+                    # Delete the element from the to download list 
+                    if url in self.log_file_content["to_download"]:
+                        del self.log_file_content["to_download"][url]
+                    
+                    await self.update_log_data()
+                    
+                else:
+                    
+                    # If the error is caused by a 404 error
+                    if status_code == 404:
+                        self.log_file_content["not_found_404"][url] = element_for_log
+
+                        if url in self.log_file_content["to_download"]:
+                            del self.log_file_content["to_download"][url]
+                    else:
+                        element_for_log["download_log"]["error_data"] = result.get("error")
+                        self.log_file_content["to_download"][url] = element_for_log
+                        # Delete the element from the to download list 
+                        
+                    
+                        
+           
+            await self.update_log_data()
+            
+               
+                
+      
+        
+    async def update_to_download_list(self):
+        # A list of the url of of the link object which have been already downloaded 
+        downloaded_link_url_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
+        to_downlaod_link_url_list = [i for i in self.log_file_content.get("to_download")] if self.log_file_content.get("to_download") else []
+
+        # We take "element_list" variable because it contains the link of the author, scripture or topic
+        
+        for url in self.element_dict:
+            if url not in downloaded_link_url_list: # If it is not already downloaded 
+                if url not in to_downlaod_link_url_list: # It is not in the link prepared to for download. 
+                    print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",url,element_name)
+                    
+                    self.log_file_content["to_download"][url] = self.element_dict[url]
+                else: # If the element is already in the "to_download" list, there is no need to add it 
+                    pass 
+            else: # If the link is already downlaed. There is no need of modification of anything 
+                pass 

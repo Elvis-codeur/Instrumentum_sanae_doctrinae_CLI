@@ -15,13 +15,11 @@ def test_download():
     async def init_and_download():
         await ob.init_aiohttp_session()
         await ob.init_log_data()
-        await ob.download(1)
-        await ob.update_downloaded_and_to_download()
-        await ob.update_log_data()
+        await ob.download(10)
+        #await ob.update_downloaded_and_to_download()
+        #await ob.update_log_data()
         await ob.close_aiohttp_session()
 
-        
-        
         
     asyncio.run(init_and_download())
     

@@ -260,23 +260,21 @@ def get_important_information_from_request_response(request_response):
                         ]
         
 
-    cookies_list = [
-                        {
-                            'name': cookie.name,
-                            'value': cookie.value,
-                            'domain': cookie.domain,
-                            'path': cookie.path,
-                            'secure': cookie.secure,
-                            'expires': cookie.expires,
-                        }
-                        for cookie in request_response.cookies
-                    ]
+    cookies = []
+    for key, morsel in request_response.cookies.items():
+        cookie = {
+            "name": key,
+            "value": morsel.value,
+            "domain": morsel["domain"],
+            "path": morsel["path"],
+            "expires": morsel["expires"]
+        }
     
 
     result = {
         "request_header":dict(request_response.headers),
             "request_status_code": request_response.status,
-            "request_cookies":cookies_list,
+            "request_cookies":cookies,
             "request_history":request_history,
     }
     return result
