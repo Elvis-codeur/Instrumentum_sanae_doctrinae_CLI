@@ -341,6 +341,7 @@ class ParallelHttpConnexionWithLogManagement():
 
 
         self.log_file_content = {}
+        #self.init_log_data()
 
                         
                 
@@ -352,10 +353,13 @@ class ParallelHttpConnexionWithLogManagement():
             self.log_file_content = self.create_default_log_file_content()
             _my_tools.write_json(self.log_filepath,self.log_file_content)
         else:
+            # Create the log file if it does not exists 
             if not os.path.exists(self.log_filepath):
                 _my_tools.write_json(self.log_filepath,self.create_default_log_file_content())
             else:
+                # Create the log dict 
                 self.log_file_content = self.create_default_log_file_content()
+                # Update it in with based on things downloaded or not 
                 await self.update_to_download_list()   
         
     async def update_log_data(self):
@@ -409,9 +413,9 @@ class ParallelHttpConnexionWithLogManagement():
                 #print(key,True)
                 downloaded[key] = element_dict[key]
             else:
+                
                 #print(key,False)
                 to_download[key] = element_dict[key]
-        
         
         self.log_file_content["to_download"] = to_download
         self.log_file_content["downloaded"] = downloaded
@@ -456,8 +460,13 @@ class ParallelHttpConnexionWithLogManagement():
         """
         result = []
 
+        # Init the log informations 
+        await self.init_log_data() 
+        
+        
         # Update before the begining of downloads
         await self.update_downloaded_and_to_download() 
+        
          
         element_to_download = list(self.log_file_content["to_download"].values())
         

@@ -189,7 +189,8 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
                                     my_constants.MONERGISM_NAME,
                                     my_constants.ELABORATED_DATA_FOLDER,
                                     browse_by_type, 
-                                    my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_DOWNLOAD_FOLDER, 
+                                    my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_DOWNLOAD_FOLDER,
+                                    self.name,
                                     my_constants.get_default_json_filename(0)
                                     )
         
@@ -335,8 +336,10 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
         )
         is_downloaded = await ob.is_downloaded()
         
-        return is_downloaded and element.get("download_log").get("download_data") != None
-    
+        result =  is_downloaded and element.get("download_log").get("download_data") != None
+        #print(result,element,"\n\n\n")
+        return result 
+        
     
     async def download(self,download_batch_size):
         """
@@ -345,6 +348,9 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
         """
         result = []
 
+        # Init the log informations 
+        await self.init_log_data()
+        
         # Update before the begining of downloads
         await self.update_log_data()
          
@@ -391,21 +397,15 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
                         self.log_file_content["not_found_404"][url] = element_for_log
 
                         if url in self.log_file_content["to_download"]:
+                            #print(url,404,"\n\n\n")
                             del self.log_file_content["to_download"][url]
                     else:
                         element_for_log["download_log"]["error_data"] = result.get("error")
                         self.log_file_content["to_download"][url] = element_for_log
                         # Delete the element from the to download list 
                         
-                    
-                        
-           
             await self.update_log_data()
             
-               
-                
-      
-        
     async def update_to_download_list(self):
         # A list of the url of of the link object which have been already downloaded 
         downloaded_link_url_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
@@ -416,7 +416,7 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
         for url in self.element_dict:
             if url not in downloaded_link_url_list: # If it is not already downloaded 
                 if url not in to_downlaod_link_url_list: # It is not in the link prepared to for download. 
-                    print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",url,element_name)
+                    #print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",url,element_name)
                     
                     self.log_file_content["to_download"][url] = self.element_dict[url]
                 else: # If the element is already in the "to_download" list, there is no need to add it 
