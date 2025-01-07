@@ -366,13 +366,19 @@ class ParallelHttpConnexionWithLogManagement():
         """
         Open the log file and update to download and downloaded informations 
         """
-        await self.update_downloaded_and_to_download()
+        await self.update_downloaded_and_to_download(add_not_found_404_elements=False)
         
         await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
         
                 
         
     async def update_to_download_list(self):
+        """
+        This function take the element in the self.element_dict and take care that if there 
+        is an element in the self.element_dict that is not downloaded and is not in the yet in 
+        the to_download list. That happen if after the last scraping, new elements have been scrapped 
+        and not yet downloaded
+        """
         # A list of the url of of the link object which have been already downloaded 
         downloaded_link_url_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
         to_downlaod_link_url_list = [i for i in self.log_file_content.get("to_download")] if self.log_file_content.get("to_download") else []
@@ -391,20 +397,28 @@ class ParallelHttpConnexionWithLogManagement():
                     pass 
 
 
-    async def update_downloaded_and_to_download(self):
+    async def update_downloaded_and_to_download(self,add_not_found_404_elements):
         """
         This function verify if the data of the links in "downloaded" list are truly downloaded. 
         If not this link is put back in the "to_download" list. 
         If a link data is downloaded but is in to_download list, it is put in the downloaded list
+        
+        :param add_not_found_404_elements: If true, the elements in the not_found_404 list are
+        added to the download list so that a new download attempt can be made for each one of them. 
         """
 
         # Remove from link_list the link whoes data are already downloaded 
         downloaded = {}
         to_download = {}
-
-        element_dict = {**self.log_file_content["to_download"],
-                     ** self.log_file_content["downloaded"],
-                     ** self.log_file_content["not_found_404"]}
+        
+        if add_not_found_404_elements:
+            element_dict = {**self.log_file_content["to_download"],
+                        ** self.log_file_content["downloaded"],
+                        ** self.log_file_content["not_found_404"]}
+        else:
+            element_dict = {**self.log_file_content["to_download"],
+                        ** self.log_file_content["downloaded"]}
+            
 
         for key in element_dict:
             is_downloaded = await self.is_element_data_downloaded(element_dict[key])
