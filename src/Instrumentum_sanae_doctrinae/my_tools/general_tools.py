@@ -4,10 +4,7 @@ import random
 import string
 import json 
 import aiofiles
-import requests
-import bs4
 
-from . import my_constants
 
 def datetimeToGoogleFormat(date:datetime.datetime):
     """
@@ -297,7 +294,3 @@ def process_path_according_to_cwd(folder_path):
     return result
 
 
-def get_bs4soup_from_url(url):
-    response = requests.get(url=url,timeout=my_constants.HTTP_REQUEST_TIMEOUT)
-
-    return bs4.BeautifulSoup(response.text,features="lxml")

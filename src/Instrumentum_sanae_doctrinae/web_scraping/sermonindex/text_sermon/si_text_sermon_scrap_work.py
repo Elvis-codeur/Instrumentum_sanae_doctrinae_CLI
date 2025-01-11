@@ -7,9 +7,11 @@ import json
 import os
 import pathlib
 
-from bs4 import BeautifulSoup
+
 import urllib
-from Instrumentum_sanae_doctrinae.web_scraping import _my_tools, http_connexion, my_constants
+from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, my_constants
+from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
+
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_metadata import SermonIndexScrapAuthorTopicScripturePage
 
 

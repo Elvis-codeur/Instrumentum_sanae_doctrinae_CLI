@@ -7,16 +7,14 @@ import os
 import urllib
 import pathlib
 import aiohttp
-from tqdm import tqdm
 
-
-import requests
 from bs4 import BeautifulSoup
 
 
 from ..web_scraping import my_constants
 from . import my_errors
-from ..web_scraping import _my_tools
+from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
+
 
 
 class ScrapDataFromURL():
@@ -433,25 +431,7 @@ class ParallelHttpConnexionWithLogManagement():
         
         self.log_file_content["to_download"] = to_download
         self.log_file_content["downloaded"] = downloaded
-
-
-    def prepare_input_data(self,**kwargs):
-        """
-        This method take a json file content and create input data for download 
-        that are put int dict self.element_dict
-
-        """
-
-
-
-    def write_log_file(self):
-        return _my_tools.write_json(self.log_filepath,self.log_file_content)
-        
-    def is_element_data_downloaded(self,element):
-        """
-        Check if the element data was downloaded 
-        """
-            
+    
 
     def create_default_log_file_content(self):
 
@@ -498,6 +478,28 @@ class ParallelHttpConnexionWithLogManagement():
             await self.update_downloaded_and_to_download()
             break 
                
+               
+    
+    def prepare_input_data(self,**kwargs):
+        """
+        This method take a json file content and create input data for download 
+        that are put int dict self.element_dict
+
+        """
+
+    def write_log_file(self):
+        return _my_tools.write_json(self.log_filepath,self.log_file_content)
+        
+    def is_element_data_downloaded(self,element):
+        """
+        Check if the element data was downloaded 
+        """
+        
+    def prepare_log_metadata_input_files_path(self,root_folder):
+        """
+        Return the log, metatdata and input files path in a dict
+        """
+        
                 
       
         

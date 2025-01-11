@@ -2,8 +2,15 @@
 This module is meant to offer the base classes for the download of works(pdf, mp3, etc)
 """
 import os 
+import math 
+import traceback
+import aiofile 
+import datetime
+import asyncio
 
-from Instrumentum_sanae_doctrinae.web_scraping import http_connexion
+
+from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
+from Instrumentum_sanae_doctrinae.web_scraping import http_connexion 
 
 
 class DownloadFromUrl():
@@ -113,10 +120,6 @@ class DownloadFromUrl():
                 elif type(content) == bytes:
                     async with aiofile.async_open(self.output_file_path,mode = "wb") as file:
                         await  file.write(content)
-                    
-               
-                
-                
                     
             download_end_time =  _my_tools.datetimeToGoogleFormat(datetime.datetime.now())
             
@@ -237,8 +240,50 @@ class DownloadFromUrl():
         ]
 
         return content_type.lower() in binary_content_types
+    
+    
+class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
+    def __init__(self,name,root_folder,browse_by_type, overwrite_log=False, update_log=True):
+        
+        # The name of the author, topic, scripture, etc 
+        self.name = name 
+        self.browse_by_type = browse_by_type
+        self.root_folder = root_folder
+        
+        root_folder = _my_tools.process_path_according_to_cwd(root_folder)
+        
+        
+        # Get the path of log file, input file and download output folder 
+        file_path_dict = self.prepare_log_metadata_input_files_path(root_folder)
+        log_filepath = file_path_dict.get("log_filepath")
+        input_root_folder = file_path_dict.get("input_root_folder")
+        download_output_root_folder = file_path_dict.get("download_output_root_folder")
+        self.download_output_root_folder = download_output_root_folder
+        
+        
+        
+        input_files = self.get_input_json_files(input_root_folder)
+        
+        input_data = {}
+        
+        # Prepare the json files as input data 
+        for filepath in input_files:
+            file_content = _my_tools.read_json(filepath)
+            input_data[str(filepath)] = file_content
+            
+        super().__init__(log_filepath = log_filepath,
+                         input_root_folder= input_root_folder,
+                         input_data=input_data,
+                         overwrite_log = overwrite_log,
+                         update_log = update_log)
+        
+       
+        self.aiohttp_session = None 
 
-
+        
+    
+    
+    
     async def download(self,download_batch_size):
         """
         Download the content of the input files concurrently 

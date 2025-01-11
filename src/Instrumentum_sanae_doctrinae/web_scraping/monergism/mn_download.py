@@ -1,14 +1,10 @@
-import datetime 
-import aiofile 
-import math 
 import pathlib 
-import aiohttp
-import asyncio 
-import traceback 
+import aiohttp 
 from charset_normalizer import detect as detect_encoding
 import os 
 from Instrumentum_sanae_doctrinae.web_scraping import download
-from Instrumentum_sanae_doctrinae.web_scraping import _my_tools,my_constants,http_connexion
+from Instrumentum_sanae_doctrinae.web_scraping import my_constants,http_connexion
+from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
 
 
 class MN_DownloadFromUrl(download.DownloadFromUrl):
@@ -54,19 +50,19 @@ class MN_DownloadFromUrl(download.DownloadFromUrl):
                 
                                                                     
 
-class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
-    def __init__(self,name,root_folder,browse_by_type, overwrite_log=False, update_log=True):
+class MN_Download_Work(download.DownloadWork):
+    def __init__(name, root_folder, browse_by_type, overwrite_log=False, update_log=True):
+        super().__init__(root_folder, browse_by_type, overwrite_log, update_log)
         
-        # The name of the author, topic, scripture, etc 
-        self.name = name 
-        
-        root_folder = _my_tools.process_path_according_to_cwd(root_folder)
 
+
+    def prepare_log_metadata_input_files_path(self, root_folder):
+       
         log_filepath = os.path.join(root_folder,
                                     my_constants.LOGS_ROOT_FOLDER,
                                     my_constants.MONERGISM_NAME,
                                     my_constants.ELABORATED_DATA_FOLDER,
-                                    browse_by_type, 
+                                    self.browse_by_type, 
                                     my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_DOWNLOAD_FOLDER,
                                     self.name,
                                     my_constants.get_default_json_filename(0)
@@ -76,7 +72,7 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
                                          my_constants.METADATA_ROOT_FOLDER,
                                          my_constants.MONERGISM_NAME,
                                          my_constants.ELABORATED_DATA_FOLDER,
-                                         browse_by_type, 
+                                         self.browse_by_type, 
                                          my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
                                          self.name
                                          )
@@ -84,37 +80,14 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
         download_output_root_folder = os.path.join(root_folder,
                                          my_constants.DOWNLOAD_ROOT_FOLDER,
                                          my_constants.MONERGISM_NAME,
-                                         browse_by_type, 
+                                         self.browse_by_type, 
                                          self.name,
                                          my_constants.DOWNLOAD_ROOT_FOLDER,                             
                                          )
         
-        
-        input_files = self.get_input_json_files(input_root_folder)
-        
-        input_data = {}
-        
-        # Prepare the json files as input data 
-        for filepath in input_files:
-            file_content = _my_tools.read_json(filepath)
-            input_data[str(filepath)] = file_content
-            
-        
-        self.browse_by_type = browse_by_type
-        self.root_folder = root_folder
-        self.download_output_root_folder = download_output_root_folder
+        return locals()
         
         
-        
-        super().__init__(log_filepath = log_filepath,
-                         input_root_folder= input_root_folder,
-                         input_data=input_data,
-                         overwrite_log = overwrite_log,
-                         update_log = update_log)
-        
-       
-        self.aiohttp_session = None 
-
 
     def get_input_json_files(self,input_root_folder):
         """
@@ -159,13 +132,15 @@ class MN_Download_Work(http_connexion.ParallelHttpConnexionWithLogManagement):
                     "link_text":element.get("link_text"),
                     "url":element.get("url"),
                     "output_folder":self.download_output_root_folder,
-                } 
-                ,
-                **{"download_log":{
-                    "input_file_index":self.meta_informations["input_files_information"]\
+                },
+                 
+                **{"metadata": {"input_file_index":self.meta_informations["input_files_information"]\
                                                             ["input_files"].index(kwargs.get("file_path")),
-                    "intermediate_folders":kwargs.get("intermediate_folders")[2:]}
+                    "intermediate_folders":kwargs.get("intermediate_folders")[2:]
                     }
+                   },
+                
+                **{"download_log":{}}
             }
     
         #print(self.element_dict)

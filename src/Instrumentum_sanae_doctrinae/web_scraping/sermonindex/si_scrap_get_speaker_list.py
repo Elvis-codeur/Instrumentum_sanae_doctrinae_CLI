@@ -12,7 +12,7 @@ import requests
 
 from .. import scrap_metadata
 from .. import my_constants
-from .. import _my_tools
+from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
 
 
 
