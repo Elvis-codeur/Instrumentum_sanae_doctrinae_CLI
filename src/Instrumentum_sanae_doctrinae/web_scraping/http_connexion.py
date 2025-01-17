@@ -349,14 +349,14 @@ class ParallelHttpConnexionWithLogManagement():
         """
         if self.overwrite_log:
             self.log_file_content = self.create_default_log_file_content()
-            _my_tools.write_json(self.log_filepath,self.log_file_content)
+            await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
         else:
             # Create the log file if it does not exists 
             if not os.path.exists(self.log_filepath):
-                _my_tools.write_json(self.log_filepath,self.create_default_log_file_content())
+                await _my_tools.async_write_json(self.log_filepath,self.create_default_log_file_content())
             else:
                 # Create the log dict 
-                self.log_file_content = self.create_default_log_file_content()
+                self.log_file_content = await _my_tools.async_read_json(self.log_filepath)
                 # Update it in with based on things downloaded or not 
                 await self.update_to_download_list()   
         
@@ -387,7 +387,7 @@ class ParallelHttpConnexionWithLogManagement():
                 if url not in downloaded_link_url_list: # If it is not already downloaded 
                     if url not in to_downlaod_link_url_list: # It is not in the link prepared to for download. 
                         print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",url,element_name)
-                        
+                    
                         self.log_file_content["to_download"][url] = self.element_dict[url]
                     else: # If the element is already in the "to_download" list, there is no need to add it 
                         pass 

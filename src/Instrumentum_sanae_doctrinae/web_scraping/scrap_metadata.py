@@ -14,7 +14,8 @@ the list of all the authors,topics, series, etc  of a website. The metadata for 
 the html files where the information is scrapped from and the json file where the scrapped iformation 
 is stored. 
 
-See this file :ref:`Instrumentum_sanae_doctrinae.scraping` for more information about the scraping and download procedure 
+See this file :ref:`Instrumentum_sanae_doctrinae.web_scraping_documentation` for more information about the scraping and download procedure 
+
 """
 
 

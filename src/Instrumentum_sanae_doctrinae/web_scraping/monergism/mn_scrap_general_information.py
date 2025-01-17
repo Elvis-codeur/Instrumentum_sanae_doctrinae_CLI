@@ -9,9 +9,9 @@ from urllib.parse import parse_qs
 import requests 
 
 
-from Instrumentum_sanae_doctrinae.web_scraping import _my_tools, http_connexion, my_constants
+from Instrumentum_sanae_doctrinae.web_scraping import  http_connexion, my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadata
-
+from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
 
 
 class MonergismScrapAuthorTopicScriptureGeneralInformation(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage):

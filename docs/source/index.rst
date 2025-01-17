@@ -14,6 +14,9 @@ documentation for details.
 .. toctree::
    :caption: Contents:
    
-   Instrumentum_sanae_doctrinae.scraping
+   web_scraping_documentation
+   Instrumentum_sanae_doctrinae.web_scraping
    json_data_structure_documentation
+   modules
+   
 

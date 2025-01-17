@@ -1,0 +1,18 @@
+
+1. Scrap the list of authors, topics and scriptures 
+
+    Run the methods in test_monergism_scrap_list.py 
+    The method test_get_topic_list() connect to https://www.monergism.com/topics and scrap the list of topics there 
+    The method test_get_speakers_list() connect to https://www.monergism.com/authors and scrap the list of authors there 
+    The method test_get_scripture_list() connect to https://www.monergism.com/scripture and scrap the list of topics there 
+
+
+2. Scrap for each author, topic and scripture the general informations 
+
+    This general informations consist of many things but the most important is that it 
+    contain the list of the pages of the authors. For exemple CH Spurgeon has 43 pages 
+
+    Run the method test_scrap_all_scripture_general_information() in the file scripture\test_mn_scrap_scripture_general_information.py 
+    to get the general informations about every scripture. Here the information are garthered for each book in th bible 
+    
+    

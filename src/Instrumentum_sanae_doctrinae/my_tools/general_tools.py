@@ -221,7 +221,7 @@ async def async_write_file(filename,content,mode = "w",encoding="utf-8",create_p
 
 async def async_read_json(filename,encoding = "utf-8",mode = "r"):
     
-    async with open(filename,encoding=encoding,mode=mode) as f:    
+    async with aiofiles.open(filename,encoding=encoding,mode=mode) as f:    
         result = await f.read()
         return json.loads(result)
 

@@ -10,7 +10,11 @@ def test_download():
     root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     browse_by_type = "speaker"
     name = "Archibald Alexander"
-    ob = mn_download.MN_Download_Work(name,root_folder,browse_by_type)
+    ob = mn_download.MN_Download_Work(name,root_folder,browse_by_type,
+                                      overwrite_log=False,update_log=True)
+    #asyncio.run(ob.init_log_data())
+    #print(ob.log_file_content["downloaded"])
+    
     #print("Elvis")
     async def init_and_download():
         await ob.init_aiohttp_session()
@@ -19,8 +23,7 @@ def test_download():
         #await ob.update_downloaded_and_to_download()
         #await ob.update_log_data()
         await ob.close_aiohttp_session()
-
-        
+    
     asyncio.run(init_and_download())
     
 

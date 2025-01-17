@@ -7,7 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   Instrumentum_sanae_doctrinae.scraping
+   Instrumentum_sanae_doctrinae.web_scraping
 
 Module contents
 ---------------

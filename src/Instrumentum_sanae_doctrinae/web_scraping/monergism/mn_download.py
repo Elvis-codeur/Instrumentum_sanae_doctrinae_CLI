@@ -51,8 +51,8 @@ class MN_DownloadFromUrl(download.DownloadFromUrl):
                                                                     
 
 class MN_Download_Work(download.DownloadWork):
-    def __init__(name, root_folder, browse_by_type, overwrite_log=False, update_log=True):
-        super().__init__(root_folder, browse_by_type, overwrite_log, update_log)
+    def __init__(self,name, root_folder, browse_by_type, overwrite_log=False, update_log=True):
+        super().__init__(name,root_folder, browse_by_type, overwrite_log, update_log)
         
 
 
