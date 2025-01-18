@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadata
 from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
+from Instrumentum_sanae_doctrinae.web_scraping.monergism.mn_scrap_subtopic_work import MN_ScriptureSubtopicWork
 
 
 
@@ -47,37 +48,7 @@ def scrap_page_works(bs4_object):
                             }
                         ) 
     return main_links   
-        
-    
 
-
-
-class MN_ScriptureSubtopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage):
-    def __init__(self, name, root_folder, url_list, browse_by_type,intermdiate_folders = None):
-
-        super().__init__(name, root_folder, url_list, browse_by_type,
-                          information_type_root_folder = my_constants.WORK_INFORMATION_ROOT_FOLDER,
-                          intermdiate_folders = intermdiate_folders)
-    
-    async def scrap_url_pages(self):
-        """
-        Scrap the main links of the page. See this file (documentation/documentation.odt) for more info 
-        """
-
-        final_result = {}
-        
-    
-
-        for main_url in self.url_informations:
-            
-            # Take the div containing the links of the author 
-            
-            bs4_object = self.url_informations[main_url].get("bs4_object")
-            
-            final_result[main_url] = {"main_links":scrap_page_works(bs4_object)}
-
-        return final_result
-    
 
 
 class MN_ScriptureWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage):
@@ -134,15 +105,8 @@ class MN_ScriptureWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage)
                                               [self.intermdiate_folders[-1],"subtopics",url_info.get("link_text")])
                 
                 await ob.scrap_and_write(save_html_file=True)
-                    
-               
-                
-                
             
-            
-            final_result[main_url] = {
-                        "main_links":scrap_page_works(bs4_object)
-                    }
+            final_result[main_url] = scrap_page_works(bs4_object)
 
         return final_result
     
