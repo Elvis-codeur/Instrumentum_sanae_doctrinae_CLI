@@ -29,24 +29,26 @@ def scrap_page_works(bs4_object):
                 
                     span_object_class = span_object.get("class")
                     
-                    if len(span_object_class) >= 2:
-                        #print(span_object)
+                    if span_object_class:
+
+                        if len(span_object_class) >= 2:
+                            #print(span_object)
+                            
+                            anchor_object = span_object.find('a')
+                            author_em = div_element.find("em")
                         
-                        anchor_object = span_object.find('a')
-                        author_em = div_element.find("em")
-                    
-                        link_type = span_object_class[1].strip()
-                        link_href = anchor_object.get("href")
-                        link_text = anchor_object.get_text()
-                        
-                        main_links.append(
-                            {
-                                "link_type":link_type,
-                                "url":link_href,
-                                "link_text":link_text,
-                                "author":author_em.get_text().split("by")[-1].strip()
-                            }
-                        ) 
+                            link_type = span_object_class[1].strip()
+                            link_href = anchor_object.get("href")
+                            link_text = anchor_object.get_text()
+                            
+                            main_links.append(
+                                {
+                                    "link_type":link_type,
+                                    "url":link_href,
+                                    "link_text":link_text,
+                                    "author":author_em.get_text().split("by")[-1].strip()
+                                }
+                            ) 
     return main_links   
 
 
@@ -98,11 +100,16 @@ class MN_ScriptureWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage)
             
             for url_info in sub_url_topics_list:
                 #print(url_info,"\n\n\n")
-                #print(self.intermdiate_folders)
+                intermediate_folders = self.intermdiate_folders[
+                self.intermdiate_folders.index(my_constants.WORK_INFORMATION_ROOT_FOLDER) + 1:]
+                
+                #print(self.intermdiate_folders,"primary",intermediate_folders)
+                
+                                
                 ob = MN_ScriptureSubtopicWork(name = self.name,root_folder=self.root_folder,
                                               url_list=[{"url":url_info.get("url")}],browse_by_type=self.browse_by_type,
                                               intermdiate_folders= 
-                                              [self.intermdiate_folders[-1],"subtopics",url_info.get("link_text")])
+                                              intermediate_folders + ["subtopics",url_info.get("link_text")])
                 
                 await ob.scrap_and_write(save_html_file=True)
             
