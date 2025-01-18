@@ -13,8 +13,10 @@ def test_scrap_all_scripture_general_information():
         browse_by_type = browse_by_type,
         overwrite_log=True,
     )
+ 
+    asyncio.run(ob.print_download_informations(True))
     #print(ob.__dict__)
-    asyncio.run(ob.download(4))
+    asyncio.run(ob.download(1))
     
 
   

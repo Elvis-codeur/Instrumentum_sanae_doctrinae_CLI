@@ -146,7 +146,7 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
         :param name: The name of the author,topic, and more 
         """
         self.name = name 
-
+        self.information_type_root_folder = information_type_root_folder
         intermdiate_folders = self.prepare_intermdiate_folders(intermdiate_folders,browse_by_type,name,information_type_root_folder)
         
         super().__init__(metadata_root_folder, log_root_folder, url_list, browse_by_type, intermdiate_folders)
@@ -221,6 +221,10 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
         # The data scrapped from each url 
         # This step can contain http connections 
         url_datascraped_list = await self.scrap_url_pages()
+        
+        if not url_datascraped_list:
+            raise RuntimeError("The method scrap_url_pages() is not defined by the class or return None")
+        
 
         if save_html_file:
             # Write the content of the html file get from the url

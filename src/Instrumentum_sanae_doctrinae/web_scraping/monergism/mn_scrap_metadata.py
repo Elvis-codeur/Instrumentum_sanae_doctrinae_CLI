@@ -32,6 +32,8 @@ class MonergismScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicScri
     def __init__(self, name,root_folder,url_list, browse_by_type,
                  information_type_root_folder,intermdiate_folders) -> None:
         
+        self.root_folder = root_folder
+        
         metadata_root_folder,log_root_folder = get_monergism_metadata_and_log_folder(root_folder)
         
         if not isinstance(url_list,list):

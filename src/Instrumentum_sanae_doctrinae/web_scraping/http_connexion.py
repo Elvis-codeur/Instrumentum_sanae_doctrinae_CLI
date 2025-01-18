@@ -53,8 +53,6 @@ class ScrapDataFromURL():
             if not isinstance(url_info,dict):
                  self.url_info_list[indice] = {"url":url_info}
                  
-            
-         
         self.browse_by_type = browse_by_type
         
         self.intermdiate_folders = intermdiate_folders
@@ -62,11 +60,6 @@ class ScrapDataFromURL():
         self.url_informations = {}
        
         
-        
-        
-        self.prepare_url_informations()
-        
-    def prepare_url_informations(self,**kwargs):
         
          # It contains the json filepath, html filepat, etc of each url  
         self.url_informations = {i.get("url"):{"json_filepath":None,"html_filepath":None,
@@ -76,6 +69,11 @@ class ScrapDataFromURL():
                                     "json_file_content":None} for i in self.url_info_list} #: A dict for each url 
 
     
+        self.prepare_url_informations()
+        
+    def prepare_url_informations(self,**kwargs):
+        
+        
         intermdiate_folders = [_my_tools.replace_forbiden_char_in_text(i) for i in self.intermdiate_folders]
     
         for indice,element in enumerate(self.url_info_list):
@@ -447,7 +445,7 @@ class ParallelHttpConnexionWithLogManagement():
         and download the data that must be downloaded from it """
 
 
-    async def download(self,download_batch_size):
+    async def download(self,download_batch_size,download_total_number = 0):
         """
         Download the content of the input files concurrently 
         by a batch of size :data:`download_batch` 
@@ -459,11 +457,16 @@ class ParallelHttpConnexionWithLogManagement():
         
         
         # Update before the begining of downloads
-        await self.update_downloaded_and_to_download() 
+        await self.update_downloaded_and_to_download(add_not_found_404_elements = True) 
         
-         
+        
+        
         element_to_download = list(self.log_file_content["to_download"].values())
         
+        if download_total_number:
+            # Take only the number have to be downloaded and set in the download_total_number variable
+            element_to_download = element_to_download[:min(download_total_number,len(element_to_download))]
+       
        
         # Split it by size download_batch_size to download
         #  them in parralel 
@@ -475,8 +478,9 @@ class ParallelHttpConnexionWithLogManagement():
         for download_batch in element_to_download_splitted:
             tasks = [self.download_element_data(element) for element in download_batch]
             result = await asyncio.gather(*tasks)
-            await self.update_downloaded_and_to_download()
-            break 
+            await self.update_downloaded_and_to_download(add_not_found_404_elements=False)
+            #break 
+            await self.print_download_informations(check_from_file=False)
                
                
     
@@ -501,7 +505,23 @@ class ParallelHttpConnexionWithLogManagement():
         """
         
                 
-      
+    async def print_download_informations(self,check_from_file = False):
+        """
+        This method show the number of the already downloaded and the number 
+        of the to downloaded and the number of not found 404 
+        :param check_from_file: If true, the class variable log_file_content is updated 
+        by runing and checking in the hard drive which is time consuming. If not, the display
+        is made from the current state the variable log_file_content. 
+        """
+        if check_from_file:
+            await self.init_log_data()
+            await self.update_downloaded_and_to_download(add_not_found_404_elements=False)
         
-
-
+        
+        #print(self.log_file_content)
+              
+        len_downloaded =  len(self.log_file_content['downloaded'])
+        len_to_download = len(self.log_file_content["to_download"])
+        len_not_found_404 = len(self.log_file_content["not_found_404"])
+        
+        print(f"downloaded = {len_downloaded} to_download = {len_to_download} not_found_404 = {len_not_found_404}")

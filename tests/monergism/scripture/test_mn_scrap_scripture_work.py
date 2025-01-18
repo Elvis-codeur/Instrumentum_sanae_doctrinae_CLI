@@ -1,10 +1,5 @@
 import asyncio
-import os 
 import sys 
-import pathlib
-
-import time
-import unittest
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -22,7 +17,12 @@ def test_scrap_all_scripture_work():
         overwrite_log=True,
     )
     #print(ob.__dict__)
-    asyncio.run(ob.download(4))
+    
+    async def run_ob():
+        await ob.print_download_informations(check_from_file=True)
+        await ob.download(1)
+    
+    asyncio.run(run_ob())
     
 
 if __name__ == "__main__":

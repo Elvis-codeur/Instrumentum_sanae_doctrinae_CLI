@@ -747,7 +747,7 @@ class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionW
                 
         return result 
         
-    def is_element_data_downloaded(self,element):
+    async def is_element_data_downloaded(self,element):
         
         intermediate_folders = self.get_element_intermidiate_folders(element)
         
