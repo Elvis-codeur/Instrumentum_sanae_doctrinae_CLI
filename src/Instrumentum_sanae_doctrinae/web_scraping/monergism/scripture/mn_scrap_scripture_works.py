@@ -9,47 +9,7 @@ from bs4 import BeautifulSoup
 from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadata
 from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
-from Instrumentum_sanae_doctrinae.web_scraping.monergism.mn_scrap_subtopic_work import MN_ScriptureSubtopicWork
-
-
-
-def scrap_page_works(bs4_object):
-    main_links = []
-    
-    for div_element in bs4_object.find_all("div"):
-        div_class = div_element.get("class")
-        
-        if div_class:
-            div_class = " ".join(div_class).strip()
-            if div_class.startswith("views-row views-row-"):
-            
-                span_object = div_element.find("span")
-                
-                if span_object:
-                
-                    span_object_class = span_object.get("class")
-                    
-                    if span_object_class:
-
-                        if len(span_object_class) >= 2:
-                            #print(span_object)
-                            
-                            anchor_object = span_object.find('a')
-                            author_em = div_element.find("em")
-                        
-                            link_type = span_object_class[1].strip()
-                            link_href = anchor_object.get("href")
-                            link_text = anchor_object.get_text()
-                            
-                            main_links.append(
-                                {
-                                    "link_type":link_type,
-                                    "url":link_href,
-                                    "link_text":link_text,
-                                    "author":author_em.get_text().split("by")[-1].strip()
-                                }
-                            ) 
-    return main_links   
+from Instrumentum_sanae_doctrinae.web_scraping.monergism.mn_scrap_subtopic_work import MN_ScriptureSubtopicWork,get_subtopics, scrap_page_works
 
 
 
@@ -78,24 +38,7 @@ class MN_ScriptureWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage)
             bs4_object = self.url_informations[main_url].get("bs4_object")
             
             
-            sub_url_topics_list = bs4_object.findAll("a")
-            
-            sub_url_topics_list = [anchor_object for anchor_object in sub_url_topics_list if anchor_object.get("href")]
-            
-            sub_url_topics_list = [
-                i for i in sub_url_topics_list  
-                if "/taxonomy/term/" in i.get("href") and i.get("href")[-1].isdigit()
-            ]
-
-            sub_url_topics_list = [
-                {
-                    "url": urllib.parse.urljoin(main_url,anchor_object.get("href")),
-                    "link_text":anchor_object.get_text().strip()
-                    
-                } for anchor_object in sub_url_topics_list 
-                               ]
-            
-            
+            sub_url_topics_list = get_subtopics(bs4_object,main_url)
             
             
             for url_info in sub_url_topics_list:
@@ -109,7 +52,7 @@ class MN_ScriptureWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage)
                 ob = MN_ScriptureSubtopicWork(name = self.name,root_folder=self.root_folder,
                                               url_list=[{"url":url_info.get("url")}],browse_by_type=self.browse_by_type,
                                               intermdiate_folders= 
-                                              intermediate_folders + ["subtopics",url_info.get("link_text")])
+                                              intermediate_folders + ["subtopics",url_info.get("name")])
                 
                 await ob.scrap_and_write(save_html_file=True)
             

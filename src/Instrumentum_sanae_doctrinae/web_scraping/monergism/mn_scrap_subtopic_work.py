@@ -56,12 +56,46 @@ def scrap_page_works(bs4_object):
                                 }
                             ) 
     return main_links   
-        
-    
 
+    
+def get_subtopics(bs4_soup,main_url):
+        
+        h3_list = [i for i in bs4_soup.find_all("h3")]
+        
+        subtopic_h3 = [h3_object for h3_object in h3_list if h3_object.get_text() == "Subtopics"]
+        
+        if not subtopic_h3:
+            return []
+        
+        subtopic_h3 = subtopic_h3[0]
+        
+        #print(subtopic_h3.parent.next)
+        
+        content = subtopic_h3.parent.find_next_sibling("div")
+        #print(content,"\n\n\n")
+        
+        result = []
+
+        if content:
+            links = content.find_all("a")
+            for i in links:
+                anchor_text = i.get_text()
+                if anchor_text:
+                    result.append(
+                        {
+                            "name":anchor_text,
+                            "url":urllib.parse.urljoin(main_url,i.get("href")),
+                        }
+                    )
+                
+        return result
+        
 
 
 class MN_ScriptureSubtopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage):
+    
+    url_already_consulted = []
+    
     def __init__(self, name, root_folder, url_list, browse_by_type,intermdiate_folders = None):
 
         super().__init__(name, root_folder, url_list, browse_by_type,
@@ -83,23 +117,7 @@ class MN_ScriptureSubtopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScript
             
             bs4_object = self.url_informations[main_url].get("bs4_object")
             
-            
-            sub_url_topics_list = bs4_object.findAll("a")
-            
-            sub_url_topics_list = [anchor_object for anchor_object in sub_url_topics_list if anchor_object.get("href")]
-            
-            sub_url_topics_list = [
-                i for i in sub_url_topics_list  
-                if "/taxonomy/term/" in i.get("href") and i.get("href")[-1].isdigit()
-            ]
-
-            sub_url_topics_list = [
-                {
-                    "url": urllib.parse.urljoin(main_url,anchor_object.get("href")),
-                    "link_text":anchor_object.get_text().strip()
-                    
-                } for anchor_object in sub_url_topics_list 
-                               ]
+            sub_url_topics_list = get_subtopics(bs4_object,main_url)
             
             for url_info in sub_url_topics_list:
                 #print(url_info,"\n\n\n")
@@ -107,15 +125,29 @@ class MN_ScriptureSubtopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScript
                 intermediate_folders = self.intermdiate_folders[
                 self.intermdiate_folders.index(my_constants.WORK_INFORMATION_ROOT_FOLDER) + 1:]
                 
-                #print(self.intermdiate_folders,intermediate_folders)
-                ob = MN_ScriptureSubtopicWork(name = self.name,root_folder=self.root_folder,
-                                              url_list=[{"url":url_info.get("url")}],browse_by_type=self.browse_by_type,
-                                              intermdiate_folders= 
-                                                intermediate_folders + ["subtopics",url_info.get("link_text")])
+                url = url_info.get("url")
                 
-                await ob.scrap_and_write(save_html_file=True)
-            
+                if url not in MN_ScriptureSubtopicWork.url_already_consulted:
+                    print(url," not consulted yet. total = ",len(MN_ScriptureSubtopicWork.url_already_consulted))
+                    
+                    f = open(os.path.join(self.root_folder,"trr.json"),"w")
+                    f.write(json.dumps(MN_ScriptureSubtopicWork.url_already_consulted))
+                    f.close()
+                    
+                    #print(self.intermdiate_folders,intermediate_folders)
+                    ob = MN_ScriptureSubtopicWork(name = self.name,root_folder=self.root_folder,
+                                                url_list=[{"url":url}],browse_by_type=self.browse_by_type,
+                                                intermdiate_folders= 
+                                                    intermediate_folders + ["subtopics",url_info.get("name")])
+                    
+                    await ob.scrap_and_write(save_html_file=True)
+                    
+                    MN_ScriptureSubtopicWork.url_already_consulted.append(url)
+                else:
+                    final_result[main_url] = scrap_page_works(bs4_object)
+
+                    return final_result
+    
             final_result[main_url] = scrap_page_works(bs4_object)
 
         return final_result
-    
