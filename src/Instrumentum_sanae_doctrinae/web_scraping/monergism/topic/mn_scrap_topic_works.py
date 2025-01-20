@@ -8,7 +8,7 @@ import urllib
 from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadata
 from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
-from Instrumentum_sanae_doctrinae.web_scraping.monergism.mn_scrap_subtopic_work import MN_ScriptureSubtopicWork
+from Instrumentum_sanae_doctrinae.web_scraping.monergism.mn_scrap_subtopic_work import MN_ScriptureSubtopicWork, get_subtopics
 
 
 def scrap_page_works(bs4_object):
@@ -72,30 +72,21 @@ class MN_ScrapTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage
             bs4_object = self.url_informations[main_url].get("bs4_object")
             
             
-            sub_url_topics_list = bs4_object.findAll("a")
-            
-            sub_url_topics_list = [anchor_object for anchor_object in sub_url_topics_list if anchor_object.get("href")]
-            
-            sub_url_topics_list = [
-                i for i in sub_url_topics_list  
-                if "/taxonomy/term/" in i.get("href") and i.get("href")[-1].isdigit()
-            ]
-
-            sub_url_topics_list = [
-                {
-                    "url": urllib.parse.urljoin(main_url,anchor_object.get("href")),
-                    "link_text":anchor_object.get_text().strip()
-                    
-                } for anchor_object in sub_url_topics_list 
-                               ]
+            sub_url_topics_list = get_subtopics(bs4_object,main_url)
+        
+            #print(main_url,sub_url_topics_list)
             
             for url_info in sub_url_topics_list:
                 #print(url_info,"\n\n\n")
                 #print(self.intermdiate_folders)
+                intermediate_folders = self.intermdiate_folders[
+                self.intermdiate_folders.index(my_constants.WORK_INFORMATION_ROOT_FOLDER) + 1:]
+                
+                
                 ob = MN_ScriptureSubtopicWork(name = self.name,root_folder=self.root_folder,
                                               url_list=[{"url":url_info.get("url")}],browse_by_type=self.browse_by_type,
                                               intermdiate_folders= 
-                                              [self.intermdiate_folders[-1],"subtopics",url_info.get("link_text")])
+                                              intermediate_folders + ["subtopics",url_info.get("name")])
                 
                 await ob.scrap_and_write(save_html_file=True)
                     
@@ -104,7 +95,7 @@ class MN_ScrapTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage
         return final_result
     
     
-    def is_data_downloaded(self):
+    async def is_data_downloaded(self):
 
         for url in self.url_informations:
             file_path = self.url_informations[url].get("json_filepath")
@@ -112,7 +103,7 @@ class MN_ScrapTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage
             if not os.path.exists(file_path):
                 return False
             
-            file_content = _my_tools.read_file(file_path)
+            file_content = await _my_tools.async_read_file(file_path)
             
             if not file_content:
                 return False 
@@ -258,7 +249,7 @@ class MN_ScrapTopicWork_All(http_connexion.ParallelHttpConnexionWithLogManagemen
             )
             await ob.scrap_and_write()
 
-    def is_element_data_downloaded(self,element_list):
+    async def is_element_data_downloaded(self,element_list):
         
         for element in element_list:
             
@@ -269,7 +260,7 @@ class MN_ScrapTopicWork_All(http_connexion.ParallelHttpConnexionWithLogManagemen
                 url_list = [{'url':i} for i in element.get("data").get("pages")],
                 intermdiate_folders = element.get("download_log").get("intermediate_folders")
             )
-            if not ob.is_data_downloaded():
+            if not await ob.is_data_downloaded():
                 return False 
             
         return True 

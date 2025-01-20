@@ -24,7 +24,7 @@ def test_scrap_all_topic_work():
         overwrite_log=True,
     )
     #print(ob.__dict__)
-    asyncio.run(ob.download(2))
+    asyncio.run(ob.download(1))
     
     
 if __name__ == "__main__":

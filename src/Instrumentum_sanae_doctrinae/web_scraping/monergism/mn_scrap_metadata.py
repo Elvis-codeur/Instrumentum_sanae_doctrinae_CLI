@@ -55,7 +55,18 @@ class MonergismScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicScri
             return intermdiate_folders
 
        
-    
+    def next_page(self,main_url):
+        anchor_list = self.url_informations[main_url].get("bs4_object").findAll("a")
+        anchor_list = [anchor_element 
+                       for anchor_element in anchor_list 
+                       if anchor_element.get_text().strip() == "next ›"]
+        
+        if anchor_list:
+            return anchor_list[0]
+        else:
+            return None
+        
+        
 
 
     

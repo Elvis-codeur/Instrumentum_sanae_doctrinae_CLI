@@ -82,7 +82,7 @@ class MN_ScrapAuthorWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePag
 
         return final_result
     
-    def is_data_downloaded(self):
+    async def is_data_downloaded(self):
 
         for url in self.url_informations:
             file_path = self.url_informations[url].get("json_filepath")
@@ -92,7 +92,7 @@ class MN_ScrapAuthorWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePag
             
             
             
-            file_content = _my_tools.read_file(file_path)
+            file_content = await _my_tools.async_read_file(file_path)
             
             if not file_content:
                 return False 
@@ -240,7 +240,7 @@ class MN_ScrapAuthorWork_All(http_connexion.ParallelHttpConnexionWithLogManageme
 
             await ob.scrap_and_write()
 
-    def is_element_data_downloaded(self,element_list):
+    async def is_element_data_downloaded(self,element_list):
         
         for element in element_list:
             
@@ -251,7 +251,7 @@ class MN_ScrapAuthorWork_All(http_connexion.ParallelHttpConnexionWithLogManageme
                 url_list = [{'url':i} for i in element.get("data").get("pages")],
                 intermdiate_folders = element.get("download_log").get("intermediate_folders")
             )
-            if not ob.is_data_downloaded():
+            if not await ob.is_data_downloaded():
                 return False 
             
         return True 

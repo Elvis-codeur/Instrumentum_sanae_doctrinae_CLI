@@ -60,7 +60,7 @@ class MN_ScriptureWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage)
 
         return final_result
     
-    def is_data_downloaded(self):
+    async def is_data_downloaded(self):
 
         for url in self.url_informations:
             file_path = self.url_informations[url].get("json_filepath")
@@ -68,7 +68,7 @@ class MN_ScriptureWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage)
             if not os.path.exists(file_path):
                 return False
                         
-            file_content = _my_tools.read_file(file_path)
+            file_content = await _my_tools.async_read_file(file_path)
             
             if not file_content:
                 return False 

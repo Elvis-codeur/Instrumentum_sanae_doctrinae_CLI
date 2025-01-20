@@ -57,6 +57,24 @@ def scrap_page_works(bs4_object):
                             ) 
     return main_links   
 
+
+
+def get_description_text(bs4_object):
+    result = []
+    
+    div = bs4_object.find("div",class_ = "views-row views-row-1 views-row-odd views-row-first views-row-last")
+    if div:
+        div = div.find("div",class_ = "views-field views-field-description")
+        if div:
+            div = div.find("div",class_ = "field-content")
+            
+            p_list = div.find_all("p")
+            
+            for p_element in p_list:
+                result.append(p_element.get_text().strip())
+                
+    return result
+
     
 def get_subtopics(bs4_soup,main_url):
         
@@ -128,11 +146,12 @@ class MN_ScriptureSubtopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScript
                 url = url_info.get("url")
                 
                 if url not in MN_ScriptureSubtopicWork.url_already_consulted:
-                    print(url," not consulted yet. total = ",len(MN_ScriptureSubtopicWork.url_already_consulted))
                     
-                    f = open(os.path.join(self.root_folder,"trr.json"),"w")
-                    f.write(json.dumps(MN_ScriptureSubtopicWork.url_already_consulted))
-                    f.close()
+                    
+                    #print(url," not consulted yet. total = ",len(MN_ScriptureSubtopicWork.url_already_consulted))
+                    #f = open(os.path.join(self.root_folder,"trr.json"),"w")
+                    #f.write(json.dumps(MN_ScriptureSubtopicWork.url_already_consulted))
+                    #f.close()
                     
                     #print(self.intermdiate_folders,intermediate_folders)
                     ob = MN_ScriptureSubtopicWork(name = self.name,root_folder=self.root_folder,
@@ -143,11 +162,33 @@ class MN_ScriptureSubtopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScript
                     await ob.scrap_and_write(save_html_file=True)
                     
                     MN_ScriptureSubtopicWork.url_already_consulted.append(url)
+                    
+                    next_url = self.next_page(main_url)
+                    
+                    # If there is other page to download in this level 
+                    if next_url:
+                        #print(self.intermdiate_folders,intermediate_folders)
+                        ob = MN_ScriptureSubtopicWork(name = self.name,root_folder=self.root_folder,
+                                                    url_list=[{"url":next_url}],browse_by_type=self.browse_by_type,
+                                                    intermdiate_folders= 
+                                                        intermediate_folders + ["subtopics",url_info.get("name")])
+                        
+                        await ob.scrap_and_write(save_html_file=True)
+                        
+                    MN_ScriptureSubtopicWork.url_already_consulted.append(next_url)
+                    
+                        
+                    
                 else:
                     final_result[main_url] = scrap_page_works(bs4_object)
 
                     return final_result
     
-            final_result[main_url] = scrap_page_works(bs4_object)
+            final_result[main_url] = {
+                "description_text":get_description_text(bs4_object),
+                "main_links":scrap_page_works(bs4_object)
+                
+                }
 
         return final_result
+    
