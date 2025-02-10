@@ -62,7 +62,7 @@ class MonergismScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicScri
                        if anchor_element.get_text().strip() == "next ›"]
         
         if anchor_list:
-            return anchor_list[0]
+            return urllib.parse.urljoin(main_url,anchor_list[0].get("href"))
         else:
             return None
         

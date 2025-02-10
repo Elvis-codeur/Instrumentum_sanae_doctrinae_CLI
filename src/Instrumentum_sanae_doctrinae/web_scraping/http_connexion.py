@@ -112,10 +112,12 @@ class ScrapDataFromURL():
         }
         
         self.main_request_session = aiohttp.ClientSession()
-    
+        
+        
         for url_dict in self.url_info_list:
             url = url_dict.get("url")
             #timeout = aiohttp.ClientTimeout(total=15)
+            #print(url_dict)
             async with self.main_request_session.get(url=url) as response:
                 
                 
@@ -440,7 +442,7 @@ class ParallelHttpConnexionWithLogManagement():
                 "not_found_404":{}
                 }
 
-    def download_element_data(self,element):
+    async def download_element_data(self,element):
         """This element take an element ( for example the information of an author or topic) 
         and download the data that must be downloaded from it """
 

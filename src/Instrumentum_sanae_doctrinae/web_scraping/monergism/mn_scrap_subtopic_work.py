@@ -110,7 +110,7 @@ def get_subtopics(bs4_soup,main_url):
         
 
 
-class MN_ScriptureSubtopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage):
+class MN_ScrapScriptureOrTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage):
     
     url_already_consulted = []
     
@@ -127,8 +127,6 @@ class MN_ScriptureSubtopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScript
 
         final_result = {}
         
-    
-
         for main_url in self.url_informations:
             
             # Take the div containing the links of the author 
@@ -145,39 +143,39 @@ class MN_ScriptureSubtopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScript
                 
                 url = url_info.get("url")
                 
-                if url not in MN_ScriptureSubtopicWork.url_already_consulted:
+                if url not in MN_ScrapScriptureOrTopicWork.url_already_consulted:
                     
                     
                     #print(url," not consulted yet. total = ",len(MN_ScriptureSubtopicWork.url_already_consulted))
-                    #f = open(os.path.join(self.root_folder,"trr.json"),"w")
-                    #f.write(json.dumps(MN_ScriptureSubtopicWork.url_already_consulted))
-                    #f.close()
+                    
                     
                     #print(self.intermdiate_folders,intermediate_folders)
-                    ob = MN_ScriptureSubtopicWork(name = self.name,root_folder=self.root_folder,
+                    ob = MN_ScrapScriptureOrTopicWork(name = self.name,root_folder=self.root_folder,
                                                 url_list=[{"url":url}],browse_by_type=self.browse_by_type,
                                                 intermdiate_folders= 
                                                     intermediate_folders + ["subtopics",url_info.get("name")])
                     
                     await ob.scrap_and_write(save_html_file=True)
                     
-                    MN_ScriptureSubtopicWork.url_already_consulted.append(url)
+                    MN_ScrapScriptureOrTopicWork.url_already_consulted.append(url)
                     
                     next_url = self.next_page(main_url)
                     
                     # If there is other page to download in this level 
-                    if next_url:
+                    if next_url and (next_url not in MN_ScrapScriptureOrTopicWork.url_already_consulted):
                         #print(self.intermdiate_folders,intermediate_folders)
-                        ob = MN_ScriptureSubtopicWork(name = self.name,root_folder=self.root_folder,
+                        ob = MN_ScrapScriptureOrTopicWork(name = self.name,root_folder=self.root_folder,
                                                     url_list=[{"url":next_url}],browse_by_type=self.browse_by_type,
                                                     intermdiate_folders= 
                                                         intermediate_folders + ["subtopics",url_info.get("name")])
                         
                         await ob.scrap_and_write(save_html_file=True)
                         
-                    MN_ScriptureSubtopicWork.url_already_consulted.append(next_url)
+                    MN_ScrapScriptureOrTopicWork.url_already_consulted.append(next_url)
                     
-                        
+                    f = open(os.path.join(self.root_folder,"trr.json"),mode = "w",encoding = "utf-8")
+                    f.write(json.dumps(MN_ScrapScriptureOrTopicWork.url_already_consulted))
+                    f.close()
                     
                 else:
                     final_result[main_url] = scrap_page_works(bs4_object)
@@ -192,3 +190,34 @@ class MN_ScriptureSubtopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicScript
 
         return final_result
     
+    async def is_data_downloaded(self):
+
+        for url in self.url_informations:
+            file_path = self.url_informations[url].get("json_filepath")
+            
+            if not os.path.exists(file_path):
+                return False
+                        
+            file_content = await _my_tools.async_read_file(file_path)
+            
+            if not file_content:
+                return False 
+            
+            try:
+                file_content = json.loads(file_content)
+            except:
+                return False
+            
+            
+            if not file_content:
+                return False
+            
+            # Check mandatory information in the json file 
+            if not file_content.get("url"):
+                return False
+            
+
+            if not file_content.get("data"):
+                return False
+            
+        return True
