@@ -44,11 +44,7 @@ class MN_DownloadFromUrl(download.DownloadFromUrl):
         
         return False 
     
-        
-                    
-            
-                
-                                                                    
+                                               
 
 class MN_Download_Work(download.DownloadWork):
     def __init__(self,name, root_folder, browse_by_type, overwrite_log=False, update_log=True):
@@ -124,7 +120,7 @@ class MN_Download_Work(download.DownloadWork):
         :param file_path: The path of the json file 
         """
 
-        element_list = kwargs.get("file_content").get("data")
+        element_list = kwargs.get("file_content").get("data").get("main_links")
         
         for element in element_list:        
             self.element_dict[element.get("url")] = {

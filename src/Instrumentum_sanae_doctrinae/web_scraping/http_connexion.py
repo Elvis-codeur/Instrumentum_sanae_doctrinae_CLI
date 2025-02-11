@@ -83,25 +83,11 @@ class ScrapDataFromURL():
             json_filepath = os.path.join(self.metadata_root_folder,
                                           my_constants.ELABORATED_DATA_FOLDER,
                                           *intermdiate_folders,
-                                          my_constants.get_default_json_filename(compteur))
+                                          my_constants.get_default_json_filename(indice))
             
             html_filepath =  os.path.join(self.metadata_root_folder,my_constants.RAW_DATA_FOLDER,
                                           *intermdiate_folders,
-                                          my_constants.get_default_html_filename(compteur))
-            
-            # Dans le cas où il y a un fichier avec le nom ayant déja le même indice 
-            while os.path.exists(json_filepath):
-                compteur += 1
-                
-                json_filepath = os.path.join(self.metadata_root_folder,
-                                          my_constants.ELABORATED_DATA_FOLDER,
-                                          *intermdiate_folders,
-                                          my_constants.get_default_json_filename(compteur))
-            
-                html_filepath =  os.path.join(self.metadata_root_folder,my_constants.RAW_DATA_FOLDER,
-                                          *intermdiate_folders,
-                                          my_constants.get_default_html_filename(compteur))
-                
+                                          my_constants.get_default_html_filename(indice))    
                 
             self.url_informations[element.get("url")]['json_filepath'] =  json_filepath 
             
