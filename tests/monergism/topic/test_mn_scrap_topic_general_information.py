@@ -16,11 +16,11 @@ from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_general
 
     
 
-    
+root_folder = os.path.join(os.getcwd(),'test_folder')
+
     
 
 def test_scrap_all_topic_general_information():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     browse_by_type = "topic"
 
     ob = mn_scrap_general_information.MonergismScrapGeneralInformation_ALL(

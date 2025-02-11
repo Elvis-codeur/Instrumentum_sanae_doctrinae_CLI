@@ -56,11 +56,19 @@ class MonergismScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicScri
 
        
     def next_page(self,main_url):
-        anchor_list = self.url_informations[main_url].get("bs4_object").findAll("a")
+        main_div = self.url_informations[main_url].get("bs4_object").find("div",class_ = "region-inner region-content-inner")
+        
+        anchor_list = []
+
+        if main_div:
+            anchor_list = main_div.findAll("a")
+
         anchor_list = [anchor_element 
                        for anchor_element in anchor_list 
                        if anchor_element.get_text().strip() == "next ›"]
-        
+        #print(anchor_list) 
+
+
         if anchor_list:
             return urllib.parse.urljoin(main_url,anchor_list[0].get("href"))
         else:

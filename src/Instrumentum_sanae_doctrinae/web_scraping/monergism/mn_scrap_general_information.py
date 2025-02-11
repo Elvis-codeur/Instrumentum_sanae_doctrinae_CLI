@@ -404,18 +404,27 @@ class MonergismScrapTopicOrScriptureGeneralInformation(MonergismScrapAuthorTopic
     def get_recommanded_reading(self,bs4_soup):
         result = []
         
-        section = bs4_soup.find("section",
-                                class_ = "block block-views block-recommended-reading-block block-views-recommended-reading-block odd",
-                                id = "block-views-recommended-reading-block")
-        if not section:
+        recommanded_h2 = bs4_soup.find_all("h2")
+
+        recommanded_h2 = [i for i in recommanded_h2 if i.get_text().lower() ==  "recommended reading"]
+
+        if not recommanded_h2:
+            return []
+        recommanded_h2 = recommanded_h2[0]
+        
+        recomandation_div = recommanded_h2.find_next_sibling("div")
+
+        
+        if not recomandation_div:
             return []
         
-        divs = section.find("div",class_ = "view-content").find_all("div",recursive = False)
+        divs = recomandation_div.find("div",class_ = "view-content").find_all("div",recursive = False)
         
         for div in divs:
             
             #print(div,"\n\n\n")
-            
+        
+
             # The title of the book
             title = div.find("div",class_ = "views-field views-field-title")
             
@@ -611,19 +620,7 @@ class MonergismScrapRCSproulGeneralInformation(MonergismScrapAuthorTopicScriptur
                             selected_essay.append(self.anchor_object_to_dict(anchor_object))
                             
                         
-                            
-                        
-                        
-                    
-                    
-                    
-            
-            
-                       
-            
 
-    
-    
 
 
 class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionWithLogManagement):

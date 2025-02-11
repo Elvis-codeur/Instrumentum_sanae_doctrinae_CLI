@@ -135,6 +135,7 @@ class MN_ScrapScriptureOrTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicSc
             
             sub_url_topics_list = get_subtopics(bs4_object,main_url)
             
+            # Download substopics 
             for url_info in sub_url_topics_list:
                 #print(url_info,"\n\n\n")
                 
@@ -159,20 +160,6 @@ class MN_ScrapScriptureOrTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicSc
                     
                     MN_ScrapScriptureOrTopicWork.url_already_consulted.append(url)
                     
-                    next_url = self.next_page(main_url)
-                    
-                    # If there is other page to download in this level 
-                    if next_url and (next_url not in MN_ScrapScriptureOrTopicWork.url_already_consulted):
-                        #print(self.intermdiate_folders,intermediate_folders)
-                        ob = MN_ScrapScriptureOrTopicWork(name = self.name,root_folder=self.root_folder,
-                                                    url_list=[{"url":next_url}],browse_by_type=self.browse_by_type,
-                                                    intermdiate_folders= 
-                                                        intermediate_folders + ["subtopics",url_info.get("name")])
-                        
-                        await ob.scrap_and_write(save_html_file=True)
-                        
-                    MN_ScrapScriptureOrTopicWork.url_already_consulted.append(next_url)
-                    
                     f = open(os.path.join(self.root_folder,"trr.json"),mode = "w",encoding = "utf-8")
                     f.write(json.dumps(MN_ScrapScriptureOrTopicWork.url_already_consulted))
                     f.close()
@@ -181,7 +168,36 @@ class MN_ScrapScriptureOrTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicSc
                     final_result[main_url] = scrap_page_works(bs4_object)
 
                     return final_result
-    
+                
+
+            # If there is other page to download in this level 
+            # The next page 
+            next_url = self.next_page(main_url)
+
+            #print("next url found",next_url)
+
+            #print("next url ",next_url)
+            intermediate_folders = self.intermdiate_folders[
+                self.intermdiate_folders.index(my_constants.WORK_INFORMATION_ROOT_FOLDER) + 1:]
+                
+            if next_url and (next_url not in MN_ScrapScriptureOrTopicWork.url_already_consulted):
+                #print("next url to download",next_url)
+                #print(self.intermdiate_folders,intermediate_folders)
+                ob = MN_ScrapScriptureOrTopicWork(name = self.name,root_folder=self.root_folder,
+                                            url_list=[{"url":next_url}],browse_by_type=self.browse_by_type,
+                                            # It is a page next to the page level so it is the same intermediate folders path
+                                            intermdiate_folders= intermediate_folders + ["next_page"])
+                
+                
+                await ob.scrap_and_write(save_html_file=True)
+                
+                MN_ScrapScriptureOrTopicWork.url_already_consulted.append(next_url)
+
+
+                f = open(os.path.join(self.root_folder,"trr.json"),mode = "w",encoding = "utf-8")
+                f.write(json.dumps(MN_ScrapScriptureOrTopicWork.url_already_consulted))
+                f.close()
+
             final_result[main_url] = {
                 "description_text":get_description_text(bs4_object),
                 "main_links":scrap_page_works(bs4_object)

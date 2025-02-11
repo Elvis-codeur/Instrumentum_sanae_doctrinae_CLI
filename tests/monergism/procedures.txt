@@ -27,7 +27,8 @@
     This works must be downloaded to be used later to download the content of those url. 
 
     This part is time consuming because for each scripture, author or topic 
-    dozens of url request must be made. And there is dozens of topics and speakrs. For Spurgeon, there 43 request to be made 
+    dozens of url request must be made. And there is dozens of topics and speakrs. 
+    For Spurgeon, there 43 request to be made 
     
 
     Run the method test_scrap_all_scripture_work() in the file scripture\test_mn_scrap_scripture_work.py 
