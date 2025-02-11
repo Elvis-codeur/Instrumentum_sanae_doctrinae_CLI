@@ -1,15 +1,18 @@
 import asyncio
+import os
 import sys 
 
 
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_download
 
 
+root_folder = os.path.join(os.getcwd(),'test_folder')
+
+
 
 def test_download():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
-    browse_by_type = "speaker"
-    name = "Archibald Alexander"
+    browse_by_type = "scripture"
+    name = "Leviticus"
     ob = mn_download.MN_Download_Work(name,root_folder,browse_by_type,
                                       overwrite_log=False,update_log=True)
     #asyncio.run(ob.init_log_data())

@@ -1,4 +1,5 @@
 import asyncio
+import os
 import sys 
 
 import logging
@@ -6,9 +7,10 @@ logging.basicConfig(level=logging.DEBUG)
 
 from Instrumentum_sanae_doctrinae.web_scraping.monergism.scripture import mn_scrap_scripture_works
 
+root_folder = os.path.join(os.getcwd(),'test_folder')
 
 def test_scrap_all_scripture_work():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
+    
     browse_by_type = "scripture"
      
     ob = mn_scrap_scripture_works.MN_ScriptureWork_All(

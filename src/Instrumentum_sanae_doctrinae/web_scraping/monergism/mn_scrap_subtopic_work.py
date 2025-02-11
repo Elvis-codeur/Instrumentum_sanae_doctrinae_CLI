@@ -1,10 +1,11 @@
 import json
 import os 
-import pathlib
+import sys 
+
 import urllib
 import urllib.parse
 
-from bs4 import BeautifulSoup
+sys.setrecursionlimit(2000)
 
 from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadata
@@ -119,6 +120,7 @@ class MN_ScrapScriptureOrTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicSc
         super().__init__(name, root_folder, url_list, browse_by_type,
                           information_type_root_folder = my_constants.WORK_INFORMATION_ROOT_FOLDER,
                           intermdiate_folders = intermdiate_folders)
+        #print(self.url_info_list)
     
     async def scrap_url_pages(self):
         """
@@ -129,12 +131,14 @@ class MN_ScrapScriptureOrTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicSc
         
         for main_url in self.url_informations:
             
+            
             # Take the div containing the links of the author 
             
             bs4_object = self.url_informations[main_url].get("bs4_object")
             
             sub_url_topics_list = get_subtopics(bs4_object,main_url)
             
+            # Download substopics 
             for url_info in sub_url_topics_list:
                 #print(url_info,"\n\n\n")
                 
@@ -144,11 +148,8 @@ class MN_ScrapScriptureOrTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicSc
                 url = url_info.get("url")
                 
                 if url not in MN_ScrapScriptureOrTopicWork.url_already_consulted:
-                    
-                    
-                    #print(url," not consulted yet. total = ",len(MN_ScriptureSubtopicWork.url_already_consulted))
-                    
-                    
+                    MN_ScrapScriptureOrTopicWork.url_already_consulted.append(url)
+                                        
                     #print(self.intermdiate_folders,intermediate_folders)
                     ob = MN_ScrapScriptureOrTopicWork(name = self.name,root_folder=self.root_folder,
                                                 url_list=[{"url":url}],browse_by_type=self.browse_by_type,
@@ -157,31 +158,45 @@ class MN_ScrapScriptureOrTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicSc
                     
                     await ob.scrap_and_write(save_html_file=True)
                     
-                    MN_ScrapScriptureOrTopicWork.url_already_consulted.append(url)
-                    
-                    next_url = self.next_page(main_url)
-                    
-                    # If there is other page to download in this level 
-                    if next_url and (next_url not in MN_ScrapScriptureOrTopicWork.url_already_consulted):
-                        #print(self.intermdiate_folders,intermediate_folders)
-                        ob = MN_ScrapScriptureOrTopicWork(name = self.name,root_folder=self.root_folder,
-                                                    url_list=[{"url":next_url}],browse_by_type=self.browse_by_type,
-                                                    intermdiate_folders= 
-                                                        intermediate_folders + ["subtopics",url_info.get("name")])
-                        
-                        await ob.scrap_and_write(save_html_file=True)
-                        
-                    MN_ScrapScriptureOrTopicWork.url_already_consulted.append(next_url)
                     
                     f = open(os.path.join(self.root_folder,"trr.json"),mode = "w",encoding = "utf-8")
                     f.write(json.dumps(MN_ScrapScriptureOrTopicWork.url_already_consulted))
                     f.close()
                     
-                else:
-                    final_result[main_url] = scrap_page_works(bs4_object)
+                
+                
 
-                    return final_result
-    
+            # If there is other page to download in this level 
+            # The next page 
+            next_url = self.next_page(main_url)
+
+            #print("next url found",next_url)
+
+            #print("next url ",next_url)
+            intermediate_folders = self.intermdiate_folders[
+                self.intermdiate_folders.index(my_constants.WORK_INFORMATION_ROOT_FOLDER) + 1:]
+                
+            if next_url and (next_url not in MN_ScrapScriptureOrTopicWork.url_already_consulted):
+                MN_ScrapScriptureOrTopicWork.url_already_consulted.append(next_url)
+                
+                #print("next url to download",next_url)
+                #print(self.intermdiate_folders,intermediate_folders)
+                ob = MN_ScrapScriptureOrTopicWork(name = self.name,root_folder=self.root_folder,
+                                            url_list=[{"url":next_url}],browse_by_type=self.browse_by_type,
+                                            # It is a page next to the page level so it is the same intermediate folders path
+                                            intermdiate_folders= intermediate_folders)
+                
+                ob.prepare_url_informations(use_page_index_in_url=True)
+                
+                
+                await ob.scrap_and_write(save_html_file=True)
+                
+
+
+                f = open(os.path.join(self.root_folder,"trr.json"),mode = "w",encoding = "utf-8")
+                f.write(json.dumps(MN_ScrapScriptureOrTopicWork.url_already_consulted))
+                f.close()
+
             final_result[main_url] = {
                 "description_text":get_description_text(bs4_object),
                 "main_links":scrap_page_works(bs4_object)
@@ -189,6 +204,60 @@ class MN_ScrapScriptureOrTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicSc
                 }
 
         return final_result
+    
+    def prepare_url_informations(self,use_page_index_in_url = True):
+        
+        intermdiate_folders = [_my_tools.replace_forbiden_char_in_text(i) for i in self.intermdiate_folders]
+        
+        compteur = 0 
+        
+        if use_page_index_in_url:
+            for indice,element in enumerate(self.url_info_list):
+                
+                url = element.get("url")
+                
+                parsed_url = urllib.parse.urlparse(url)
+                
+                url_params = urllib.parse.parse_qs(parsed_url.query)
+                
+                page_number = url_params.get("page",[0])[0]
+                    
+                json_filepath = os.path.join(self.metadata_root_folder,
+                                            my_constants.ELABORATED_DATA_FOLDER,
+                                            *intermdiate_folders,
+                                            my_constants.get_default_json_filename(page_number))
+                
+                html_filepath =  os.path.join(self.metadata_root_folder,my_constants.RAW_DATA_FOLDER,
+                                            *intermdiate_folders,
+                                            my_constants.get_default_html_filename(page_number))    
+                    
+                self.url_informations[url]['json_filepath'] =  json_filepath 
+                
+                self.url_informations[url]['html_filepath']  = html_filepath
+                
+                # Mise à jour normal 
+                compteur += 1
+            
+        else:
+            
+            for indice,element in enumerate(self.url_info_list):
+                json_filepath = os.path.join(self.metadata_root_folder,
+                                            my_constants.ELABORATED_DATA_FOLDER,
+                                            *intermdiate_folders,
+                                            my_constants.get_default_json_filename(indice))
+                
+                html_filepath =  os.path.join(self.metadata_root_folder,my_constants.RAW_DATA_FOLDER,
+                                            *intermdiate_folders,
+                                            my_constants.get_default_html_filename(indice))    
+                    
+                self.url_informations[element.get("url")]['json_filepath'] =  json_filepath 
+                
+                self.url_informations[element.get("url")]['html_filepath']  = html_filepath
+                
+                # Mise à jour normal 
+                compteur += 1
+            
+        self.main_request_session = None
     
     async def is_data_downloaded(self):
 

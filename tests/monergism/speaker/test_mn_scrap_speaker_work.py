@@ -12,9 +12,9 @@ logging.basicConfig(level=logging.DEBUG)
 from Instrumentum_sanae_doctrinae.web_scraping.monergism.speaker import mn_scrap_speaker_works
 
 
+root_folder = os.path.join(os.getcwd(),'test_folder')
 
 def test_scrap_all_author_work():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     browse_by_type = "speaker"
      
     ob = mn_scrap_speaker_works.MN_ScrapAuthorWork_All(

@@ -24,7 +24,7 @@ class ScrapDataFromURL():
         
     """
     
-    def __init__(self,metadata_root_folder,log_root_folder,url_info_list,browse_by_type,intermdiate_folders) -> None:
+    def __init__(self,metadata_root_folder,log_root_folder,url_info_list,browse_by_type,intermdiate_folders,**kwargs) -> None:
         """
         :param metadata_root_folder: The folder where the metadata will be stored
         :param log_root_folder: The folder where the log of the download and scraping process will be stored
@@ -68,6 +68,7 @@ class ScrapDataFromURL():
                                     "is_json_file_locally_saved":False,
                                     "json_file_content":None} for i in self.url_info_list} #: A dict for each url 
 
+        
     
         self.prepare_url_informations()
         
@@ -75,18 +76,25 @@ class ScrapDataFromURL():
         
         
         intermdiate_folders = [_my_tools.replace_forbiden_char_in_text(i) for i in self.intermdiate_folders]
-    
+
+        compteur = 0 
+        
         for indice,element in enumerate(self.url_info_list):
-            #print(element)
-            self.url_informations[element.get("url")]['json_filepath'] =  os.path.join(self.metadata_root_folder,
-                                                                                my_constants.ELABORATED_DATA_FOLDER,
-                                                                                *intermdiate_folders,
-                                                                                my_constants.get_default_json_filename(indice))
+            json_filepath = os.path.join(self.metadata_root_folder,
+                                          my_constants.ELABORATED_DATA_FOLDER,
+                                          *intermdiate_folders,
+                                          my_constants.get_default_json_filename(indice))
             
-            self.url_informations[element.get("url")]['html_filepath']  = os.path.join(self.metadata_root_folder,
-                                                                                my_constants.RAW_DATA_FOLDER,
-                                                                                *intermdiate_folders,
-                                                                                my_constants.get_default_html_filename(indice))
+            html_filepath =  os.path.join(self.metadata_root_folder,my_constants.RAW_DATA_FOLDER,
+                                          *intermdiate_folders,
+                                          my_constants.get_default_html_filename(indice))    
+                
+            self.url_informations[element.get("url")]['json_filepath'] =  json_filepath 
+            
+            self.url_informations[element.get("url")]['html_filepath']  = html_filepath
+            
+            # Mise à jour normal 
+            compteur += 1
         
         self.main_request_session = None
         

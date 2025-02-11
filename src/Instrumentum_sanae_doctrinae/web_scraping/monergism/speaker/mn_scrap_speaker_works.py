@@ -78,7 +78,7 @@ class MN_ScrapAuthorWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePag
                 
                 #print(main_links,url,"\n\n")
 
-                final_result[url] = main_links
+                final_result[url] = {"main_links":main_links}
 
         return final_result
     
