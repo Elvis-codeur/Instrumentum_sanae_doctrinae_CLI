@@ -11,8 +11,8 @@ root_folder = os.path.join(os.getcwd(),'test_folder')
 
 
 def test_download():
-    browse_by_type = "scripture"
-    name = "Leviticus"
+    browse_by_type = "topic"
+    name = "Adoption"
     ob = mn_download.MN_Download_Work(name,root_folder,browse_by_type,
                                       overwrite_log=False,update_log=True)
     #asyncio.run(ob.init_log_data())
@@ -22,6 +22,7 @@ def test_download():
     async def init_and_download():
         await ob.init_aiohttp_session()
         await ob.init_log_data()
+       
         await ob.download(10)
         #await ob.update_downloaded_and_to_download()
         #await ob.update_log_data()
