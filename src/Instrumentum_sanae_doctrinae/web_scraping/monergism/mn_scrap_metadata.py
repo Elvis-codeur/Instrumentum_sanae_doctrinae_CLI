@@ -14,14 +14,7 @@ from urllib.parse import urlparse, parse_qs
 
 from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, my_constants,scrap_metadata
 from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
-
-
-
-def get_monergism_metadata_and_log_folder(root_folder):
-    metadata_root_folder = os.path.join(root_folder,my_constants.MONERGISM_METADATA_ROOT_FOLDER)
-    log_root_folder = os.path.join(root_folder,my_constants.MONERGISM_LOG_ROOT_FOLDER)
-                           
-    return metadata_root_folder,log_root_folder
+from Instrumentum_sanae_doctrinae.web_scraping.monergism.mn_tools import *
 
 
 
@@ -45,14 +38,7 @@ class MonergismScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicScri
         
         
     def prepare_intermdiate_folders(self,intermdiate_folders,browse_by_type,name,information_type_root_folder):
-        if intermdiate_folders:
-            intermdiate_folders = [browse_by_type,my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,]\
-                                 + [name,information_type_root_folder] + intermdiate_folders 
-            return intermdiate_folders
-        else:
-            intermdiate_folders = [browse_by_type,my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER
-                                   ,name,information_type_root_folder]
-            return intermdiate_folders
+        return prepare_intermdiate_folders(intermdiate_folders,browse_by_type,name,information_type_root_folder)
 
        
     def next_page(self,main_url):

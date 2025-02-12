@@ -171,6 +171,7 @@ class DownloadFromUrl():
             "application/vnd.rar": ".rar",
             "application/octet-stream": ".bin",
             "audio/mpeg": ".mp3",
+            "audio/mp3":".mp3",
             "audio/ogg": ".ogg",
             "audio/wav": ".wav",
             "audio/flac": ".flac",
@@ -180,88 +181,70 @@ class DownloadFromUrl():
             "application/vnd.ms-excel": ".xls",
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx",
             "application/msword": ".doc",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
-            "application/vnd.ms-powerpoint": ".ppt",
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation": ".pptx",
-            "application/rtf": ".rtf",
-            "application/x-shockwave-flash": ".swf",
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+            'application/vnd.ms-powerpoint': '.ppt',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation': '.pptx',
+            'application/rtf': '.rtf',
+            'application/x-shockwave-flash': '.flash',
             
-           
-            # Audio Files
-            "audio/x-mp3": "mp3",
-            "audio/x-wav": "wav",
-            "audio/x-aac": "aac",
-            "audio/x-flac": "flac",
-            "audio/x-ogg": "ogg",
-            "audio/x-midi": "midi",
-            "audio/x-ms-wma": "wma",
-            "audio/x-matroska": "mka",
-
-            # Video Files
-            "video/x-mp4": "mp4",
-            "video/x-msvideo": "avi",
-            "video/x-ms-wmv": "wmv",
-            "video/quicktime": "mov",
-            "video/x-flv": "flv",
-            "video/x-matroska": "mkv",
-            "video/x-mpeg": "mpeg",
-            "video/x-webm": "webm",
-            "video/x-ogv": "ogv",
-
-            # Image Files
-            "image/x-bmp": "bmp",
-            "image/x-tga": "tga",
-            "image/x-pcx": "pcx",
-            "image/x-icon": "ico",
-            "image/x-tiff": "tiff",
-            "image/x-webp": "webp",
-
-            # Document Files
-            "application/x-pdf": "pdf",
-            "application/x-msword": "doc",
-            "application/x-docx": "docx",
-            "application/x-excel": "xls",
-            "application/x-xlsx": "xlsx",
-            "application/x-powerpoint": "ppt",
-            "application/x-pptx": "pptx",
-            "application/x-odt": "odt",
-            "application/x-ods": "ods",
-
-            # Web Files
-            "text/x-html": "html",
-            "text/x-css": "css",
-            "application/x-javascript": "js",
-            "application/x-json": "json",
-            "application/x-xml": "xml",
-            "text/x-csv": "csv",
-
-            # Archive & Compressed Files
-            "application/x-zip-compressed": "zip",
-            "application/x-rar-compressed": "rar",
-            "application/x-tar": "tar",
-            "application/x-gzip": "gz",
-            "application/x-7z-compressed": "7z",
-
-            # Fonts
-            "application/x-font-ttf": "ttf",
-            "application/x-font-otf": "otf",
-            "application/x-font-woff": "woff",
-            "application/x-font-woff2": "woff2",
-
-            # Other
-            "application/x-msdownload": "exe",
-            "application/x-msdos-program": "dll",
-            "application/x-msdos-batch": "bat",
-            "application/x-shellscript": "sh",
-            "application/x-shockwave-flash": "flash",
-            "application/vnd.rn-realmedia": "realmedia"
+            'audio/x-mp3': '.mp3',
+            'audio/x-wav': '.wav', 
+            'audio/x-aac': '.aac',
+            'audio/x-flac': '.flac',
+            'audio/x-ogg': '.ogg',
+            'audio/x-midi': '.midi',
+            'audio/x-ms-wma': '.wma',
+            'audio/x-matroska': '.mka',
+            
+            
+            'video/x-mp4': '.mp4',
+            'video/x-msvideo': '.avi',
+            'video/x-ms-wmv': '.wmv',
+            'video/quicktime': '.mov',
+            'video/x-flv': '.flv',
+            'video/x-matroska': '.mkv',
+            'video/x-mpeg': '.mpeg',
+            'video/x-webm': '.webm',
+            'video/x-ogv': '.ogv',
+            
+            'image/x-bmp': '.bmp',
+            'image/x-tga': '.tga',
+            'image/x-pcx': '.pcx',
+            'image/x-icon': '.ico',
+            'image/x-tiff': '.tiff',
+            'image/x-webp': '.webp',
+            'application/x-pdf': '.pdf',
+            'application/x-msword': '.doc',
+            'application/x-docx': '.docx',
+            'application/x-excel': '.xls',
+            'application/x-xlsx': '.xlsx',
+            'application/x-powerpoint': '.ppt', 
+            'application/x-pptx': '.pptx',
+            'application/x-odt': '.odt', 
+            'application/x-ods': '.ods',
+            
+            'text/x-html': '.html',
+            'text/x-css': '.css', 
+            'application/x-javascript': '.js',
+            'application/x-json': '.json', 
+            'application/x-xml': '.xml', 
+            'text/x-csv': '.csv', 
+            'application/x-zip-compressed': '.zip',
+            'application/x-rar-compressed': '.rar', 
+            'application/x-tar': '.tar', 
+            'application/x-gzip': '.gz', 
+            'application/x-7z-compressed': '.7z', 
+            'application/x-font-ttf': '.ttf', 
+            'application/x-font-otf': '.otf', 
+            'application/x-font-woff': '.woff', 
+            'application/x-font-woff2': '.woff2', 
+            'application/x-msdownload': '.exe', 
+            'application/x-msdos-program': '.dll', 
+            'application/x-msdos-batch': '.bat', 
+            'application/x-shellscript': '.sh', 
+            'application/vnd.rn-realmedia': '.realmedia'
 
             }
-
-
-
-
-        
 
         # Return the corresponding file extension or a default
         return content_type_to_extension.get(content_type, ".bin")  # Default to .bin for unknown types

@@ -6,14 +6,10 @@ from Instrumentum_sanae_doctrinae.web_scraping import  http_connexion, my_consta
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadata
 from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
 
+from Instrumentum_sanae_doctrinae.web_scraping.monergism.mn_tools import *
 
 
 
-def get_monergism_metadata_and_log_folder(root_folder):
-    metadata_root_folder = os.path.join(root_folder,my_constants.MONERGISM_METADATA_ROOT_FOLDER)
-    log_root_folder = os.path.join(root_folder,my_constants.MONERGISM_LOG_ROOT_FOLDER)
-                           
-    return metadata_root_folder,log_root_folder
 
 
 class GetTopicOrAuthorOrScriptureList(scrap_metadata.GetAnyBrowseByListFromManyPages):
