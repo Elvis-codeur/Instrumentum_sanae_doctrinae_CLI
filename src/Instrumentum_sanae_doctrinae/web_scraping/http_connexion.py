@@ -299,10 +299,11 @@ class ScrapDataFromURL():
 
 
 class ParallelHttpConnexionWithLogManagement():
-    def __init__(self,log_filepath,input_data,overwrite_log = False,update_log = True,input_root_folder = ""):
+    def __init__(self,log_filepath,input_data,overwrite_log = False,input_root_folder = ""):
         """
         :param log_filepath: The path of the log file used to store and manage the downloaded, undownloaded, not found etc 
         :param input_data: A dictionnary where the keys are the file path and the value the content of the file
+        :param overwrite_log: If true, the existing log file is overwriten. If not, the older log file is read and the updates are made from it 
         :param input_root_folder: The folder from which all the json files are searched from to be used as input files 
         """
         self.log_filepath = log_filepath
@@ -389,12 +390,13 @@ class ParallelHttpConnexionWithLogManagement():
         downloaded_link_url_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
         to_downlaod_link_url_list = [i for i in self.log_file_content.get("to_download")] if self.log_file_content.get("to_download") else []
 
+        
         # We take "element_list" variable because it contains the link of the author, scripture or topic
         for element_name in self.element_dict:
             for url in self.element_dict[element_name]:
                 if url not in downloaded_link_url_list: # If it is not already downloaded 
                     if url not in to_downlaod_link_url_list: # It is not in the link prepared to for download. 
-                        print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",url,element_name)
+                        #print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",url,element_name)
                     
                         self.log_file_content["to_download"][url] = self.element_dict[url]
                     else: # If the element is already in the "to_download" list, there is no need to add it 
@@ -488,10 +490,15 @@ class ParallelHttpConnexionWithLogManagement():
         for download_batch in element_to_download_splitted:
             tasks = [self.download_element_data(element) for element in download_batch]
             result = await asyncio.gather(*tasks)
+            print(result)
             await self.update_downloaded_and_to_download(add_not_found_404_elements=False)
+            
+            
             #break 
             await self.print_download_informations(check_from_file=False)
-               
+        
+            await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
+            
                
     
     def prepare_input_data(self,**kwargs):

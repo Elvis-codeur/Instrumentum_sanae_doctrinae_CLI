@@ -142,7 +142,6 @@ class SermonIndexScrapSpeakerMainInformation_ALL(http_connexion.ParallelHttpConn
         super().__init__(log_filepath = log_filepath,
                          input_data = input_json_files_content,
                          overwrite_log = overwrite_log,
-                         update_log = update_log,
                          input_root_folder=input_root_folder)
         
         self.material_root_folder = material_root_folder

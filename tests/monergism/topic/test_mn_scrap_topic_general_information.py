@@ -26,7 +26,7 @@ def test_scrap_all_topic_general_information():
     ob = mn_scrap_general_information.MonergismScrapGeneralInformation_ALL(
         root_folder = root_folder,
         browse_by_type = browse_by_type,
-        overwrite_log=True,
+        overwrite_log=False,
     )
     #print(ob.__dict__)
     asyncio.run(ob.download(4))

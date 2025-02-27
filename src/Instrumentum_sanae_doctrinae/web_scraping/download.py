@@ -331,8 +331,7 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
         super().__init__(log_filepath = log_filepath,
                          input_root_folder= input_root_folder,
                          input_data=input_data,
-                         overwrite_log = overwrite_log,
-                         update_log = update_log)
+                         overwrite_log = overwrite_log)
         
        
         self.aiohttp_session = None 

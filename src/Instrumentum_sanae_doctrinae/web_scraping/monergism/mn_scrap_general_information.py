@@ -624,7 +624,7 @@ class MonergismScrapRCSproulGeneralInformation(MonergismScrapAuthorTopicScriptur
 
 
 class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionWithLogManagement):
-    def __init__(self,root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
+    def __init__(self,root_folder,browse_by_type, overwrite_log=False,intermdiate_folders=None):
 
         root_folder = _my_tools.process_path_according_to_cwd(root_folder)
 
@@ -656,7 +656,6 @@ class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionW
         super().__init__(log_filepath = log_filepath,
                          input_data=input_json_files_content,
                          overwrite_log = overwrite_log,
-                         update_log = update_log,
                          input_root_folder=input_root_folder)
         
         self.browse_by_type = browse_by_type
@@ -719,6 +718,7 @@ class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionW
                 )
             await ob.scrap_and_write()
             
+            
         elif self.browse_by_type == my_constants.TOPIC_NAME or \
                 self.browse_by_type == my_constants.SCRIPTURE_NAME:
             ob = MonergismScrapTopicOrScriptureGeneralInformation(
@@ -777,6 +777,36 @@ class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionW
             
             
             return ob.is_data_downloaded()
+        
+        
+        
+    async def update_to_download_list(self):
+        """
+        This function take the element in the self.element_dict and take care that if there 
+        is an element in the self.element_dict that is not downloaded and is not in the yet in 
+        the to_download list. That happen if after the last scraping, new elements have been scrapped 
+        and not yet downloaded
+        """
+        # A list of the url of of the link object which have been already downloaded 
+        downloaded_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
+        to_downlaod_list = [i for i in self.log_file_content.get("to_download")] if self.log_file_content.get("to_download") else []
+
+        
+        # We take "element_list" variable because it contains the link of the author, scripture or topic
+        for element_name in self.element_dict:
+            if element_name not in downloaded_list: # If it is not already downloaded 
+                if element_name not in to_downlaod_list: # It is not in the link prepared to for download. 
+                    #print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",url,element_name)
+                    print(element_name)
+                    self.log_file_content["to_download"][element_name] = self.element_dict[element_name]
+                else: # If the element is already in the "to_download" list, there is no need to add it 
+                    pass 
+            else: # If the link is already downlaed. There is no need of modification of anything 
+                pass 
+               
+
+
+
 
 
 

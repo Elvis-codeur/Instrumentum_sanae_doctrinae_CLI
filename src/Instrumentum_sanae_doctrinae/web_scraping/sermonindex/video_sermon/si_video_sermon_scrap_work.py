@@ -172,8 +172,7 @@ class SI_ScrapVideoSermonWork_ALL(http_connexion.ParallelHttpConnexionWithLogMan
         super().__init__(log_filepath = log_filepath,
                          input_root_folder = input_root_folder,
                          input_data=input_data,
-                         overwrite_log = overwrite_log,
-                         update_log = update_log)
+                         overwrite_log = overwrite_log)
         
         self.material_root_folder = material_root_folder
         self.browse_by_type = browse_by_type
