@@ -40,8 +40,9 @@ def sermon_index_group():
 
 
 # Add command for monergism
-monergism_group.add_command(scrap_list_command,name="scrap_list")
-monergism_group.add_command(scrap_general_information_command,name="scrap_general_information")
+monergism_group.add_command(monergism_scrap_list_command,name="scrap_list")
+monergism_group.add_command(monergism_scrap_general_information_command,name="scrap_general_information")
+monergism_group.add_command(monergism_scrap_work_command,name="scrap_work")
 
 
 if __name__ == "__main__":

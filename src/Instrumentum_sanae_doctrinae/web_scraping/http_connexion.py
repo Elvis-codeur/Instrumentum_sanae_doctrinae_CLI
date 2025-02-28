@@ -111,13 +111,6 @@ class ScrapDataFromURL():
         Connect to an html page whose url has been given 
         """
 
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Connection": "close",
-        }
         
         self.main_request_session = aiohttp.ClientSession()
         
@@ -454,6 +447,7 @@ class ParallelHttpConnexionWithLogManagement():
         to_download = {}
         
         for download_result in download_result_list:
+            print(download_result)
             if download_result.get("success"):
                 # Add the downloaded element to the downloaded list
                 self.log_file_content["downloaded"][download_result.get("element").get("name")] = download_result.get("element")
@@ -511,11 +505,9 @@ class ParallelHttpConnexionWithLogManagement():
         for download_batch in element_to_download_splitted:
             tasks = [self.download_element_data(element) for element in download_batch]
             result = await asyncio.gather(*tasks)
-            #print(result)
+           
             await self.update_downloaded_and_to_download_from_download_result(result)
-            
-            
-            #break 
+           
             await self.print_download_informations(check_from_file=False)
         
             await _my_tools.async_write_json(self.log_filepath,self.log_file_content)

@@ -9,7 +9,7 @@ import unittest
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-from Instrumentum_sanae_doctrinae.web_scraping.monergism.speaker import mn_scrap_speaker_works
+from Instrumentum_sanae_doctrinae.web_scraping.monergism.mn_scrap_work_base import MN_ScrapSpeakerTopicScriptureWork_All
 
 
 root_folder = os.path.join(os.getcwd(),'test_folder')
@@ -17,13 +17,15 @@ root_folder = os.path.join(os.getcwd(),'test_folder')
 def test_scrap_all_author_work():
     browse_by_type = "speaker"
      
-    ob = mn_scrap_speaker_works.MN_ScrapAuthorWork_All(
+    ob = MN_ScrapSpeakerTopicScriptureWork_All(
         root_folder=root_folder,
         browse_by_type=browse_by_type,
-        overwrite_log=True,
+        overwrite_log=False,
     )
+    print(ob.element_dict.keys())
+    
     #print(ob.__dict__)
-    asyncio.run(ob.download(4))
+    #asyncio.run(ob.download(4))
 
     
     
