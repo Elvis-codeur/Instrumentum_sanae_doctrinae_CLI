@@ -405,7 +405,7 @@ class ParallelHttpConnexionWithLogManagement():
                     pass 
 
 
-    async def update_downloaded_and_to_download(self,add_not_found_404_elements):
+    async def update_downloaded_and_to_download_from_drive(self,add_not_found_404_elements):
         """
         This function verify if the data of the links in "downloaded" list are truly downloaded. 
         If not this link is put back in the "to_download" list. 
@@ -442,6 +442,27 @@ class ParallelHttpConnexionWithLogManagement():
         self.log_file_content["to_download"] = to_download
         self.log_file_content["downloaded"] = downloaded
     
+    
+    async def update_downloaded_and_to_download_from_download_result(self,download_result_list):
+        """
+        This method take the result of downloads and update the downloaded and to download 
+        dict of the log file content 
+        """
+
+        # Remove from link_list the link whoes data are already downloaded 
+        downloaded = {}
+        to_download = {}
+        
+        for download_result in download_result_list:
+            if download_result.get("success"):
+                # Add the downloaded element to the downloaded list
+                self.log_file_content["downloaded"][download_result.get("element").get("name")] = download_result.get("element")
+                
+                # Delete it from the to_download list 
+                del self.log_file_content["to_download"][download_result.get("element").get("name")]
+                
+    
+    
 
     def create_default_log_file_content(self):
 
@@ -469,7 +490,7 @@ class ParallelHttpConnexionWithLogManagement():
         
         
         # Update before the begining of downloads
-        await self.update_downloaded_and_to_download(add_not_found_404_elements = True) 
+        await self.update_downloaded_and_to_download_from_drive(add_not_found_404_elements = True) 
         
         
         
@@ -490,8 +511,8 @@ class ParallelHttpConnexionWithLogManagement():
         for download_batch in element_to_download_splitted:
             tasks = [self.download_element_data(element) for element in download_batch]
             result = await asyncio.gather(*tasks)
-            print(result)
-            await self.update_downloaded_and_to_download(add_not_found_404_elements=False)
+            #print(result)
+            await self.update_downloaded_and_to_download_from_download_result(result)
             
             
             #break 
@@ -532,7 +553,7 @@ class ParallelHttpConnexionWithLogManagement():
         """
         if check_from_file:
             await self.init_log_data()
-            await self.update_downloaded_and_to_download(add_not_found_404_elements=False)
+            await self.update_downloaded_and_to_download_from_drive(add_not_found_404_elements=False)
         
         
         #print(self.log_file_content)

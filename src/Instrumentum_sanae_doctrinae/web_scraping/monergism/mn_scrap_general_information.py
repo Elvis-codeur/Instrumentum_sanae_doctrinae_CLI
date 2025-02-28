@@ -706,28 +706,39 @@ class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionW
         #print("\n",element.get("name"))
         
         intermediate_folders = self.get_element_intermidiate_folders(element)
+        result = {}
         
-        #print(intermediate_folders)
-        
-        if self.browse_by_type == my_constants.SPEAKER_NAME:
-            ob = MonergismScrapAuthorGeneralInformation(
-                name = element.get("name"),
-                root_folder = self.root_folder,
-                browse_by_type = self.browse_by_type,
-                url_list = [{**i,**u} for i,u in zip(element.get("url_list"),intermediate_folders)],
-                )
-            await ob.scrap_and_write()
+        try:
+            if self.browse_by_type == my_constants.SPEAKER_NAME:
+                ob = MonergismScrapAuthorGeneralInformation(
+                    name = element.get("name"),
+                    root_folder = self.root_folder,
+                    browse_by_type = self.browse_by_type,
+                    url_list = [{**i,**u} for i,u in zip(element.get("url_list"),intermediate_folders)],
+                    )
+                await ob.scrap_and_write()
+                
+                result = {"success":True,"element":element}
+                
+            elif self.browse_by_type == my_constants.TOPIC_NAME or \
+                    self.browse_by_type == my_constants.SCRIPTURE_NAME:
+                ob = MonergismScrapTopicOrScriptureGeneralInformation(
+                    name = element.get("name"),
+                    root_folder = self.root_folder,
+                    browse_by_type = self.browse_by_type,
+                    url_list = [{**i,**u} for i,u in zip(element.get("url_list"),intermediate_folders)],
+                    )
+                await ob.scrap_and_write()
+                
+                result = {"success":True,"element":element}
+                
+            return result
+                
+        except:
+            result = {"success":False,"element":element}
             
-            
-        elif self.browse_by_type == my_constants.TOPIC_NAME or \
-                self.browse_by_type == my_constants.SCRIPTURE_NAME:
-            ob = MonergismScrapTopicOrScriptureGeneralInformation(
-                name = element.get("name"),
-                root_folder = self.root_folder,
-                browse_by_type = self.browse_by_type,
-                url_list = [{**i,**u} for i,u in zip(element.get("url_list"),intermediate_folders)],
-                )
-            await ob.scrap_and_write()
+            return result
+    
             
     
     def get_element_intermidiate_folders(self,element):
