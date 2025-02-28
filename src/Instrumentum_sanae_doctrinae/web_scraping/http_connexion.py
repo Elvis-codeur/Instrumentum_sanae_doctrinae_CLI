@@ -520,7 +520,43 @@ class ParallelHttpConnexionWithLogManagement():
         
             await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
             
+    
+    
+    async def download_from_element_list(self,element_list,download_batch_size):
+        """
+        Download the content of the input files concurrently 
+        by a batch of size :data:`download_batch` 
+        """
+        result = []
+
+        # Init the log informations 
+        await self.init_log_data() 
+        
+        
+        # Update before the begining of downloads
+        await self.update_downloaded_and_to_download_from_drive(add_not_found_404_elements = False) 
                
+        # Split it by size download_batch_size to download
+        #  them in parralel 
+        element_to_download_splitted = _my_tools.sample_list(element_list,
+                                                      download_batch_size)
+
+        
+        # This is used to show a progress bar 
+        for download_batch in element_to_download_splitted:
+            tasks = [self.download_element_data(element) for element in download_batch]
+            result = await asyncio.gather(*tasks)
+            #print(result)
+            await self.update_downloaded_and_to_download_from_download_result(result)
+            
+            
+            #break 
+            await self.print_download_informations(check_from_file=False)
+        
+            await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
+            
+               
+  
     
     def prepare_input_data(self,**kwargs):
         """
