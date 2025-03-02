@@ -480,6 +480,10 @@ class MonergismScrapTopicOrScriptureGeneralInformation(MonergismScrapAuthorTopic
             name = _my_tools.remove_consecutive_spaces(name)
             name = _my_tools.replace_forbiden_char_in_text(name)
             
+            # This is required only because on some pages of monenergism it is 1&2 and on 
+            # others 1 & 2. This is problematic because the name is used as key in dicts 
+            # by other algorithms 
+            name = name.replace("1 & 2","1&2")
             
             result = {
                 "name":name,
@@ -702,7 +706,7 @@ class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionW
         """This element take an element ( for example the information of an author or topic) 
         and download the data that must be downloaded from it """
 
-        #print(self.root_folder,self.browse_by_type)
+        print(self.root_folder,self.browse_by_type)
         #print("\n",element.get("name"))
         
         intermediate_folders = self.get_element_intermidiate_folders(element)
@@ -814,7 +818,7 @@ class MonergismScrapGeneralInformation_ALL(http_connexion.ParallelHttpConnexionW
                     pass 
             else: # If the link is already downlaed. There is no need of modification of anything 
                 pass 
-               
+        
 
 
 

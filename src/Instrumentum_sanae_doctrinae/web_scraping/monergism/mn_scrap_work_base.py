@@ -190,6 +190,7 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
                     
                 input_json_files.append(file)
 
+       
         return input_json_files
  
     
@@ -206,9 +207,12 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
         
 
         element = kwargs.get("file_content").get("data")
+        
+        #print("-----prepare-input-data------- ",element)
              
         if not element.get("name") in self.element_dict.keys():
             self.element_dict[element.get("name")]  = {
+                "name":element.get("name"),
                 "data":[]
             }
 
@@ -230,7 +234,7 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
                 })
             
        
-    async def download_element_data(self,element_list):
+    async def download_element_data(self,element):
         """This element take an element ( for example the information of an author or topic) 
         and download the data that must be downloaded from it """
 
@@ -239,6 +243,10 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
         #print(element.get("data"))
         
         #print(len(element_list))
+        
+        element_list = element.get("data")
+        
+        print(element_list)
         
         if self.browse_by_type == my_constants.SPEAKER_NAME:
             try:
@@ -281,67 +289,97 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
                 return {"success":False,"element_list":element_list}
             
 
-    async def is_element_data_downloaded(self,element_list):
+    async def is_element_data_downloaded(self,element):
+        print(element,"\n\n\n")
+        element_list = element.get("data")
                 
         if self.browse_by_type == my_constants.SPEAKER_NAME:
             
             for element in element_list:
                 
-                if type(element.get("data")) == str:
-                    print(element)
+                if True: #type(element) != str:
+                    #print(element)
                 
-                ob = MN_ScrapAuthorWork(
-                    name = element.get("data").get("name"),
-                    root_folder = self.root_folder,
-                    browse_by_type = self.browse_by_type,
-                    url_list = [{'url':i} for i in element.get("data").get("pages")],
-                    intermdiate_folders = element.get("download_log").get("intermediate_folders")
-                )
-                if not await ob.is_data_downloaded():
-                    return False 
+                    ob = MN_ScrapAuthorWork(
+                        name = element.get("data").get("name"),
+                        root_folder = self.root_folder,
+                        browse_by_type = self.browse_by_type,
+                        url_list = [{'url':i} for i in element.get("data").get("pages")],
+                        intermdiate_folders = element.get("download_log").get("intermediate_folders")
+                    )
+                    if not await ob.is_data_downloaded():
+                        return False 
             
             return True 
         
         elif self.browse_by_type in [my_constants.SCRIPTURE_NAME,my_constants.TOPIC_NAME]:
             for element in element_list:
-                print(element,"\n\n\n")
-                if type(element.get("data")) == str:
-                    print(element)
-                    
-                #print(element.get("data"))
-                ob = MN_ScrapScriptureOrTopicWork(
-                    name = element.get("data").get("name"),
-                    root_folder = self.root_folder,
-                    browse_by_type = self.browse_by_type,
-                    url_list = [{'url':i} for i in element.get("data").get("pages")],
-                    intermdiate_folders = element.get("download_log").get("intermediate_folders")
-                )
-                if not await ob.is_data_downloaded():
-                    return False 
+                #print(element,"\n\n\n")
+                if True: #type(element) != str:
+                    #print(element)
+                        
+                    #print(element.get("data"))
+                    ob = MN_ScrapScriptureOrTopicWork(
+                        name = element.get("data").get("name"),
+                        root_folder = self.root_folder,
+                        browse_by_type = self.browse_by_type,
+                        url_list = [{'url':i} for i in element.get("data").get("pages")],
+                        intermdiate_folders = element.get("download_log").get("intermediate_folders")
+                    )
+                    if not await ob.is_data_downloaded():
+                        return False 
             
             return True
                 
     async def update_to_download_list(self):
-            """
-            This function take the element in the self.element_dict and take care that if there 
-            is an element in the self.element_dict that is not downloaded and is not in the yet in 
-            the to_download list. That happen if after the last scraping, new elements have been scrapped 
-            and not yet downloaded
-            """
-            # A list of the url of of the link object which have been already downloaded 
-            downloaded_link_url_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
-            to_downlaod_link_url_list = [i for i in self.log_file_content.get("to_download")] if self.log_file_content.get("to_download") else []
+        """
+        This function take the element in the self.element_dict and take care that if there 
+        is an element in the self.element_dict that is not downloaded and is not in the yet in 
+        the to_download list. That happen if after the last scraping, new elements have been scrapped 
+        and not yet downloaded
+        """
+        
+        # A list of the url of of the link object which have been already downloaded 
+        downloaded_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
+        to_downlaod_list = [i for i in self.log_file_content.get("to_download")] if self.log_file_content.get("to_download") else []
 
-            
-            # We take "element_list" variable because it contains the link of the author, scripture or topic
-            for element_name in self.element_dict:
-                if element_name not in downloaded_link_url_list: # If it is not already downloaded 
-                    if element_name not in to_downlaod_link_url_list: # It is not in the link prepared to for download. 
-                        #print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",element_name,element_name)
-                    
-                        self.log_file_content["to_download"][element_name] = self.element_dict[element_name]
-                    else: # If the element is already in the "to_download" list, there is no need to add it 
-                        pass 
-                else: # If the link is already downlaed. There is no need of modification of anything 
+        
+        # We take "element_list" variable because it contains the link of the author, scripture or topic
+        for element_name in self.element_dict:
+            if element_name not in downloaded_list: # If it is not already downloaded 
+                if element_name not in to_downlaod_list: # It is not in the link prepared to for download. 
+                    #print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",url,element_name)
+                    print(element_name)
+                    self.log_file_content["to_download"][element_name] = self.element_dict[element_name]
+                else: # If the element is already in the "to_download" list, there is no need to add it 
                     pass 
+            else: # If the link is already downlaed. There is no need of modification of anything 
+                pass
+        
+        print("Fils de David °°°",self.log_file_content["to_download"].keys())
+     
+    async def update_downloaded_and_to_download_from_download_result(self,download_result_list):
+        """
+        This method take the result of downloads and update the downloaded and to download 
+        dict of the log file content 
+        """
 
+        # Remove from link_list the link whoes data are already downloaded 
+        downloaded = {}
+        to_download = {}
+        
+        print("downloaded = ",self.log_file_content["downloaded"].keys())
+        print("to downlaod",self.log_file_content["to_download"].keys())
+        
+        for download_result in download_result_list:
+            
+            if download_result.get("success"):
+                for element in download_result.get("element_list"):
+                    
+                    # Add the downloaded element to the downloaded list
+                    self.log_file_content["downloaded"][element.get("data").get("name")] = download_result.get("element_list")
+                    
+                    # Delete it from the to_download list 
+                    if element.get("data").get("name") in self.log_file_content["to_download"].keys():
+                            
+                        del self.log_file_content["to_download"][element.get("data").get("name")]

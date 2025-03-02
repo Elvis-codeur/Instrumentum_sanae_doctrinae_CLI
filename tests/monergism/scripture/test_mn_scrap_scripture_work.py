@@ -27,7 +27,7 @@ def test_scrap_all_scripture_work():
         await ob.print_download_informations(check_from_file=True)
         await ob.download(1)
     
-    #asyncio.run(run_ob())
+    asyncio.run(run_ob())
     
 
 if __name__ == "__main__":
