@@ -205,20 +205,24 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
         :param file_path: The path of the json file 
         """
         
+        #print(kwargs,"\n\n\n\n")
+        
+        name = kwargs.get("file_content").get("local_json_filepath").split("/")
+        name = name[name.index(my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER) + 1]
 
         element = kwargs.get("file_content").get("data")
         
         #print("-----prepare-input-data------- ",element)
              
-        if not element.get("name") in self.element_dict.keys():
-            self.element_dict[element.get("name")]  = {
-                "name":element.get("name"),
+        if not name in self.element_dict.keys():
+            self.element_dict[name]  = {
+                "name":name,
                 "data":[]
             }
 
                 
-        self.element_dict[element.get("name")]["data"].append({
-                    "name":element.get("name"),
+        self.element_dict[name]["data"].append({
+                    "name":name,
                     "pages":element.get("pages"),
                 
                      **{
@@ -246,7 +250,7 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
         
         element_list = element.get("data")
         
-        print(element_list)
+        #print(element_list)
         
         if self.browse_by_type == my_constants.SPEAKER_NAME:
             try:
@@ -255,10 +259,10 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
                     #print(element.get("data").get("name"))
                     
                     ob = MN_ScrapAuthorWork(
-                        name = element.get("data").get("name"),
+                        name = element.get("name"),
                         root_folder = self.root_folder,
                         browse_by_type = self.browse_by_type,
-                        url_list = [{'url':i} for i in element.get("data").get("pages")],
+                        url_list = [{'url':i} for i in element.get("pages")],
                         intermdiate_folders = element.get("download_log").get("intermediate_folders")
                     )
                     await ob.scrap_and_write()
@@ -275,10 +279,10 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
                     #print(element.get("data").get("name"))
                     
                     ob = MN_ScrapScriptureOrTopicWork(
-                        name = element.get("data").get("name"),
+                        name = element.get("name"),
                         root_folder = self.root_folder,
                         browse_by_type = self.browse_by_type,
-                        url_list = [{'url':i} for i in element.get("data").get("pages")],
+                        url_list = [{'url':i} for i in element.get("pages")],
                         intermdiate_folders = element.get("download_log").get("intermediate_folders")
                     )
                     await ob.scrap_and_write()
@@ -290,8 +294,10 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
             
 
     async def is_element_data_downloaded(self,element):
-        print(element,"\n\n\n")
+        #print(element,"\n\n\n")
         element_list = element.get("data")
+        
+        #print(element_list)
                 
         if self.browse_by_type == my_constants.SPEAKER_NAME:
             
@@ -301,10 +307,10 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
                     #print(element)
                 
                     ob = MN_ScrapAuthorWork(
-                        name = element.get("data").get("name"),
+                        name = element.get("name"),
                         root_folder = self.root_folder,
                         browse_by_type = self.browse_by_type,
-                        url_list = [{'url':i} for i in element.get("data").get("pages")],
+                        url_list = [{'url':i} for i in element.get("pages")],
                         intermdiate_folders = element.get("download_log").get("intermediate_folders")
                     )
                     if not await ob.is_data_downloaded():
@@ -314,21 +320,19 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
         
         elif self.browse_by_type in [my_constants.SCRIPTURE_NAME,my_constants.TOPIC_NAME]:
             for element in element_list:
+                
                 #print(element,"\n\n\n")
-                if True: #type(element) != str:
-                    #print(element)
-                        
-                    #print(element.get("data"))
-                    ob = MN_ScrapScriptureOrTopicWork(
-                        name = element.get("data").get("name"),
-                        root_folder = self.root_folder,
-                        browse_by_type = self.browse_by_type,
-                        url_list = [{'url':i} for i in element.get("data").get("pages")],
-                        intermdiate_folders = element.get("download_log").get("intermediate_folders")
-                    )
-                    if not await ob.is_data_downloaded():
-                        return False 
-            
+                    
+                ob = MN_ScrapScriptureOrTopicWork(
+                    name = element.get("name"),
+                    root_folder = self.root_folder,
+                    browse_by_type = self.browse_by_type,
+                    url_list = [{'url':i} for i in element.get("pages")],
+                    intermdiate_folders = element.get("download_log").get("intermediate_folders")
+                )
+                if not await ob.is_data_downloaded():
+                    return False 
+        
             return True
                 
     async def update_to_download_list(self):
@@ -339,6 +343,9 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
         and not yet downloaded
         """
         
+        #print("Fils de David *****",self.log_file_content["to_download"].keys(),self.log_file_content["downloaded"].keys())
+        
+        
         # A list of the url of of the link object which have been already downloaded 
         downloaded_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
         to_downlaod_list = [i for i in self.log_file_content.get("to_download")] if self.log_file_content.get("to_download") else []
@@ -346,17 +353,18 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
         
         # We take "element_list" variable because it contains the link of the author, scripture or topic
         for element_name in self.element_dict:
+            #print(element_name,self.element_dict[element_name],"Elvis","\n\n\n")
             if element_name not in downloaded_list: # If it is not already downloaded 
                 if element_name not in to_downlaod_list: # It is not in the link prepared to for download. 
                     #print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",url,element_name)
-                    print(element_name)
+                    #print(element_name)
                     self.log_file_content["to_download"][element_name] = self.element_dict[element_name]
                 else: # If the element is already in the "to_download" list, there is no need to add it 
                     pass 
             else: # If the link is already downlaed. There is no need of modification of anything 
                 pass
         
-        print("Fils de David °°°",self.log_file_content["to_download"].keys())
+        #print("Fils de David °°°",self.log_file_content["to_download"].keys(),self.log_file_content["downloaded"].keys())
      
     async def update_downloaded_and_to_download_from_download_result(self,download_result_list):
         """
@@ -377,9 +385,9 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
                 for element in download_result.get("element_list"):
                     
                     # Add the downloaded element to the downloaded list
-                    self.log_file_content["downloaded"][element.get("data").get("name")] = download_result.get("element_list")
+                    self.log_file_content["downloaded"][element.get("name")] = download_result.get("element_list")
                     
                     # Delete it from the to_download list 
-                    if element.get("data").get("name") in self.log_file_content["to_download"].keys():
+                    if element.get("name") in self.log_file_content["to_download"].keys():
                             
-                        del self.log_file_content["to_download"][element.get("data").get("name")]
+                        del self.log_file_content["to_download"][element.get("name")]

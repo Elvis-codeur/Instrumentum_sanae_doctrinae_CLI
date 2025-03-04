@@ -412,6 +412,7 @@ class ParallelHttpConnexionWithLogManagement():
         downloaded = {}
         to_download = {}
         
+        
         if add_not_found_404_elements:
             element_dict = {**self.log_file_content["to_download"],
                         ** self.log_file_content["downloaded"],
@@ -422,6 +423,8 @@ class ParallelHttpConnexionWithLogManagement():
             
 
         for key in element_dict:
+            #print(element_dict.keys())
+            print(key,element_dict[key],"\n\n\n")
             is_downloaded = await self.is_element_data_downloaded(element_dict[key])
             #print(key,is_downloaded)
             if is_downloaded:
@@ -536,6 +539,7 @@ class ParallelHttpConnexionWithLogManagement():
         
         # This is used to show a progress bar 
         for download_batch in element_to_download_splitted:
+            print([type(element) for element in download_batch_size])
             tasks = [self.download_element_data(element) for element in download_batch]
             result = await asyncio.gather(*tasks)
             #print(result)

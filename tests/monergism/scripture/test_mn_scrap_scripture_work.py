@@ -19,13 +19,19 @@ def test_scrap_all_scripture_work():
         browse_by_type=browse_by_type,
         overwrite_log=False,
     )
-    print(ob.element_dict.keys())
+       
     
-    #print(ob.__dict__)
     
     async def run_ob():
-        await ob.print_download_informations(check_from_file=True)
-        await ob.download(1)
+        # Init the log informations 
+        await ob.init_log_data() 
+        
+        # Update before the begining of downloads
+        await ob.update_downloaded_and_to_download_from_drive(add_not_found_404_elements = True) 
+        
+        #await ob.print_download_informations(check_from_file=True)
+        #await ob.download(1)
+    
     
     asyncio.run(run_ob())
     
