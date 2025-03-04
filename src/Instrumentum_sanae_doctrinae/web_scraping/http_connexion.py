@@ -424,7 +424,7 @@ class ParallelHttpConnexionWithLogManagement():
 
         for key in element_dict:
             #print(element_dict.keys())
-            print(key,element_dict[key],"\n\n\n")
+            #print(key,element_dict[key],"\n",self.element_dict[key],"\n\n\n")
             is_downloaded = await self.is_element_data_downloaded(element_dict[key])
             #print(key,is_downloaded)
             if is_downloaded:

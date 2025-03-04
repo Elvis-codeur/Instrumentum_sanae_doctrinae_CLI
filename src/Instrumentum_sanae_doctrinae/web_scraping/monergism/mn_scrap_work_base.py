@@ -217,11 +217,11 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
         if not name in self.element_dict.keys():
             self.element_dict[name]  = {
                 "name":name,
-                "data":[]
+                "data":{"url_list":[]}
             }
 
                 
-        self.element_dict[name]["data"].append({
+        self.element_dict[name]["data"]["url_list"].append({
                     "name":name,
                     "pages":element.get("pages"),
                 
@@ -248,7 +248,8 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
         
         #print(len(element_list))
         
-        element_list = element.get("data")
+        element_list = element.get("data").get("url_list")
+        
         
         #print(element_list)
         
@@ -295,7 +296,7 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
 
     async def is_element_data_downloaded(self,element):
         #print(element,"\n\n\n")
-        element_list = element.get("data")
+        element_list = element.get("data").get("url_list")
         
         #print(element_list)
                 
@@ -303,18 +304,15 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
             
             for element in element_list:
                 
-                if True: #type(element) != str:
-                    #print(element)
-                
-                    ob = MN_ScrapAuthorWork(
-                        name = element.get("name"),
-                        root_folder = self.root_folder,
-                        browse_by_type = self.browse_by_type,
-                        url_list = [{'url':i} for i in element.get("pages")],
-                        intermdiate_folders = element.get("download_log").get("intermediate_folders")
-                    )
-                    if not await ob.is_data_downloaded():
-                        return False 
+                ob = MN_ScrapAuthorWork(
+                    name = element.get("name"),
+                    root_folder = self.root_folder,
+                    browse_by_type = self.browse_by_type,
+                    url_list = [{'url':i} for i in element.get("pages")],
+                    intermdiate_folders = element.get("download_log").get("intermediate_folders")
+                )
+                if not await ob.is_data_downloaded():
+                    return False 
             
             return True 
         
@@ -373,8 +371,6 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
         """
 
         # Remove from link_list the link whoes data are already downloaded 
-        downloaded = {}
-        to_download = {}
         
         print("downloaded = ",self.log_file_content["downloaded"].keys())
         print("to downlaod",self.log_file_content["to_download"].keys())

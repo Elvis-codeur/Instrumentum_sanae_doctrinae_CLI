@@ -17,7 +17,7 @@ def test_scrap_all_scripture_work():
     ob = MN_ScrapSpeakerTopicScriptureWork_All(
         root_folder=root_folder,
         browse_by_type=browse_by_type,
-        overwrite_log=False,
+        overwrite_log=True,
     )
        
     
@@ -29,8 +29,8 @@ def test_scrap_all_scripture_work():
         # Update before the begining of downloads
         await ob.update_downloaded_and_to_download_from_drive(add_not_found_404_elements = True) 
         
-        #await ob.print_download_informations(check_from_file=True)
-        #await ob.download(1)
+        await ob.print_download_informations(check_from_file=True)
+        await ob.download(1)
     
     
     asyncio.run(run_ob())
