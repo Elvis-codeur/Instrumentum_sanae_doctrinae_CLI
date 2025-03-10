@@ -357,7 +357,7 @@ class ParallelHttpConnexionWithLogManagement():
             if not os.path.exists(self.log_filepath):
                 await _my_tools.async_write_json(self.log_filepath,self.create_default_log_file_content())
             else:
-                # Create the log dict 
+                # Read the log dict 
                 self.log_file_content = await _my_tools.async_read_json(self.log_filepath)
                 # Update it in with based on things downloaded or not 
                 await self.update_to_download_list()   
@@ -379,23 +379,24 @@ class ParallelHttpConnexionWithLogManagement():
         the to_download list. That happen if after the last scraping, new elements have been scrapped 
         and not yet downloaded
         """
+        
         # A list of the url of of the link object which have been already downloaded 
-        downloaded_link_url_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
-        to_downlaod_link_url_list = [i for i in self.log_file_content.get("to_download")] if self.log_file_content.get("to_download") else []
+        downloaded_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
+        to_downlaod_list = [i for i in self.log_file_content.get("to_download")] if self.log_file_content.get("to_download") else []
 
         
         # We take "element_list" variable because it contains the link of the author, scripture or topic
         for element_name in self.element_dict:
-            for url in self.element_dict[element_name]:
-                if url not in downloaded_link_url_list: # If it is not already downloaded 
-                    if url not in to_downlaod_link_url_list: # It is not in the link prepared to for download. 
-                        #print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",url,element_name)
-                    
-                        self.log_file_content["to_download"][url] = self.element_dict[url]
-                    else: # If the element is already in the "to_download" list, there is no need to add it 
-                        pass 
-                else: # If the link is already downlaed. There is no need of modification of anything 
+            #print(element_name,self.element_dict[element_name],"Elvis","\n\n\n")
+            if element_name not in downloaded_list: # If it is not already downloaded 
+                if element_name not in to_downlaod_list: # It is not in the link prepared to for download. 
+                    #print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",url,element_name)
+                    #print(element_name)
+                    self.log_file_content["to_download"][element_name] = self.element_dict[element_name]
+                else: # If the element is already in the "to_download" list, there is no need to add it 
                     pass 
+            else: # If the link is already downlaed. There is no need of modification of anything 
+                pass
 
 
     async def update_downloaded_and_to_download_from_drive(self,add_not_found_404_elements):
@@ -445,12 +446,9 @@ class ParallelHttpConnexionWithLogManagement():
         dict of the log file content 
         """
 
-        # Remove from link_list the link whoes data are already downloaded 
-        downloaded = {}
-        to_download = {}
-        
+     
         for download_result in download_result_list:
-            print(download_result)
+            print(download_result,"--------- download result --------------")
             if download_result.get("success"):
                 # Add the downloaded element to the downloaded list
                 self.log_file_content["downloaded"][download_result.get("element").get("name")] = download_result.get("element")
@@ -539,7 +537,7 @@ class ParallelHttpConnexionWithLogManagement():
         
         # This is used to show a progress bar 
         for download_batch in element_to_download_splitted:
-            print([type(element) for element in download_batch_size])
+            #print([type(element) for element in download_batch_size])
             tasks = [self.download_element_data(element) for element in download_batch]
             result = await asyncio.gather(*tasks)
             #print(result)

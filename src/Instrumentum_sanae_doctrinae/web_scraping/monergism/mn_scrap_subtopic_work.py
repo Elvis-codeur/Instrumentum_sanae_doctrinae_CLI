@@ -261,6 +261,14 @@ class MN_ScrapScriptureOrTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicSc
     
     async def is_data_downloaded(self):
 
+        # This function do not check truly if all is downloaded 
+        # In fact the download method of this class is recursive because I do not 
+        # have the list of all the url from which data is do be downloaded 
+        # Consequetly there is not a list of prexisting url in a json file 
+        # to compare and say all was downloaded
+        # This function check only the file associeteded with the url in the url_list of the object
+        # Generaly they are 2 or 3 but the file downloaded because of the recursivity of the algorithm 
+        # dozens 
         for url in self.url_informations:
             file_path = self.url_informations[url].get("json_filepath")
             

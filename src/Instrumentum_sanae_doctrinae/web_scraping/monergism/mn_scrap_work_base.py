@@ -238,8 +238,8 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
                 })
             
        
-    async def download_element_data(self,element):
-        """This element take an element ( for example the information of an author or topic) 
+    async def download_element_data(self,download_data):
+        """This function take an element ( for example the information of an author or topic) 
         and download the data that must be downloaded from it """
 
         #print(self.root_folder,self.browse_by_type)
@@ -248,10 +248,10 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
         
         #print(len(element_list))
         
-        element_list = element.get("data").get("url_list")
+        element_list = download_data.get("data").get("url_list")
         
         
-        #print(element_list)
+        #print(element,"--- IN DOWNLOAD ---")
         
         if self.browse_by_type == my_constants.SPEAKER_NAME:
             try:
@@ -268,10 +268,10 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
                     )
                     await ob.scrap_and_write()
                     
-                    return {"success":True,"element_list":element_list}
+                return {"success":True,"element":download_data}
                 
             except:
-                return {"success":False,"element_list":element_list}
+                return {"success":False,"element":download_data}
             
         elif self.browse_by_type in [my_constants.SCRIPTURE_NAME,my_constants.TOPIC_NAME]:
             try:
@@ -288,15 +288,16 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
                     )
                     await ob.scrap_and_write()
                     
-                    return {"success":True,"element_list":element_list}
+                return {"success":True,"element":download_data}
                 
             except:
-                return {"success":False,"element_list":element_list}
+                return {"success":False,"element":download_data}
             
 
-    async def is_element_data_downloaded(self,element):
+    async def is_element_data_downloaded(self,download_data):
+        
         #print(element,"\n\n\n")
-        element_list = element.get("data").get("url_list")
+        element_list = download_data.get("data").get("url_list")
         
         #print(element_list)
                 
@@ -363,27 +364,3 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
                 pass
         
         #print("Fils de David °°°",self.log_file_content["to_download"].keys(),self.log_file_content["downloaded"].keys())
-     
-    async def update_downloaded_and_to_download_from_download_result(self,download_result_list):
-        """
-        This method take the result of downloads and update the downloaded and to download 
-        dict of the log file content 
-        """
-
-        # Remove from link_list the link whoes data are already downloaded 
-        
-        print("downloaded = ",self.log_file_content["downloaded"].keys())
-        print("to downlaod",self.log_file_content["to_download"].keys())
-        
-        for download_result in download_result_list:
-            
-            if download_result.get("success"):
-                for element in download_result.get("element_list"):
-                    
-                    # Add the downloaded element to the downloaded list
-                    self.log_file_content["downloaded"][element.get("name")] = download_result.get("element_list")
-                    
-                    # Delete it from the to_download list 
-                    if element.get("name") in self.log_file_content["to_download"].keys():
-                            
-                        del self.log_file_content["to_download"][element.get("name")]
