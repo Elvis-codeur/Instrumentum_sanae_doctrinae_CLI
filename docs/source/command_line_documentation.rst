@@ -43,48 +43,48 @@ The **monergism** command has many subcommands. The subcommands are :
     speakers CH Spurgeon on the monergism 
 
 
+    This command takes tree arguments.
 
-    This command takes two arguments.
+    a) browse_by_type : It can be "topic", "speaker", "scripture". To precise if the target_name comming after 
+    is a topic, a speaker or a bible book. 
+    
+    
+    b) target_name : The name of the targeted topic, speaker or bible books. If "C H Spurgeon", it is
+     the general information of Spurgeon which will be downloaded. To download for all topics, speakers
+     or scriptures, put "all"
 
-    a) browse_by_type : It can be "topic", "speaker", "scripture". If it is "topic", it goes on and download 
-    the general information of all the topics. The same for all the speakers or bible books if it is 
-    respectively "speaker" or "topic". 
-
-    It is also possible to send the name of particular topic, speaker or scripture. The app take the care to 
-    find if the value given is a speaker, a topic or a scripture. However the parameter must be written as it is on 
-    monergism. 
 
     Here is an example to download the general information of all the topics. 
 
 .. code-block:: console
     
-    $ "code_env/bin/python" "cli_interface/argument_parser.py" monergism scrap_general_information topic "test_folder"
+    $ "code_env/bin/python" "cli_interface/argument_parser.py" monergism scrap_general_information topic all "test_folder"
 
 
 Here is an example to download the general information of all the speakers. 
 
 .. code-block:: console    
     
-    $ "code_env/bin/python" "cli_interface/argument_parser.py" monergism scrap_general_information speaker "test_folder"
+    $ "code_env/bin/python" "cli_interface/argument_parser.py" monergism scrap_general_information speaker all "test_folder"
 
 
 Here is an example to download the general information of all the bible books. 
 
 .. code-block:: console    
     
-    $ "code_env/bin/python cli_interface/argument_parser.py monergism scrap_general_information scriptures "test_folder
+    $ "code_env/bin/python cli_interface/argument_parser.py monergism scrap_general_information scriptures all "test_folder"
 
 
 Here is an example to download the general information of Spurgeon. 
 
 .. code-block:: console
 
-    $ "code_env/bin/python cli_interface/argument_parser.py monergism scrap_general_information "C H Spurgeon" "test_folder
+    $ "code_env/bin/python cli_interface/argument_parser.py monergism scrap_general_information speaker "C H Spurgeon" "test_folder"
 
 The same syntax used for Spurgeon can be used for any topic, speaker or bible books
 
 
-    b) output_folder : It the the output folder where the download data will be placed. 
+    c) output_folder : It the the output folder where the download data will be placed. 
 
 
 
@@ -94,47 +94,47 @@ The same syntax used for Spurgeon can be used for any topic, speaker or bible bo
     all the works of an author, topic or bible books. The script to download the works is 
     recursive. There is a non zero probability that it may stuck in a infinite loop though it never 
     happenned during my tests. 
+
+    This command takes tree arguments.
+
+    a) browse_by_type : It can be "topic", "speaker", "scripture". To precise if the target_name comming after 
+    is a topic, a speaker or a bible book. 
     
+    
+    b) target_name : The name of the targeted topic, speaker or bible books. If "C H Spurgeon", it is
+     the works of Spurgeon which will be downloaded. To download for all topics, speakers
+     or scriptures, put "all"
 
-    This command takes two arguments.
 
-    a) browse_by_type : It can be "topic", "speaker", "scripture". If it is "topic", it goes on and download 
-    the works of all the topics. The same for all the speakers or bible books if it is 
-    respectively "speaker" or "topic". 
-
-    It is also possible to send the name of particular topic, speaker or scripture. The app take the care to 
-    find if the value given is a speaker, a topic or a scripture. However the parameter must be written as it is on 
-    monergism. 
-
-    Here is an example to download the works of all the topics.
+    Here is an example to download the general information of all the topics. 
 
 .. code-block:: console
     
-    $ "code_env/bin/python" "cli_interface/argument_parser.py" monergism scrap_work topic "test_folder"
+    $ "code_env/bin/python" "cli_interface/argument_parser.py" monergism scrap_work topic all "test_folder"
 
 
-Here is an example to download the works of all the speakers. 
-
-.. code-block:: console    
-    
-    $ "code_env/bin/python" "cli_interface/argument_parser.py" monergism scrap_work speaker "test_folder"
-
-
-Here is an example to download the works of all the bible books. 
+Here is an example to download the general information of all the speakers. 
 
 .. code-block:: console    
     
-    $ "code_env/bin/python cli_interface/argument_parser.py monergism scrap_work scriptures "test_folder
+    $ "code_env/bin/python" "cli_interface/argument_parser.py" monergism scrap_work speaker all "test_folder"
 
 
-Here is an example to download works of Spurgeon. 
+Here is an example to download the general information of all the bible books. 
+
+.. code-block:: console    
+    
+    $ "code_env/bin/python cli_interface/argument_parser.py monergism scrap_work scriptures all "test_folder"
+
+
+Here is an example to download the general information of Spurgeon. 
 
 .. code-block:: console
 
-    $ "code_env/bin/python cli_interface/argument_parser.py monergism scrap_work "C H Spurgeon" "test_folder
+    $ "code_env/bin/python cli_interface/argument_parser.py monergism scrap_work speaker "C H Spurgeon" "test_folder"
 
 The same syntax used for Spurgeon can be used for any topic, speaker or bible books
 
 
-    b) output_folder : It the the output folder where the download data will be placed. 
+    c) output_folder : It the the output folder where the download data will be placed. 
 
