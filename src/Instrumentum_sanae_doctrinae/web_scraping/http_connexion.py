@@ -549,7 +549,55 @@ class ParallelHttpConnexionWithLogManagement():
             await self.print_download_informations(check_from_file=False)
         
             await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
-            
+           
+           
+    
+    async def download_from_element_key_list(self,key_list,download_batch_size):
+        """
+        Download the content of the input files concurrently 
+        by a batch of size :data:`download_batch` 
+        """
+        result = []
+
+        # Init the log informations 
+        await self.init_log_data() 
+        
+        
+        # Update before the begining of downloads
+        await self.update_downloaded_and_to_download_from_drive(add_not_found_404_elements = True) 
+        
+        element_to_download = []
+        
+        #print(self.log_file_content["to_download"].keys())
+        #print(self.log_file_content["downloaded"].keys())
+        #print(self.element_dict.keys())
+        
+        for key in key_list:
+            if key in self.log_file_content["to_download"]:
+                element_to_download.append(self.log_file_content["to_download"][key])
+            elif key in self.log_file_content["downloaded"]:
+                element_to_download.append(self.log_file_content["downloaded"][key])
+            else:
+                raise ValueError(f'The element "{key}" is not available')
+                
+       
+        # Split it by size download_batch_size to download
+        #  them in parralel 
+        element_to_download_splitted = _my_tools.sample_list(element_to_download,
+                                                      download_batch_size)
+
+        
+        # This is used to show a progress bar 
+        for download_batch in element_to_download_splitted:
+            tasks = [self.download_element_data(element) for element in download_batch]
+            result = await asyncio.gather(*tasks)
+           
+            await self.update_downloaded_and_to_download_from_download_result(result)
+           
+            await self.print_download_informations(check_from_file=False)
+        
+            await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
+ 
                
   
     

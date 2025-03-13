@@ -9,6 +9,7 @@ from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, my_constan
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadata
 from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
 from Instrumentum_sanae_doctrinae.web_scraping.monergism.mn_scrap_subtopic_work import MN_ScrapScriptureOrTopicWork, get_subtopics
+from Instrumentum_sanae_doctrinae.web_scraping.monergism.mn_scrap_work_base import MN_ScrapSpeakerTopicScriptureWork_All
 
 
 class MN_ScrapTopicWork_All(http_connexion.ParallelHttpConnexionWithLogManagement):
@@ -90,7 +91,7 @@ class MN_ScrapTopicWork_All(http_connexion.ParallelHttpConnexionWithLogManagemen
             
             #print(element.get("data").get("name"))
     
-            ob = MN_ScrapTopicWork(
+            ob = MN_ScrapSpeakerTopicScriptureWork_All(
                 name = element.get("data").get("name"),
                 root_folder = self.root_folder,
                 browse_by_type = self.browse_by_type,
@@ -103,7 +104,7 @@ class MN_ScrapTopicWork_All(http_connexion.ParallelHttpConnexionWithLogManagemen
         
         for element in element_list:
             
-            ob = MN_ScrapTopicWork(
+            ob = MN_ScrapSpeakerTopicScriptureWork_All(
                 name = element.get("data").get("name"),
                 root_folder = self.root_folder,
                 browse_by_type = self.browse_by_type,
