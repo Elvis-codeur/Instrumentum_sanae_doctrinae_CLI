@@ -448,14 +448,15 @@ class ParallelHttpConnexionWithLogManagement():
 
      
         for download_result in download_result_list:
-            print(download_result,"--------- download result --------------")
+            #print(download_result,"--------- download result --------------")
             if download_result.get("success"):
                 # Add the downloaded element to the downloaded list
                 self.log_file_content["downloaded"][download_result.get("element").get("name")] = download_result.get("element")
                 
-                # Delete it from the to_download list 
-                del self.log_file_content["to_download"][download_result.get("element").get("name")]
-                
+                if download_result.get("element").get("name") in self.log_file_content["to_download"].keys():
+                    # Delete it from the to_download list 
+                    del self.log_file_content["to_download"][download_result.get("element").get("name")]
+                    
     
     
 
