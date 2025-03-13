@@ -5,5 +5,7 @@ def parse_argument(argument:str):
     if argument:
         if "=" in argument:
             return argument.split("=")[1]
+        else:
+            return argument
     else:
         return argument
