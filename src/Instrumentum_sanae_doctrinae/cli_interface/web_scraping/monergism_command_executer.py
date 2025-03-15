@@ -120,6 +120,7 @@ def monegism_scrap_work(root_folder,browse_by_type:str,
                                     target_name:str,
                                     download_batch_size:int,
                                     overwrite_log):
+  
     """_summary_
 
     Args:
@@ -131,7 +132,7 @@ def monegism_scrap_work(root_folder,browse_by_type:str,
     
         if browse_by_type.strip() == my_constants.SPEAKER_NAME:
         
-            ob = mn_scrap_speaker_works.MN_ScrapAuthorWork_All(
+            ob = mn_scrap_work_base.MN_ScrapSpeakerTopicScriptureWork_All(
             root_folder=root_folder,
             browse_by_type=browse_by_type,
             overwrite_log=overwrite_log,
@@ -191,10 +192,12 @@ def monegism_scrap_work(root_folder,browse_by_type:str,
         # The name of the author, the topic or the scripture
         target_name = general_tools.replace_forbiden_char_in_text(target_name)
         
+    
+        
         
         if target_name in topic_dict:
             #print(topic_dict[target_name])
-            ob = mn_scrap_topic_works.MN_ScrapSpeakerTopicScriptureWork_All(
+            ob = mn_scrap_work_base.MN_ScrapSpeakerTopicScriptureWork_All(
             root_folder=root_folder,
             browse_by_type=browse_by_type,
             overwrite_log=overwrite_log,
@@ -203,17 +206,17 @@ def monegism_scrap_work(root_folder,browse_by_type:str,
             asyncio.run(ob.download_from_element_key_list([target_name],1))
             
         elif target_name in speaker_dict:
-            ob = mn_scrap_speaker_works.MN_ScrapAuthorWork_All(
+            ob = mn_scrap_work_base.MN_ScrapSpeakerTopicScriptureWork_All(
             root_folder = root_folder,
             browse_by_type = browse_by_type,
             overwrite_log = overwrite_log
             )
             #print(ob.__dict__)
             asyncio.run(ob.print_download_informations(True))
-            asyncio.run(ob.download_from_element_list([speaker_names_list[target_name]],1))
+            asyncio.run(ob.download_from_element_key_list([target_name],1))
             
         elif target_name in scripture_dict:
-            ob = mn_scrap_topic_works.MN_ScrapSpeakerTopicScriptureWork_All(
+            ob = mn_scrap_work_base.MN_ScrapSpeakerTopicScriptureWork_All(
             root_folder=root_folder,
             browse_by_type=browse_by_type,
             overwrite_log=overwrite_log,
@@ -224,7 +227,7 @@ def monegism_scrap_work(root_folder,browse_by_type:str,
             asyncio.run(ob.download_from_element_key_list([target_name],1))
             
         else:
-            click.echo(f"The element '{browse_by_type}' which general information is to be downloaded do not exists")
+            click.echo(f"The element '{target_name}' which general information is to be downloaded do not exists")
   
 
 
@@ -290,8 +293,8 @@ def monergism_scrap_general_information_command(context:click.Context,browse_by_
 
 @click.pass_context
 def monergism_scrap_work_command(context:click.Context,browse_by_type:str,
-                                 output_folder,
                                  target:str,
+                                 output_folder,
                                   overwrite_log,download_batch_size:int):
     
     output_folder = parse_argument(output_folder)

@@ -20,12 +20,13 @@ def test_scrap_all_author_work():
     ob = MN_ScrapSpeakerTopicScriptureWork_All(
         root_folder=root_folder,
         browse_by_type=browse_by_type,
-        overwrite_log=False,
+        overwrite_log=True,
     )
-    print(ob.element_dict.keys())
+    #print(ob.element_dict.keys())
     
-    #print(ob.__dict__)
-    #asyncio.run(ob.download(4))
+    asyncio.run(ob.init_log_data())
+    asyncio.run(ob.print_download_informations())
+    asyncio.run(ob.download(1))
 
     
     

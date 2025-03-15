@@ -4,11 +4,12 @@ import pathlib
 import re
 
 from Instrumentum_sanae_doctrinae.web_scraping import  http_connexion, my_constants
+from Instrumentum_sanae_doctrinae.my_tools import general_tools
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadata
 
 
 
-class MonergismScrapAuthorTopicScriptureWork(MonergismScrapAuthorTopicScripturePage):
+class MonergismScrapAuthorTopicScriptureWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePage):
     def __init__(self, name, root_folder, url_list, browse_by_type,intermdiate_folders = None):
 
         super().__init__(name, root_folder, url_list, browse_by_type,
@@ -91,7 +92,7 @@ class MonergismScrapAuthorTopicScriptureWork(MonergismScrapAuthorTopicScriptureP
             
             
             
-            file_content = _my_tools.read_file(file_path)
+            file_content = general_tools.read_file(file_path)
             
             if not file_content:
                 return False 
@@ -121,7 +122,7 @@ class MonergismScrapAuthorTopicScriptureWork(MonergismScrapAuthorTopicScriptureP
 class MonergismScrapWebSiteAuthorTopicScripturesWork_All(http_connexion.ParallelHttpConnexionWithLogManagement):
     def __init__(self,root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
 
-        root_folder = _my_tools.process_path_according_to_cwd(root_folder)
+        root_folder = general_tools.process_path_according_to_cwd(root_folder)
 
         log_filepath = os.path.join(root_folder,
                                     my_constants.LOGS_ROOT_FOLDER,
@@ -147,7 +148,7 @@ class MonergismScrapWebSiteAuthorTopicScripturesWork_All(http_connexion.Parallel
         
         # Prepare the json files as input data 
         for filepath in input_files:
-            file_content = _my_tools.read_json(filepath)
+            file_content = general_tools.read_json(filepath)
             input_data[str(filepath)] = file_content
         
         

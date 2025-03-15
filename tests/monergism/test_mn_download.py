@@ -11,8 +11,8 @@ root_folder = os.path.join(os.getcwd(),'test_folder')
 
 
 def test_download():
-    browse_by_type = "topic"
-    name = "Adoption"
+    browse_by_type = "scripture"
+    name = "1 Samuel"
     ob = mn_download.MN_Download_Work(name,root_folder,browse_by_type,
                                       overwrite_log=False,update_log=True)
     #asyncio.run(ob.init_log_data())

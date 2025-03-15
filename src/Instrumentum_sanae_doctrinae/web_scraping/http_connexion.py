@@ -121,7 +121,6 @@ class ScrapDataFromURL():
             #print(url_dict)
             async with self.main_request_session.get(url=url) as response:
                 
-                
                 if response.status == 404:
                     raise my_errors.HTTP404Error(url)
                 
@@ -366,7 +365,7 @@ class ParallelHttpConnexionWithLogManagement():
         """
         Open the log file and update to download and downloaded informations 
         """
-        await self.update_downloaded_and_to_download(add_not_found_404_elements=False)
+        await self.update_downloaded_and_to_download_from_drive(add_not_found_404_elements=False)
         
         await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
         

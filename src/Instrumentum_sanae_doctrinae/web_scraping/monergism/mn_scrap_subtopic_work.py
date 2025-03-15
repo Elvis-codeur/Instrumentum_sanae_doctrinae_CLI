@@ -1,11 +1,13 @@
 import json
+import logging
 import os 
+import random
 import sys 
 
 import urllib
 import urllib.parse
 
-sys.setrecursionlimit(2000)
+logging.basicConfig(level=logging.DEBUG)  # Enables detailed logs
 
 from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadata
@@ -29,12 +31,15 @@ def scrap_page_works(bs4_object):
         if div_class:
             div_class = " ".join(div_class).strip()
             if div_class.startswith("views-row views-row-"):
+                
+                #print(div_class)
             
                 span_object = div_element.find("span")
                 
                 if span_object:
                 
                     span_object_class = span_object.get("class")
+                    #print(span_object_class)
                     
                     if span_object_class:
                         
@@ -68,46 +73,49 @@ def get_description_text(bs4_object):
         div = div.find("div",class_ = "views-field views-field-description")
         if div:
             div = div.find("div",class_ = "field-content")
-            
-            p_list = div.find_all("p")
-            
-            for p_element in p_list:
-                result.append(p_element.get_text().strip())
+            if div:        
+                p_list = div.find_all("p")
+                if p_list:
+                    for p_element in p_list:
+                        result.append(p_element.get_text().strip())
                 
     return result
 
     
 def get_subtopics(bs4_soup,main_url):
-        
-        h3_list = [i for i in bs4_soup.find_all("h3")]
-        
-        subtopic_h3 = [h3_object for h3_object in h3_list if h3_object.get_text() == "Subtopics"]
-        
-        if not subtopic_h3:
-            return []
-        
-        subtopic_h3 = subtopic_h3[0]
-        
-        #print(subtopic_h3.parent.next)
-        
-        content = subtopic_h3.parent.find_next_sibling("div")
-        #print(content,"\n\n\n")
-        
-        result = []
-
-        if content:
-            links = content.find_all("a")
-            for i in links:
-                anchor_text = i.get_text()
-                if anchor_text:
-                    result.append(
-                        {
-                            "name":anchor_text,
-                            "url":urllib.parse.urljoin(main_url,i.get("href")),
-                        }
-                    )
-                
-        return result
+    
+    #print(main_url)
+    
+    h3_list = [i for i in bs4_soup.find_all("h3")]
+    
+    subtopic_h3 = [h3_object for h3_object in h3_list if h3_object.get_text() == "Subtopics"]
+    
+    if not subtopic_h3:        
+        return []
+    
+    subtopic_h3 = subtopic_h3[0]
+    
+    #print(subtopic_h3.parent.next)
+    
+    content = subtopic_h3.parent.find_next_sibling("div")
+    #print(content,"\n\n\n")
+    
+    result = []
+    
+    if content:
+        links = content.find_all("a")
+        for i in links:
+            anchor_text = i.get_text()
+            if anchor_text:
+                result.append(
+                    {
+                        "name":anchor_text,
+                        "url":urllib.parse.urljoin(main_url,i.get("href")),
+                    }
+                )
+    
+    
+    return result
         
 
 
@@ -130,6 +138,7 @@ class MN_ScrapScriptureOrTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicSc
         final_result = {}
         
         for main_url in self.url_informations:
+            print(main_url)
             
             
             # Take the div containing the links of the author 
@@ -159,9 +168,19 @@ class MN_ScrapScriptureOrTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicSc
                     await ob.scrap_and_write(save_html_file=True)
                     
                     
-                    f = open(os.path.join(self.root_folder,"trr.json"),mode = "w",encoding = "utf-8")
+                    self.temp_log_file = os.path.join(self.root_folder,
+                                                      f"trr-{random.randint(1e3,1e9)}.json")
+                    
+                    #print(self.temp_log_file)
+                    """
+                    f = open(self.temp_log_file,mode = "w",encoding = "utf-8")
                     f.write(json.dumps(MN_ScrapScriptureOrTopicWork.url_already_consulted))
                     f.close()
+                    
+                    if os.path.exists(self.temp_log_file):
+                        os.remove(self.temp_log_file)
+                        
+                    """
                     
                 
                 
@@ -191,12 +210,18 @@ class MN_ScrapScriptureOrTopicWork(mn_scrap_metadata.MonergismScrapAuthorTopicSc
                 
                 await ob.scrap_and_write(save_html_file=True)
                 
+                """
+                self.temp_log_file =  os.path.join(self.root_folder,
+                                                   f"trr-{random.randint(1e3,1e9)}.json")         
 
-
-                f = open(os.path.join(self.root_folder,"trr.json"),mode = "w",encoding = "utf-8")
+                f = open(self.temp_log_file,mode = "w",encoding = "utf-8")
                 f.write(json.dumps(MN_ScrapScriptureOrTopicWork.url_already_consulted))
                 f.close()
-
+                """
+                
+            
+            
+            
             final_result[main_url] = {
                 "description_text":get_description_text(bs4_object),
                 "main_links":scrap_page_works(bs4_object)

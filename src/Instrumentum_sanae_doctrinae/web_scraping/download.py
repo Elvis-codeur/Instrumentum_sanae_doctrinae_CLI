@@ -367,6 +367,9 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
             tasks = [self.download_element_data(element) for element in download_batch]
             result_list = await asyncio.gather(*tasks)
             
+            #await self.update_downloaded_and_to_download_from_download_result(result_list)
+            
+            
             for result,element in zip(result_list,download_batch):
                 succes = result.get("success")
                 status_code = result.get("status_code")
@@ -404,6 +407,7 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
                         # Delete the element from the to download list 
                         
             await self.update_log_data()
+            
             
     async def update_to_download_list(self):
         # A list of the url of of the link object which have been already downloaded 

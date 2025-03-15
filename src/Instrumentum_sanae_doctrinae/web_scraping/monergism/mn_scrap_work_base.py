@@ -30,8 +30,11 @@ class MN_ScrapAuthorWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePag
         """
 
         final_result = {}
+        
+        #print(self.url_informations.keys())
 
         for url in self.url_informations:
+            #print(url)
             
             # Take the div containing the links of the author 
             
@@ -40,21 +43,25 @@ class MN_ScrapAuthorWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePag
             links_div = bs4_obect.find_all("div",
                                             class_=re.compile("view.*view-link-search.*view-id-link_search.*view-display-id-page.*view-dom-id-")) 
             
+            #print(len(links_div))
             if(len(links_div) != 0):
                 links_div = links_div[0]
 
                 # The header where this text isYour Search Yielded <n> Results
                 # Displaying <a> Through <b> where <n> is the total number of links about the author and <a> and <b> the range of links displayed 
                 header = links_div.find("div",{"class":"view-header"})
-
+                
                 header_text = header.get_text()
                 header_text = header_text.split(" ")
                 
+                # The total number of works. And the range of works in the actual page 
                 header_numbers = []
 
                 for text in header_text:
                     if text.strip().isdigit():
                         header_numbers.append(int(text.strip()))
+                        
+                #print(header_numbers)
 
                 # The number of element monergism has on the author
                 self.num_result = header_numbers[0]
@@ -68,20 +75,27 @@ class MN_ScrapAuthorWork(mn_scrap_metadata.MonergismScrapAuthorTopicScripturePag
                 main_content = links_div.find("div",{"class":"view-content"})
                 main_links_li = main_content.find_all("li",{"class":"views-row"})
                 main_links = []
+                
+            
 
                 for li in main_links_li:
                     li = li.find("div").find("span")
-                    link_type = li.get("class")[1]
-                    link_href = li.find("a").get("href")
-                    link_text = li.find("a").get_text()
-                    main_links.append({
-                        "link_type":link_type,
-                        "url":link_href,
-                        "link_text":link_text
-                    })
+                    li_class = li.get("class")
+                    #print(li_class)
+                    if len(li_class) >= 2:
+                        #print(li_class)
+                        link_type = li_class[1]
+                        link_href = li.find("a").get("href")
+                        link_text = li.find("a").get_text()
+                        main_links.append({
+                            "link_type":link_type,
+                            "url":link_href,
+                            "link_text":link_text
+                        })
 
                 
                 #print(main_links,url,"\n\n")
+                
 
                 final_result[url] = {"main_links":main_links}
 
@@ -251,13 +265,13 @@ class MN_ScrapSpeakerTopicScriptureWork_All(http_connexion.ParallelHttpConnexion
         element_list = download_data.get("data").get("url_list")
         
         
-        #print(element,"--- IN DOWNLOAD ---")
+        #print(download_data,"--- IN DOWNLOAD ---")
         
         if self.browse_by_type == my_constants.SPEAKER_NAME:
             try:
                 for element in element_list:
                     
-                    #print(element.get("data").get("name"))
+                    #print(element.get("data").get("pages"),element.get("name"))
                     
                     ob = MN_ScrapAuthorWork(
                         name = element.get("name"),

@@ -30,7 +30,8 @@ def test_scrap_all_scripture_work():
         #await ob.update_downloaded_and_to_download_from_drive(add_not_found_404_elements = True) 
         
         await ob.print_download_informations(check_from_file=True)
-        await ob.download(1)
+        #await ob.download(1)
+        await ob.download_from_element_key_list(["Daniel"],1)
     
     asyncio.run(run_ob())
     
