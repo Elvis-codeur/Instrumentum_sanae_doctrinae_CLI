@@ -9,9 +9,9 @@ from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.audio_sermon import s
 from Instrumentum_sanae_doctrinae.web_scraping import my_constants 
 
         
+root_folder ='/home/elvis/Documents/ForGod/Scraping General/test_folder' 
 
 def test_get_audio_sermon_topic():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder' 
         
     ob = si_audio_sermon_scrap_get_list.GetAudioSermonTopicList(
                                                     root_folder,
@@ -20,15 +20,13 @@ def test_get_audio_sermon_topic():
     asyncio.run(ob.scrap_and_write(get_useful_link_method = ob.get_useful_anchor_object_list))
 
 def test_get_audio_sermon_scripture():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder' 
     ob = si_audio_sermon_scrap_get_list.GetAudioSermonScriptureList(
                                                     root_folder,
                                                     browse_by_type=my_constants.SCRIPTURE_NAME)
     asyncio.run(ob.scrap_and_write(get_useful_link_method = ob.get_useful_anchor_object_list))
-
+    
 
 def test_get_audio_sermon_podcast():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder' 
     ob = si_audio_sermon_scrap_get_list.GetAudioSermonPodcastList(
                                                     root_folder,
                                                     browse_by_type=my_constants.PODCAST_NAME)

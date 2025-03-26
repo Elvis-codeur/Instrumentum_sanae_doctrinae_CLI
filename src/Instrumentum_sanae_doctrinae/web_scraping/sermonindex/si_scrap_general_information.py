@@ -196,20 +196,29 @@ class SermonIndexScrapSpeakerMainInformation_ALL(http_connexion.ParallelHttpConn
     async def download_element_data(self,element):
         """This element take an element ( for example the information of an author or topic) 
         and download the data that must be downloaded from it """
+            
+        try:
+            
 
-        #print(element.get("name"))
-        ob = SermonIndexScrapGeneralInformation(
-            name = element.get("name"),
-            root_folder = self.root_folder,
-            browse_by_type = self.browse_by_type,
-            url_list = element.get("url_list"),
-            intermdiate_folders = element.get("download_log").get("intermediate_folders"),
-            material_root_folder = self.material_root_folder
-        )
+            #print(element.get("name"))
+            ob = SermonIndexScrapGeneralInformation(
+                name = element.get("name"),
+                root_folder = self.root_folder,
+                browse_by_type = self.browse_by_type,
+                url_list = element.get("url_list"),
+                intermdiate_folders = element.get("download_log").get("intermediate_folders"),
+                material_root_folder = self.material_root_folder
+            )
 
-        await ob.scrap_and_write()
-
-    def is_element_data_downloaded(self,element):
+            await ob.scrap_and_write()
+            
+            return {"success":True,"element":element}
+        
+        except:
+            return {"success":False,"element":element}
+            
+        
+    async def is_element_data_downloaded(self,element):
         ob = SermonIndexScrapGeneralInformation(
             name = element.get("name"),
             root_folder = self.root_folder,
@@ -218,5 +227,5 @@ class SermonIndexScrapSpeakerMainInformation_ALL(http_connexion.ParallelHttpConn
             intermdiate_folders = element.get("download_log").get("intermediate_folders"),
             material_root_folder = self.material_root_folder
         )
-        return ob.is_data_downloaded()
+        return await ob.is_data_downloaded()
         

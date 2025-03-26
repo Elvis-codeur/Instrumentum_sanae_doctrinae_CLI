@@ -164,7 +164,7 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
         
 
 
-    def is_data_downloaded(self):
+    async def is_data_downloaded(self):
 
         for url in self.url_informations:
             file_path = self.url_informations[url].get("json_filepath")
@@ -173,7 +173,7 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
                 return False
             
             
-            file_content = _my_tools.read_file(file_path)
+            file_content = await _my_tools.async_read_file(file_path)
             
 
             if not file_content:
