@@ -59,6 +59,8 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
                                        target:str,output_folder,
                                        overwrite_log,download_batch_size:int):
     
+
+    
     target_name = general_tools.replace_forbiden_char_in_text(target)
     
     if material_type == "audio":
@@ -83,29 +85,38 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
     elif material_type == "text":
         material_folder = my_constants.SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER
         
-        if target == "all":
-            
+        if browse_by_type == my_constants.SPEAKER_NAME:
             # The general information of the speakers 
-            ob = si_scrap_general_information.SermonIndexScrapSpeakerMainInformation_ALL(
+            speaker_text_ob = si_scrap_general_information.SermonIndexScrapSpeakerMainInformation_ALL(
                     output_folder,
                     material_folder,
                     browse_by_type,
                     overwrite_log=True
                 )    
-            #print(ob.__dict__)
-            asyncio.run(ob.download(download_batch_size))
             
-            ob.write_log_file()
-        
+            if target == "all":
+                asyncio.run(speaker_text_ob.download(download_batch_size))
+                speaker_text_ob.write_log_file()
+            else: 
+                asyncio.run(speaker_text_ob.download_from_element_key_list([target_name],1))
+                
+            
+        if browse_by_type == my_constants.SERMONINDEX_CHRISTIAN_BOOKS_NAME:
             # The general information the books 
-            ob = si_text_sermon_scrap_general_information.SI_ChristianBookScrapMainInformation_ALL(
+            book_text_ob = si_text_sermon_scrap_general_information.SI_ChristianBookScrapMainInformation_ALL(
                     output_folder,
                     material_folder,
                     browse_by_type,
                     overwrite_log=True
                 )    
-            asyncio.run(ob.download(download_batch_size))
-            ob.write_log_file()
+            if target == "all":
+                asyncio.run(book_text_ob.download(download_batch_size))
+                book_text_ob.write_log_file()
+            else:
+                #print(book_text_ob.log_file_content["downloaded"].keys())
+                
+                asyncio.run(book_text_ob.download_from_element_key_list([target_name],1))
+            
         
     elif material_type == "video":
         material_folder = my_constants.SERMONINDEX_VIDEO_SERMONS_ROOT_FOLDER
@@ -135,7 +146,6 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
             )
         
         if target == "all":
-                
             #print(ob.__dict__)
             asyncio.run(ob.download(download_batch_size))
             ob.write_log_file()
@@ -177,6 +187,7 @@ def sermonindex_scrap_general_information_command(context:click.Context,browse_b
                                                   overwrite_log,download_batch_size:int):
     
     output_folder = parse_argument(output_folder)
+    #print(browse_by_type,material_type,target)
     sermonindex_scrap_general_information(browse_by_type=browse_by_type,material_type=material_type,
                                           target=target,output_folder=output_folder,
                                           overwrite_log=overwrite_log,download_batch_size=download_batch_size)

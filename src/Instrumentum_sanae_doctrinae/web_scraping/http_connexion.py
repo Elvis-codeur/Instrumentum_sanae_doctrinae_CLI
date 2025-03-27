@@ -550,6 +550,27 @@ class ParallelHttpConnexionWithLogManagement():
             await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
            
            
+           
+    async def is_key_in_logfile_keys(self,key:str) -> bool:
+        """
+
+        Args:
+            key (str): The key to check if it is in the log file to_download dict or downloaded dict. 
+
+        Returns:
+            bool: 
+        """
+
+        
+
+        # Init the log informations 
+        await self.init_log_data() 
+        
+        
+        # Update before the begining of downloads
+        await self.update_downloaded_and_to_download_from_drive(add_not_found_404_elements = True) 
+        
+        return (key in self.log_file_content["to_download"] or key in self.log_file_content["downloaded"])
     
     async def download_from_element_key_list(self,key_list,download_batch_size):
         """
@@ -570,6 +591,8 @@ class ParallelHttpConnexionWithLogManagement():
         #print(self.log_file_content["to_download"].keys())
         #print(self.log_file_content["downloaded"].keys())
         #print(self.element_dict.keys())
+        
+        
         
         for key in key_list:
             if key in self.log_file_content["to_download"]:

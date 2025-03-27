@@ -92,6 +92,7 @@ SERMONINDEX_VIDEO_SERMONS_ROOT_FOLDER = "video_sermon"  #: The metadata, downloa
 SERMONINDEX_VINTAGE_IMAGE_ROOT_FOLDER = "vintage_image"  #: The metadata, downloads of the **Text Sermons** will be here. For the logs, **Text Sermons** they will be in the  of the log folder  
 
 SERMONINDEX_CHRISTIAN_BOOKS_ROOT_FOLDER = "christian_book" #: The metadata, download of the **Christian books** will be in this subfolder of :data:`SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER`
+SERMONINDEX_CHRISTIAN_BOOKS_NAME =  "christian_book" #: The metadata, download of the **Christian books** will be in this subfolder of :data:`SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER`
 SERMONINDEX_ONLINE_BIBLES_ROOT_FOLDER = "online_bible" #: The metadata, download of the **Online Bibles** will be in this folder
  
 SERMONINDEX_VIDEO_SERMONS_ROOT_FOLDER = "video_sermon"  #: The metadata, download of the **Video Sermons** will be in this folder
