@@ -1,7 +1,7 @@
 import asyncio
 import os
 from Instrumentum_sanae_doctrinae.cli_interface.web_scraping.monergism_command_executer import *
-from Instrumentum_sanae_doctrinae.cli_interface.web_scraping.sermonindex_command_executer import sermonindex_scrap_general_information_command, sermonindex_scrap_list_command
+from Instrumentum_sanae_doctrinae.cli_interface.web_scraping.sermonindex_command_executer import sermonindex_scrap_general_information_command, sermonindex_scrap_list_command, sermonindex_scrap_work_command
 import click
 from Instrumentum_sanae_doctrinae.web_scraping.my_constants import SCRIPTURE_NAME, SPEAKER_NAME, TOPIC_NAME
 
@@ -50,6 +50,7 @@ monergism_group.add_command(monergism_scrap_work_command,name="scrap_work")
 # Add command for sermoinedex 
 sermon_index_group.add_command(sermonindex_scrap_list_command,name = "scrap_list")
 sermon_index_group.add_command(sermonindex_scrap_general_information_command,name = "scrap_general_information")
+sermon_index_group.add_command(sermonindex_scrap_work_command,name = "scrap_work")
 
 if __name__ == "__main__":
     entry_point()

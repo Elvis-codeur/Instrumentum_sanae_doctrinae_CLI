@@ -1,23 +1,18 @@
 
 
-
+import asyncio
+import time 
 # This class works for the audio sermons 
+from bs4 import NavigableString
 
-import json
-import os
-import pathlib
-
-from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_work import SI_ScrapWork_ALL
-import bs4 
-from bs4 import BeautifulSoup
-import urllib
 from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, my_constants
 from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
 
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_metadata import SermonIndexScrapAuthorTopicScripturePage
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_work import SI_ScrapWork_ALL
 
 
-class SI_ScrapVideoSermonWork(SermonIndexScrapAuthorTopicScripturePage):
+class SermonIndexScrapChristianBookTextSermonWork(SermonIndexScrapAuthorTopicScripturePage):
     def __init__(self, name, root_folder,browse_by_type, url_list,material_root_folder,intermdiate_folders=None):
         
         super().__init__(name, root_folder, url_list,browse_by_type,
@@ -39,69 +34,38 @@ class SI_ScrapVideoSermonWork(SermonIndexScrapAuthorTopicScripturePage):
         for current_page_url in self.url_informations:
                 
             soup = self.url_informations[current_page_url].get("bs4_object")
-            
+
             result = []
             
-            table = soup.find("table",attrs = {
-                "width":"100%",
-                "cellspacing":"0",
-                "cellpadding":"10",
-                "border":"0"
-                
-            })
+            book_text_div =  soup.find("div",class_ = "bookText")
             
-            for tr_element in table.find_all("tr",recursie = False):
+            #print(book_text_div)
+            
+            for element in book_text_div.contents:
                 
-                td_element = tr_element.find_all("td")[-1]
+                if(isinstance(element, NavigableString)):
+                    element_content = repr(element.string)  
+                else:
+                    element_content = element.get_text()
                 
-                anchor_element = td_element.find_all("a")[1]
-                
-                b_element_list = td_element.find_all("b",recursive = False)
-                
-                description_text = ""
-                number_of_views = ""
-                
-                for b_element in b_element_list:
-                    if "description:" in b_element.get_text().lower():
-                        for next_element in b_element.next_siblings:
-                            if next_element.name == "br":
-                                break 
-                            
-                            if isinstance(next_element,bs4.NavigableString):    
-                                description_text += next_element.get_text()
+                if element_content:
+                    result.append(element_content)
                     
-                    if "views:" in b_element.get_text().lower():
-                        for next_element in b_element.next_siblings:
-                            if next_element.name == "br":
-                                break 
-                            
-                            if isinstance(next_element,bs4.NavigableString):    
-                                number_of_views += next_element.get_text()    
-                
-                                
-                result.append(
-                    {
-                        "url":anchor_element.get("href"),
-                        "link_text":anchor_element.get_text(),
-                        "description":description_text.strip(),
-                        "views":number_of_views.strip(),
-                        
-                    }
-                )
-                
-                        
             final_result[current_page_url] = result
-
+            
+        #await asyncio.sleep(0.3)
+        
         return final_result
 
-
-class SI_ScrapVideoSermonWork_ALL(SI_ScrapWork_ALL):
+   
+   
+class SI_ScrapTextSermonChristianBookWork_ALL(SI_ScrapWork_ALL):
     def __init__(self, root_folder, material_root_folder, browse_by_type,
                  overwrite_log=False, update_log=True,
                  intermdiate_folders=None):
         super().__init__(root_folder, material_root_folder, browse_by_type,
-                         overwrite_log, update_log, intermdiate_folders)
-    
+                         overwrite_log, update_log, intermdiate_folders)      
+          
     
     async def download_element_data(self,element):
         """This element take an element ( for example the information of an author or topic) 
@@ -110,7 +74,7 @@ class SI_ScrapVideoSermonWork_ALL(SI_ScrapWork_ALL):
         #print(self.root_folder,self.browse_by_type)
 
         try:
-            ob = SI_ScrapVideoSermonWork(
+            ob = SermonIndexScrapChristianBookTextSermonWork(
                 name = element.get("name"),
                 root_folder = self.root_folder,
                 browse_by_type = self.browse_by_type,
@@ -118,20 +82,15 @@ class SI_ScrapVideoSermonWork_ALL(SI_ScrapWork_ALL):
                 intermdiate_folders = element.get("download_log").get("intermediate_folders"),
                 material_root_folder = self.material_root_folder
             )
-            
             await ob.scrap_and_write()
-            
             return {"success":True,"element":element}
         except:
             return {"success":False,"element":element}
             
 
-        #print(element.get("name"))
-        
-
-
     async def is_element_data_downloaded(self,element):
-        ob = SI_ScrapVideoSermonWork(
+        
+        ob = SermonIndexScrapChristianBookTextSermonWork(
             name = element.get("name"),
             root_folder = self.root_folder,
             browse_by_type =self.browse_by_type,

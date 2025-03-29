@@ -483,6 +483,7 @@ class ParallelHttpConnexionWithLogManagement():
         # Init the log informations 
         await self.init_log_data() 
         
+        #print(self.log_file_content.keys())
         
         # Update before the begining of downloads
         await self.update_downloaded_and_to_download_from_drive(add_not_found_404_elements = True) 

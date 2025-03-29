@@ -6,8 +6,11 @@ from Instrumentum_sanae_doctrinae.cli_interface.cli_tools import parse_argument
 from Instrumentum_sanae_doctrinae.my_tools import general_tools
 from Instrumentum_sanae_doctrinae.web_scraping import my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex import si_scrap_general_information, si_scrap_get_speaker_list
-from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.audio_sermon import si_audio_sermon_scrap_get_list
-from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.text_sermon import si_text_sermon_scrap_general_information, si_text_sermon_scrap_get_list
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.audio_sermon import si_audio_sermon_scrap_get_list, si_audio_sermon_scrap_work
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.text_sermon import si_text_sermon_scrap_general_information, si_text_sermon_scrap_get_list, si_text_sermon_speaker_scrap_work
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.text_sermon import si_text_sermon_christianbook_scrap_work
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.video_sermon import si_video_sermon_scrap_work
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.vintage_image import si_vin_im_scrap_work
 import click
 
 
@@ -63,7 +66,7 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
     
     target_name = general_tools.replace_forbiden_char_in_text(target)
     
-    if material_type == "audio":
+    if material_type == my_constants.SERMONINDEX_AUDIO:
         
         material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
         
@@ -82,7 +85,7 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
             
         
         
-    elif material_type == "text":
+    elif material_type == my_constants.SERMONINDEX_TEXT:
         material_folder = my_constants.SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER
         
         if browse_by_type == my_constants.SPEAKER_NAME:
@@ -118,7 +121,7 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
                 asyncio.run(book_text_ob.download_from_element_key_list([target_name],1))
             
         
-    elif material_type == "video":
+    elif material_type == my_constants.SERMONINDEX_VIDEO:
         material_folder = my_constants.SERMONINDEX_VIDEO_SERMONS_ROOT_FOLDER
         
         ob = si_scrap_general_information.SermonIndexScrapSpeakerMainInformation_ALL(
@@ -135,7 +138,7 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
             asyncio.run(ob.download_from_element_key_list([target_name],1))
             ob.write_log_file()
     
-    elif material_type == "vintage_image":
+    elif material_type == my_constants.SERMONINDEX_VINTAGE_IMAGE:
         material_folder = my_constants.SERMONINDEX_VINTAGE_IMAGE_ROOT_FOLDER
     
         ob = si_scrap_general_information.SermonIndexScrapSpeakerMainInformation_ALL(
@@ -154,9 +157,99 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
             ob.write_log_file()    
         
         
-   
+
+def sermonindex_scrap_work(browse_by_type:str,material_type:str,
+                            target:str,output_folder,
+                            overwrite_log,download_batch_size:int):
     
+    target_name = general_tools.remove_forbiden_char_in_text(target)
+
+    if material_type == my_constants.SERMONINDEX_AUDIO:
+        material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
+        
+        ob = si_audio_sermon_scrap_work.SI_ScrapAudioSermonWork_ALL(
+                root_folder=output_folder,
+                material_root_folder=material_folder,
+                browse_by_type = browse_by_type,
+                overwrite_log=overwrite_log
+        )
+        
+        if target == "all":
+            asyncio.run(ob.download(download_batch_size=download_batch_size))
+            ob.write_log_file()
+        else:
+            asyncio.run(ob.download_from_element_key_list([target_name],1))
+            ob.write_log_file()
+            
+    elif material_type == my_constants.SERMONINDEX_TEXT:
+        material_folder = my_constants.SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER
+        
+        # Download work of a speaker 
+        if browse_by_type == my_constants.SPEAKER_NAME:
+            ob = si_text_sermon_speaker_scrap_work.SI_ScrapTextSermonSpeakerWork_ALL(
+                    root_folder=output_folder,
+                    material_root_folder=material_folder,
+                    browse_by_type = browse_by_type,
+                    overwrite_log=overwrite_log
+            )
+            
+            if target == "all":
+                asyncio.run(ob.download(download_batch_size=download_batch_size))
+                ob.write_log_file()
+            else:
+                asyncio.run(ob.download_from_element_key_list([target_name],1))
+                ob.write_log_file()
+        else:
+            ob = si_text_sermon_christianbook_scrap_work.SI_ScrapTextSermonChristianBookWork_ALL(
+                    root_folder=output_folder,
+                    material_root_folder=material_folder,
+                    browse_by_type = browse_by_type,
+                    overwrite_log=overwrite_log
+            )
+            
+            if target == "all":
+                asyncio.run(ob.download(download_batch_size=download_batch_size))
+                ob.write_log_file()
+            else:
+                asyncio.run(ob.download_from_element_key_list([target_name],1))
+                ob.write_log_file()
+            
+           
     
+    elif material_type == my_constants.SERMONINDEX_VIDEO:
+        material_folder = my_constants.SERMONINDEX_VIDEO_SERMONS_ROOT_FOLDER
+        
+        ob = si_vin_im_scrap_work.SI_ScrapVintageImageWork_ALL(
+                root_folder=output_folder,
+                material_root_folder=material_folder,
+                browse_by_type = browse_by_type,
+                overwrite_log=overwrite_log
+        )
+        
+        if target == "all":
+            asyncio.run(ob.download(download_batch_size=download_batch_size))
+            ob.write_log_file()
+        else:
+            asyncio.run(ob.download_from_element_key_list([target_name],1))
+            ob.write_log_file()
+            
+    elif material_type == my_constants.SERMONINDEX_VINTAGE_IMAGE:
+        material_folder = my_constants.SERMONINDEX_VINTAGE_IMAGE_ROOT_FOLDER
+        
+        ob = si_vin_im_scrap_work.SI_ScrapVintageImageWork_ALL(
+                root_folder=output_folder,
+                material_root_folder=material_folder,
+                browse_by_type = browse_by_type,
+                overwrite_log=overwrite_log
+        )
+        
+        if target == "all":
+            asyncio.run(ob.download(download_batch_size=download_batch_size))
+            ob.write_log_file()
+        else:
+            asyncio.run(ob.download_from_element_key_list([target_name],1))
+            ob.write_log_file() 
+                    
     
     
 
@@ -191,3 +284,28 @@ def sermonindex_scrap_general_information_command(context:click.Context,browse_b
     sermonindex_scrap_general_information(browse_by_type=browse_by_type,material_type=material_type,
                                           target=target,output_folder=output_folder,
                                           overwrite_log=overwrite_log,download_batch_size=download_batch_size)
+    
+    
+@click.command()
+@click.argument("browse_by_type",required = True,type = str)
+@click.argument("material_type",required = True,type=str)
+@click.argument("target",required = True,type = str)
+@click.argument("output_folder",required = True,type=str)
+@click.option('-u', '--overwrite-log',"overwrite_log",
+              default = False,required =  False)
+@click.option("-bs","--download_batch_size","download_batch_size",
+              default = 10,type = int,required = False)
+
+@click.pass_context
+def sermonindex_scrap_work_command(context:click.Context,browse_by_type:str,
+                                                  material_type:str,target:str,output_folder,
+                                                  overwrite_log,download_batch_size:int):
+    
+    output_folder = parse_argument(output_folder)
+    
+    sermonindex_scrap_work(browse_by_type=browse_by_type,material_type=material_type,
+                           target=target,overwrite_log=overwrite_log,
+                           download_batch_size=download_batch_size,
+                           output_folder=output_folder)
+    
+    
