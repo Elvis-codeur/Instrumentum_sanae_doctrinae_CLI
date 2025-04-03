@@ -51,7 +51,7 @@ class SI_AudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
 
             #print(*main_links_element[:2],sep="\n\n\n")
 
-            author_name = ""
+            name = ""
 
 
             result = []
@@ -88,10 +88,10 @@ class SI_AudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
                     
                         for comp in element_content[1].contents[0].contents[1:]:
                             if "by" in comp.get_text():
-                                author_name = comp.get_text().split(" ")
-                                if len(author_name) > 1:
+                                name = comp.get_text().split(" ")
+                                if len(name) > 1:
 
-                                    author_name = " ".join(author_name[1:]).strip()
+                                    name = " ".join(name[1:]).strip()
 
                             if  "topic" in comp.get_text().lower():
                                 add_element_to_topic = True
@@ -145,7 +145,7 @@ class SI_AudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
 
                         result.append({
                             "url":url,
-                            "author_name":author_name,
+                            "name":name,
                             "downlaod_number":download_number,
                             "topics":topic_list,
                             "scriptures":scripture_list,
