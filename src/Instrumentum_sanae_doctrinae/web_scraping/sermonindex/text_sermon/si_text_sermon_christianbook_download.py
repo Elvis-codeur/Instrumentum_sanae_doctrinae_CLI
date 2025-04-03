@@ -8,7 +8,7 @@ from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_download import SI
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_metadata import SermonIndexScrapAuthorTopicScripturePage
 
 
-class DownloadTextSermonSpeaker(SI_DownloadFromUrl):
+class DownloadTextSermonChristianBooks(SI_DownloadFromUrl):
     def __init__(self, url, output_folder, output_file_name, aiohttp_session,
                  separe_file_based_on_format=True):
         super().__init__(url, output_folder, output_file_name, aiohttp_session,
@@ -16,7 +16,7 @@ class DownloadTextSermonSpeaker(SI_DownloadFromUrl):
         
 
 
-class SI_Download_Speaker_ListOfTextWork(SI_Download_Work):
+class SI_Download_ChristianBooks_ListOfTextWork(SI_Download_Work):
     def __init__(self, name,material_type, root_folder, browse_by_type,
                  overwrite_log=False, update_log=True):
         super().__init__(name,material_type, root_folder, browse_by_type,
@@ -34,19 +34,27 @@ class SI_Download_Speaker_ListOfTextWork(SI_Download_Work):
         input_json_files = []
 
         # The folder where the works of the author are 
-        folder_path = os.path.join(input_root_folder,my_constants.WORK_INFORMATION_ROOT_FOLDER)
+        
+        
+        # Pay attention to this line 
+        # Things are different here 
+        # I take my data from the subfolder MAIN_INFORMATION_ROOT_FOLDER and no more from 
+        # WORK_INFORMATION_ROOT_FOLDER
+        
+        folder_path = os.path.join(input_root_folder,my_constants.MAIN_INFORMATION_ROOT_FOLDER)
         
         
         #print(folder_path)
         # List to store paths to all JSON files
         json_files = [i for i in pathlib.Path(folder_path).rglob("*.json") if i.is_file()]
 
-        #print(json_files)
+        #print(folder_path,json_files)
+        
         #print("kaka",json_files,input_root_folder)
         
         for file in json_files:
             filename = file.as_posix()
-            if my_constants.WORK_INFORMATION_ROOT_FOLDER in filename:
+            if my_constants.MAIN_INFORMATION_ROOT_FOLDER in filename:
                 input_json_files.append(file)
                 
 
@@ -66,8 +74,10 @@ class SI_Download_Speaker_ListOfTextWork(SI_Download_Work):
 
         element_list = kwargs.get("file_content").get("data")
         
+        #print(element_list)
+        
         if element_list:
-            name = element_list[0].get("author_name")
+            name = element_list.get("author_name")
             
         intermediate_folders = kwargs.get("intermediate_folders")
         
@@ -76,7 +86,7 @@ class SI_Download_Speaker_ListOfTextWork(SI_Download_Work):
             if name in intermediate_folders:
                 local_intermediate_folders = intermediate_folders[:intermediate_folders.index(name)].copy()
         
-        for element in element_list:        
+        for element in element_list.get("pages"):        
             self.element_dict[element.get("url")] = {
                 **{
                     "link_text":element.get("link_text"),
@@ -105,8 +115,9 @@ class SI_Download_Speaker_ListOfTextWork(SI_Download_Work):
 
         #print(self.root_folder,self.browse_by_type)
 
+        #print(element)
         
-        ob = DownloadTextSermonSpeaker(
+        ob = DownloadTextSermonChristianBooks(
             url = element.get("url"),
             output_folder = element.get('output_folder'),
             output_file_name = general_tools.replace_forbiden_char_in_text(
@@ -122,7 +133,7 @@ class SI_Download_Speaker_ListOfTextWork(SI_Download_Work):
 
     async def is_element_data_downloaded(self,element):
         #print(element)
-        ob = DownloadTextSermonSpeaker(
+        ob = DownloadTextSermonChristianBooks(
             url = element.get("url"),
             output_folder = element.get('output_folder'),
             output_file_name = general_tools.replace_forbiden_char_in_text(
