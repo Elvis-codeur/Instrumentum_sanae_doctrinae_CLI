@@ -78,21 +78,125 @@ class SI_ScrapVideoSermonWork(SermonIndexScrapAuthorTopicScripturePage):
                             if isinstance(next_element,bs4.NavigableString):    
                                 number_of_views += next_element.get_text()    
                 
-                                
+                
+                link_text = anchor_element.get_text()
+                
+                url =   anchor_element.get("href")
+                
+                
+                
+                # Now connect to that url to get the precise download url 
+                # and the youtube url if it is provided 
+                intermediate_download_content = await self.parse_sermonindex_download_intermediate_page(current_page_url,
+                                                                                                        url)
+                #print(url,link_text)
+                
                 result.append(
                     {
-                        "url":anchor_element.get("href"),
-                        "link_text":anchor_element.get_text(),
+                        **intermediate_download_content,
+                        "url":url,
+                        "link_text":link_text,
                         "description":description_text.strip(),
                         "views":number_of_views.strip(),
-                        
                     }
-                )
-                
+                )  
                         
             final_result[current_page_url] = result
 
         return final_result
+    
+    
+    async def parse_sermonindex_download_intermediate_page(self,current_page_url,download_page_url):
+        
+        async with self.main_request_session.get(url=download_page_url) as response:
+            
+            html_code =  await response.text()
+            
+            parser = bs4.BeautifulSoup(html_code,features="html.parser")
+            
+            h2_list = parser.findAll("h2")
+            
+            
+            
+            embed_url = ""
+            download_url = ""
+            
+            view_h2 = None
+            for h2 in h2_list:
+                if "view" in h2.get_text().lower():
+                    view_h2 = h2
+                    
+            #print(view_h2)
+            
+            video_iframe = parser.find("iframe")
+            video_embed = parser.find("embed")
+            
+            if view_h2:
+                download_url = view_h2.parent.find("a").get("href")
+                
+            if video_iframe:
+                embed_url = video_iframe.get("src")
+            
+            if video_embed:
+                embed_url = video_embed.get("src")
+                
+                
+            if not download_url:
+                raise RuntimeError(f"The download url was not found. Info dowload_page_url = {download_page_url}"
+                                   f" current_page_url = {current_page_url}")
+            
+            
+            # Parse to get comments also
+            
+            comment_table_list = parser.find_all("table",attrs={"width":"95%"}) 
+            comment_list = []
+            for comment_table in comment_table_list:
+                comment_title = ""
+                comment_content = ""
+                
+                comment_title_strong = comment_table.find("strong")
+                if comment_title_strong:
+                    comment_title = comment_title_strong.get_text()
+                
+                #print(list(comment_table.children))
+                
+                content_td_list = comment_table.find_all("tr",recursive=False)
+                
+                if content_td_list:
+                    content_td_list = content_td_list[-1].find_all("td")
+                
+                
+                #print(content_td_list)
+                
+                for content_td in content_td_list:
+                    content_td_text = content_td.get_text()
+                    if content_td_text:
+                        comment_content = content_td_text
+                        break
+                    
+                
+                comment_list.append(
+                    {
+                        "title":comment_title ,
+                        "text":comment_content
+                    }
+                    )
+                   
+
+            return {
+                "download_url":download_url,
+                "embed_url":embed_url,
+                "comments":comment_list
+            }
+            
+                
+            
+                
+                
+                
+                
+                    
+
 
 
 class SI_ScrapVideoSermonWork_ALL(SI_ScrapWork_ALL):
@@ -108,6 +212,7 @@ class SI_ScrapVideoSermonWork_ALL(SI_ScrapWork_ALL):
         and download the data that must be downloaded from it """
 
         #print(self.root_folder,self.browse_by_type)
+        #print(element)
 
         try:
             ob = SI_ScrapVideoSermonWork(
