@@ -249,7 +249,13 @@ def sermonindex_scrap_work(browse_by_type:str,material_type:str,
         else:
             asyncio.run(ob.download_from_element_key_list([target_name],1))
             ob.write_log_file() 
-                    
+    
+    
+def sermonindex_donwload(browse_by_type:str,material_type:str,
+                                       target:str,output_folder,
+                                       overwrite_log,download_batch_size:int):
+    
+    pass    
     
     
 
@@ -308,4 +314,25 @@ def sermonindex_scrap_work_command(context:click.Context,browse_by_type:str,
                            download_batch_size=download_batch_size,
                            output_folder=output_folder)
     
+
+@click.command()
+@click.argument("browse_by_type",required = True,type = str)
+@click.argument("material_type",required = True,type=str)
+@click.argument("target",required = True,type = str)
+@click.argument("output_folder",required = True,type=str)
+@click.option('-u', '--overwrite-log',"overwrite_log",
+              default = False,required =  False)
+@click.option("-bs","--download_batch_size","download_batch_size",
+              default = 10,type = int,required = False)
+
+@click.pass_context
+def sermonindex_download_command(context:click.Context,browse_by_type:str,
+                                                  material_type:str,target:str,output_folder,
+                                                  overwrite_log,download_batch_size:int)
     
+    output_folder = parse_argument(output_folder)
+    
+    sermonindex_donwload(browse_by_type=browse_by_type,material_type=material_type,
+                           target=target,overwrite_log=overwrite_log,
+                           download_batch_size=download_batch_size,
+                           output_folder=output_folder)

@@ -51,6 +51,7 @@ monergism_group.add_command(monergism_scrap_work_command,name="scrap_work")
 sermon_index_group.add_command(sermonindex_scrap_list_command,name = "scrap_list")
 sermon_index_group.add_command(sermonindex_scrap_general_information_command,name = "scrap_general_information")
 sermon_index_group.add_command(sermonindex_scrap_work_command,name = "scrap_work")
+sermon_index_group.add_command(sermonindex_download_command,name = "download")
 
 if __name__ == "__main__":
     entry_point()
