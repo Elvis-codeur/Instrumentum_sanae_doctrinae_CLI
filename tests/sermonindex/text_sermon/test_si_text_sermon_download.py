@@ -46,6 +46,7 @@ def test_text_sermon_christiabook_download():
         await ob.init_log_data()
         #print(ob.__dict__)
         await ob.download(1)
+        await ob.close_aiohttp_session()
     
     asyncio.run(d())
 

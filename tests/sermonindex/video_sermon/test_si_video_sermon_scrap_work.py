@@ -15,7 +15,8 @@ def test_video_sermon_get_speaker_work():
         overwrite_log=True
     )
     #print(ob.__dict__)
-    asyncio.run(ob.download(2))
+    asyncio.run(ob.download_from_element_key_list(["Art Katz"],1))
+    
     #ob.update_downloaded_and_to_download()
     #ob.write_log_file()
     

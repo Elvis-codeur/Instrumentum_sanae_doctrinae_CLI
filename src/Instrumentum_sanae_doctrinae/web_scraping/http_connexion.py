@@ -7,6 +7,7 @@ import os
 import urllib
 import pathlib
 import aiohttp
+import requests
 
 from bs4 import BeautifulSoup
 
@@ -97,6 +98,9 @@ class ScrapDataFromURL():
             compteur += 1
         
         self.main_request_session = None
+        
+        # The secondary is a non asynchronous http client 
+        self.secondary_request_session = requests.Session() 
         
     
         
