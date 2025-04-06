@@ -429,7 +429,7 @@ def sermonindex_scrap_work_command(context:click.Context,browse_by_type:str,
 @click.pass_context
 def sermonindex_download_command(context:click.Context,browse_by_type:str,
                                                   material_type:str,target:str,output_folder,
-                                                  overwrite_log,download_batch_size:int)
+                                                  overwrite_log,download_batch_size:int):
     
     output_folder = parse_argument(output_folder)
     
