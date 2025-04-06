@@ -13,6 +13,8 @@ from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.video_sermon import s
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.vintage_image import si_vin_im_scrap_work
 import click
 
+from Instrumentum_sanae_doctrinae_CLI.src.Instrumentum_sanae_doctrinae.web_scraping.sermonindex.video_sermon import si_video_sermon_download
+
 
 def sermonindex_scrap_list(root_folder):
     # Audio sermon 
@@ -255,7 +257,106 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                                        target:str,output_folder,
                                        overwrite_log,download_batch_size:int):
     
-    pass    
+    
+    target_name = general_tools.remove_forbiden_char_in_text(target)
+
+    if material_type == my_constants.SERMONINDEX_AUDIO:
+        material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
+        
+        ob = si_video_sermon_download.SI_Download_ListOfVideoWork(
+            "Art Katz",
+            material_type,
+            output_folder,
+            browse_by_type,
+            overwrite_log=True
+        )
+        
+        if target == "all":
+            async def  f():
+                await ob.init_aiohttp_session()
+                await ob.download(download_batch_size=download_batch_size)
+            asyncio.run(f())
+            ob.write_log_file()
+            
+        else:
+            async def  f():
+                await ob.init_aiohttp_session()
+                await ob.download_from_element_key_list([target_name],1)
+            asyncio.run(f())
+            ob.write_log_file()
+            
+            
+            
+            
+    elif material_type == my_constants.SERMONINDEX_TEXT:
+        material_folder = my_constants.SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER
+        
+        # Download work of a speaker 
+        if browse_by_type == my_constants.SPEAKER_NAME:
+            ob = si_text_sermon_speaker_scrap_work.SI_ScrapTextSermonSpeakerWork_ALL(
+                    root_folder=output_folder,
+                    material_root_folder=material_folder,
+                    browse_by_type = browse_by_type,
+                    overwrite_log=overwrite_log
+            )
+            
+            if target == "all":
+                asyncio.run(ob.download(download_batch_size=download_batch_size))
+                ob.write_log_file()
+            else:
+                asyncio.run(ob.download_from_element_key_list([target_name],1))
+                ob.write_log_file()
+        else:
+            ob = si_text_sermon_christianbook_scrap_work.SI_ScrapTextSermonChristianBookWork_ALL(
+                    root_folder=output_folder,
+                    material_root_folder=material_folder,
+                    browse_by_type = browse_by_type,
+                    overwrite_log=overwrite_log
+            )
+            
+            if target == "all":
+                asyncio.run(ob.download(download_batch_size=download_batch_size))
+                ob.write_log_file()
+            else:
+                asyncio.run(ob.download_from_element_key_list([target_name],1))
+                ob.write_log_file()
+            
+           
+    
+    elif material_type == my_constants.SERMONINDEX_VIDEO:
+        material_folder = my_constants.SERMONINDEX_VIDEO_SERMONS_ROOT_FOLDER
+        
+        ob = si_vin_im_scrap_work.SI_ScrapVintageImageWork_ALL(
+                root_folder=output_folder,
+                material_root_folder=material_folder,
+                browse_by_type = browse_by_type,
+                overwrite_log=overwrite_log
+        )
+        
+        if target == "all":
+            asyncio.run(ob.download(download_batch_size=download_batch_size))
+            ob.write_log_file()
+        else:
+            asyncio.run(ob.download_from_element_key_list([target_name],1))
+            ob.write_log_file()
+            
+    elif material_type == my_constants.SERMONINDEX_VINTAGE_IMAGE:
+        material_folder = my_constants.SERMONINDEX_VINTAGE_IMAGE_ROOT_FOLDER
+        
+        ob = si_vin_im_scrap_work.SI_ScrapVintageImageWork_ALL(
+                root_folder=output_folder,
+                material_root_folder=material_folder,
+                browse_by_type = browse_by_type,
+                overwrite_log=overwrite_log
+        )
+        
+        if target == "all":
+            asyncio.run(ob.download(download_batch_size=download_batch_size))
+            ob.write_log_file()
+        else:
+            asyncio.run(ob.download_from_element_key_list([target_name],1))
+            ob.write_log_file() 
+     
     
     
 
