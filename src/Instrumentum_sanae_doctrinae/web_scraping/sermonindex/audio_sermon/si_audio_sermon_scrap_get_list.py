@@ -36,6 +36,17 @@ class GetAudioSermonList(scrap_metadata.GetAnyBrowseByListFromManyPages):
                          intermdiate_folders = [])
         
         
+    def get_list_from_local_data(self):
+       
+        file_path = list(self.url_informations.values())[0].get("json_filepath")
+        
+        file_content = _my_tools.read_json(file_path)
+        
+        return [i.get("name") for i in file_content.get("data")]
+        
+        
+        
+        
 
 class GetAudioSermonTopicList(GetAudioSermonList):
     def __init__(self, root_folder, browse_by_type,

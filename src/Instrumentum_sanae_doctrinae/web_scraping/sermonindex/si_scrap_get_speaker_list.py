@@ -91,6 +91,10 @@ class GetSpeakerLinks(scrap_metadata.GetAnyBrowseByListFromManyPages):
             #print(links)
         return result
     
+    
+    def get_list_from_local_data(self):
+        print(self.__dict__)
+    
 
 
 class GetAudioSermonsSpeakerLinks(GetSpeakerLinks):
@@ -402,6 +406,29 @@ class GetSpeakerList():
                                                   ob.get_useful_anchor_object_list_on_other_page)
 
                 await other_page_ob.close()
+                
+                
+    def get_list_from_local_data(self):
+        speaker_list_json_file_root_folder = os.path.join(self.metadata_root_folder,
+                                                          my_constants.ELABORATED_DATA_FOLDER,
+                                                          my_constants.SPEAKER_NAME,
+                                                          my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER,
+                                                          )
+        
+        
+        filepath_list = pathlib.Path(speaker_list_json_file_root_folder).rglob("*.json")
+        
+        #print(speaker_list_json_file_root_folder,[i for i in filepath_list])
+        
+        result = []
+        
+        for file_path in filepath_list:
+            file_content = _my_tools.read_json(file_path)
+            result += [i.get("name") for i in file_content.get("data")]   
+            
+        return result     
+        
+        
         
 
 class GetAudioSermonSpeakerList(GetSpeakerList):
