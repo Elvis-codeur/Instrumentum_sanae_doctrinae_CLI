@@ -78,7 +78,7 @@ if __name__ == "__main__":
 	    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
      
      
-    test_get_text_sermons_speakers_list_from_drive()
+    test_get_audio_sermon_topic_list_from_drive()
     
     
     #test_get_audio_sermon_topic()
