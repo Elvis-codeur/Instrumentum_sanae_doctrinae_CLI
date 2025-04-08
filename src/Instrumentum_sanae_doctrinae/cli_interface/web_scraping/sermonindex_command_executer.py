@@ -13,7 +13,8 @@ from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.video_sermon import s
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.vintage_image import si_vin_im_scrap_work
 import click
 
-from Instrumentum_sanae_doctrinae_CLI.src.Instrumentum_sanae_doctrinae.web_scraping.sermonindex.video_sermon import si_video_sermon_download
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.video_sermon import si_video_sermon_download
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.audio_sermon import si_audio_sermon_download
 
 
 def sermonindex_scrap_list(root_folder):
@@ -263,27 +264,90 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
     if material_type == my_constants.SERMONINDEX_AUDIO:
         material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
         
-        ob = si_video_sermon_download.SI_Download_ListOfVideoWork(
-            "Art Katz",
-            material_type,
-            output_folder,
-            browse_by_type,
-            overwrite_log=True
-        )
-        
-        if target == "all":
-            async def  f():
-                await ob.init_aiohttp_session()
-                await ob.download(download_batch_size=download_batch_size)
-            asyncio.run(f())
-            ob.write_log_file()
+        if browse_by_type == my_constants.SPEAKER_NAME:
             
-        else:
-            async def  f():
-                await ob.init_aiohttp_session()
-                await ob.download_from_element_key_list([target_name],1)
-            asyncio.run(f())
-            ob.write_log_file()
+            list_ob = si_scrap_get_speaker_list.GetAudioSermonSpeakerList(root_folder=output_folder)
+            
+            speaker_list = list_ob.get_list_from_local_data()
+            
+            
+            if target == "all":
+                # Make the download for each spaker
+                for speaker_name in speaker_list:
+                    ob =si_audio_sermon_download.SI_Download_ListOfAudioWork(
+                        speaker_name,
+                        material_type,
+                        output_folder,
+                        browse_by_type,
+                        overwrite_log=True
+                    )
+                    
+                    async def  f():
+                        await ob.init_aiohttp_session()
+                        await ob.download(download_batch_size=download_batch_size)
+                        ob.write_log_file()
+                        
+                    asyncio.run(f())
+                
+            else:
+                
+                ob = si_audio_sermon_download.SI_Download_ListOfAudioWork(
+                        target_name,
+                        material_type,
+                        output_folder,
+                        browse_by_type,
+                        overwrite_log=True
+                    )
+                
+                    
+                async def f():
+                    await ob.init_aiohttp_session()
+                    await ob.download(download_batch_size=download_batch_size)
+                    ob.write_log_file()
+                    
+                asyncio.run(f())
+                
+        elif browse_by_type == my_constants.TOPIC_NAME:
+            list_ob = si_audio_sermon_scrap_get_list.GetAudioSermonTopicList(root_folder=output_folder)
+            
+            speaker_list = list_ob.get_list_from_local_data()
+            
+            
+            if target == "all":
+                # Make the download for each spaker
+                for speaker_name in speaker_list:
+                    ob =si_audio_sermon_download.SI_Download_ListOfAudioWork(
+                        speaker_name,
+                        material_type,
+                        output_folder,
+                        browse_by_type,
+                        overwrite_log=True
+                    )
+                    
+                    async def  f():
+                        await ob.init_aiohttp_session()
+                        await ob.download(download_batch_size=download_batch_size)
+                        ob.write_log_file()
+                        
+                    asyncio.run(f())
+                
+            else:
+                
+                ob = si_audio_sermon_download.SI_Download_ListOfAudioWork(
+                        target_name,
+                        material_type,
+                        output_folder,
+                        browse_by_type,
+                        overwrite_log=True
+                    )
+                
+                async def f():
+                    await ob.init_aiohttp_session()
+                    await ob.download(download_batch_size=download_batch_size)
+                    ob.write_log_file()
+                    
+                asyncio.run(f())
+                
             
             
             
