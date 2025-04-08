@@ -1,3 +1,4 @@
+import asyncio
 import os 
 
 
@@ -82,6 +83,33 @@ class GetTopicOrAuthorOrScriptureList(scrap_metadata.GetAnyBrowseByListFromManyP
         return (("/topics/" in link.attrs.get("href")) or ("=author:" in link.attrs.get("href")))
     
     
+    
+    async def get_list_of_downloadable_element(self,update_from_internet = False):
+        """
+        :param update_from_internet: If true, the json file containing the name of the downloadable element are updated from internet. 
+        This function return the list of all the element that can be downloaded. 
+        For the authors, it the name of the authors. 
+        For the scriptures, it is the name of the bible books. 
+        For topics, it is the name of the topics 
+        """
+        
+        if update_from_internet:
+            await self.scrap_and_write()
+    
+        result = {}
+        for url in self.url_informations:
+            url_information = self.url_informations[url]
+            json_filepath = url_information.get("json_filepath")
+            
+            if json_filepath:
+                url = url_information.get("url")
+                
+                json_filecontent = await _my_tools.async_read_json(json_filepath)
+                
+                result[url] = json_filecontent.get("data")
+        
+        return result
+        
 
 class GetScriptureList(GetTopicOrAuthorOrScriptureList):
     def __init__(self, root_folder,) -> None:

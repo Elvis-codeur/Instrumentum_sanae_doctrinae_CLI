@@ -3,9 +3,9 @@ import sys
 from Instrumentum_sanae_doctrinae.web_scraping import my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.video_sermon import  si_video_sermon_scrap_work
 
+root_folder ='/home/elvis/Documents/ForGod/Scraping General/test_folder' 
 
 def test_video_sermon_get_speaker_work():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     material_folder = my_constants.SERMONINDEX_VIDEO_SERMONS_ROOT_FOLDER
     browse_by_type = my_constants.SPEAKER_NAME
     ob = si_video_sermon_scrap_work.SI_ScrapVideoSermonWork_ALL(
@@ -15,7 +15,8 @@ def test_video_sermon_get_speaker_work():
         overwrite_log=True
     )
     #print(ob.__dict__)
-    asyncio.run(ob.download(2))
+    asyncio.run(ob.download_from_element_key_list(["Art Katz"],1))
+    
     #ob.update_downloaded_and_to_download()
     #ob.write_log_file()
     

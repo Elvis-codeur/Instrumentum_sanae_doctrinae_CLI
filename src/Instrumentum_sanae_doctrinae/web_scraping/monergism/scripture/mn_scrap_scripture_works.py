@@ -13,13 +13,6 @@ from Instrumentum_sanae_doctrinae.web_scraping.monergism.mn_scrap_subtopic_work 
 
 
 
-class MN_ScriptureWork(MN_ScrapScriptureOrTopicWork):
-    def  __init__(self, name, root_folder, url_list, browse_by_type, intermdiate_folders=None):
-        super().__init__(name, root_folder, url_list, browse_by_type, intermdiate_folders)
-        
-    
-
-
 class MN_ScriptureWork_All(http_connexion.ParallelHttpConnexionWithLogManagement):
     def __init__(self,root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
 
@@ -56,8 +49,7 @@ class MN_ScriptureWork_All(http_connexion.ParallelHttpConnexionWithLogManagement
         super().__init__(log_filepath = log_filepath,
                          input_root_folder= input_root_folder,
                          input_data=input_data,
-                         overwrite_log = overwrite_log,
-                         update_log = update_log)
+                         overwrite_log = overwrite_log)
         
         self.browse_by_type = browse_by_type
         self.root_folder = root_folder
@@ -84,43 +76,7 @@ class MN_ScriptureWork_All(http_connexion.ParallelHttpConnexionWithLogManagement
 
         #print(input_json_files)
         return input_json_files
-    
-    def prepare_input_data(self,**kwargs):
-        """
-        This method take a json file content and create input data for download 
-        that are put into the dict self.element_dict
-
-        :param file_content: the content of a json file where input data will be taken 
-        :param intermediate_folders: The intermediate folders from the root folder to 
-        the json file 
-        :param file_path: The path of the json file 
-        """
-
-        element = kwargs.get("file_content").get("data")
-        
-        
-        if not element.get("name") in self.element_dict.keys():
-            self.element_dict[element.get("name")]  = []
-
-                
-        self.element_dict[element.get("name")].append({
-            **{
-                "data":{
-                    "name":element.get("name"),
-                    "pages":element.get("pages")
-                }
-            },
-            **{
-                "meta_data": {
-                    "input_file_index":self.meta_informations["input_files_information"]\
-                                                        ["input_files"].index(kwargs.get("file_path")),                
-            },
             
-            **{"download_log":{
-                "intermediate_folders":kwargs.get("intermediate_folders")[2:]}
-                }}}
-        )
-        
         
 
     async def download_element_data(self,element_list):

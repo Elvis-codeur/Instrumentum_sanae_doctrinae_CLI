@@ -75,7 +75,7 @@ class SI_ChristianBookScrapGeneralInformation(SermonIndexScrapAuthorTopicScriptu
         return final_result
     
     
-    def is_data_downloaded(self):
+    async def is_data_downloaded(self):
 
         for url in self.url_informations:
             file_path = self.url_informations[url].get("json_filepath")
@@ -84,7 +84,7 @@ class SI_ChristianBookScrapGeneralInformation(SermonIndexScrapAuthorTopicScriptu
                 return False
             
             
-            file_content = _my_tools.read_file(file_path)
+            file_content = await _my_tools.async_read_file(file_path)
             
 
             if not file_content:
@@ -134,7 +134,6 @@ class SI_ChristianBookScrapMainInformation_ALL(http_connexion.ParallelHttpConnex
         super().__init__(log_filepath = log_filepath,
                          input_data = input_json_files_content,
                          overwrite_log = overwrite_log,
-                         update_log = update_log,
                          input_root_folder=input_root_folder)
         
         self.material_root_folder = material_root_folder
@@ -190,19 +189,23 @@ class SI_ChristianBookScrapMainInformation_ALL(http_connexion.ParallelHttpConnex
         """This element take an element ( for example the information of an author or topic) 
         and download the data that must be downloaded from it """
 
-        print(element.get("name"))
-        ob = SI_ChristianBookScrapGeneralInformation(
-            name = element.get("name"),
-            root_folder = self.root_folder,
-            browse_by_type = self.browse_by_type,
-            url_list = element.get("url_list"),
-            intermdiate_folders = element.get("download_log").get("intermediate_folders"),
-            material_root_folder = self.material_root_folder
-        )
+        try:
+            ob = SI_ChristianBookScrapGeneralInformation(
+                name = element.get("name"),
+                root_folder = self.root_folder,
+                browse_by_type = self.browse_by_type,
+                url_list = element.get("url_list"),
+                intermdiate_folders = element.get("download_log").get("intermediate_folders"),
+                material_root_folder = self.material_root_folder
+            )
 
-        await ob.scrap_and_write()
+            await ob.scrap_and_write()
+            return {"success":True,"element":element}
+        except:
+            return {"success":False,"element":element}
+            
 
-    def is_element_data_downloaded(self,element):
+    async def is_element_data_downloaded(self,element):
         ob = SI_ChristianBookScrapGeneralInformation(
             name = element.get("name"),
             root_folder = self.root_folder,
@@ -211,5 +214,5 @@ class SI_ChristianBookScrapMainInformation_ALL(http_connexion.ParallelHttpConnex
             intermdiate_folders = element.get("download_log").get("intermediate_folders"),
             material_root_folder = self.material_root_folder
         )
-        return ob.is_data_downloaded()
+        return await ob.is_data_downloaded()
         

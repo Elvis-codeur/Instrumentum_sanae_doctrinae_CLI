@@ -1,0 +1,1164 @@
+{
+    "version": "0.0.1",
+    "url": "https://www.monergism.com/search?f[0]=author:34468",
+    "local_json_filepath": "test_folder/metadata/monergism/elaborated_data/speaker/_work/C H Spurgeon/main_information/file_0.json",
+    "local_html_filepath": "test_folder/metadata/monergism/raw_data/speaker/_work/C H Spurgeon/main_information/file_0.html",
+    "request_datetime": [
+        "2025-02-28T13:41:12.877382Z"
+    ],
+    "request_header": {
+        "Date": "Fri, 28 Feb 2025 12:41:13 GMT",
+        "Content-Type": "text/html; charset=utf-8",
+        "Transfer-Encoding": "chunked",
+        "Connection": "keep-alive",
+        "CF-Ray": "91907cd28e56a649-CDG",
+        "CF-Cache-Status": "HIT",
+        "Age": "49499",
+        "Cache-Control": "public, max-age=86400",
+        "Content-Language": "en",
+        "Expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+        "Last-Modified": "Thu, 27 Feb 2025 06:00:17 GMT",
+        "Link": "<https://www.monergism.com/search>; rel=\"canonical\",<https://www.monergism.com/search>; rel=\"shortlink\"",
+        "Vary": "Cookie,Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-drupal-cache": "MISS",
+        "x-frame-options": "SAMEORIGIN",
+        "Report-To": "{\"endpoints\":[{\"url\":\"https:\\/\\/a.nel.cloudflare.com\\/report\\/v4?s=jJRkJUV7muyBeZkK%2BDDkoosDYeWliSjm7S020v9PK%2FmFPKN7R4vTPXas5obZ7fa3Y1isSalDcaiVwd8J%2FXEyHC2w%2BPOHxCuv29slXZl%2B1RBoSgaRCsgHYPeTw9lpjIyQPiYK\"}],\"group\":\"cf-nel\",\"max_age\":604800}",
+        "NEL": "{\"success_fraction\":0,\"report_to\":\"cf-nel\",\"max_age\":604800}",
+        "Server": "cloudflare",
+        "Content-Encoding": "gzip",
+        "server-timing": "cfL4;desc=\"?proto=TCP&rtt=30009&min_rtt=29965&rtt_var=8505&sent=4&recv=7&lost=0&retrans=0&sent_bytes=2844&recv_bytes=776&delivery_rate=96030&cwnd=251&unsent_bytes=0&cid=e3b9c2f433bb1183&ts=71&x=0\""
+    },
+    "request_status_code": 200,
+    "request_cookies": [],
+    "request_history": [],
+    "data": {
+        "pages": [
+            "https://www.monergism.com/search?f[0]=author:34468",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=1",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=2",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=3",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=4",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=5",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=6",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=7",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=8",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=9",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=10",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=11",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=12",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=13",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=14",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=15",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=16",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=17",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=18",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=19",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=20",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=21",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=22",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=23",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=24",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=25",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=26",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=27",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=28",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=29",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=30",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=31",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=32",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=33",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=34",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=35",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=36",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=37",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=38",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=39",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=40",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=41",
+            "https://www.monergism.com/search?f%5B0%5D=author%3A34468&page=42"
+        ],
+        "name": "C H Spurgeon",
+        "filter_by_topic": {
+            "Sermon Manuscripts & MP3s": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30882",
+                "link_text": "Sermon Manuscripts & MP3s",
+                "number": 818
+            },
+            "Charles Spurgeon": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30889",
+                "link_text": "Charles Spurgeon",
+                "number": 226
+            },
+            "MP3 Audio & Multimedia": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30883",
+                "link_text": "MP3 Audio & Multimedia",
+                "number": 62
+            },
+            "Free eBooks": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30915",
+                "link_text": "Free eBooks",
+                "number": 61
+            },
+            "Jesus Christ": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30764",
+                "link_text": "Jesus Christ",
+                "number": 38
+            },
+            "Prayer": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30876",
+                "link_text": "Prayer",
+                "number": 37
+            },
+            "God\u2019s Attributes": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30804",
+                "link_text": "God\u2019s Attributes",
+                "number": 33
+            },
+            "Faith": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30793",
+                "link_text": "Faith",
+                "number": 30
+            },
+            "Reformed Theology": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30863",
+                "link_text": "Reformed Theology",
+                "number": 26
+            },
+            "Salvation": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30873",
+                "link_text": "Salvation",
+                "number": 20
+            },
+            "Grace": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30809",
+                "link_text": "Grace",
+                "number": 18
+            },
+            "Sin and Temptation": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30871",
+                "link_text": "Sin and Temptation",
+                "number": 18
+            },
+            "Pastoral Ministry": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30850",
+                "link_text": "Pastoral Ministry",
+                "number": 17
+            },
+            "Pride & Humility": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30846",
+                "link_text": "Pride & Humility",
+                "number": 17
+            },
+            "Death": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30774",
+                "link_text": "Death",
+                "number": 16
+            },
+            "The Parables of Jesus": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30908",
+                "link_text": "The Parables of Jesus",
+                "number": 16
+            },
+            "Atonement": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30755",
+                "link_text": "Atonement",
+                "number": 15
+            },
+            "Doctrines of Grace": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30782",
+                "link_text": "Doctrines of Grace",
+                "number": 15
+            },
+            "Discipleship": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30781",
+                "link_text": "Discipleship",
+                "number": 14
+            },
+            "Evangelism": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30791",
+                "link_text": "Evangelism",
+                "number": 14
+            },
+            "Christian Life": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30803",
+                "link_text": "Christian Life",
+                "number": 13
+            },
+            "Forgiveness": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30799",
+                "link_text": "Forgiveness",
+                "number": 13
+            },
+            "Commentaries": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30885",
+                "link_text": "Commentaries",
+                "number": 12
+            },
+            "Gospel": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30807",
+                "link_text": "Gospel",
+                "number": 12
+            },
+            "Love and Charity": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30858",
+                "link_text": "Love and Charity",
+                "number": 12
+            },
+            "Christian Character": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30765",
+                "link_text": "Christian Character",
+                "number": 11
+            },
+            "Holy Spirit": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30880",
+                "link_text": "Holy Spirit",
+                "number": 11
+            },
+            "Five Solas": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30796",
+                "link_text": "Five Solas",
+                "number": 9
+            },
+            "Unregenerate": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30828",
+                "link_text": "Unregenerate",
+                "number": 9
+            },
+            "Bad Theology": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30756",
+                "link_text": "Bad Theology",
+                "number": 8
+            },
+            "Devotional": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30778",
+                "link_text": "Devotional",
+                "number": 8
+            },
+            "Election": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30786",
+                "link_text": "Election",
+                "number": 8
+            },
+            "Justification": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30879",
+                "link_text": "Justification",
+                "number": 8
+            },
+            "Providence & God\u2019s Will": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30845",
+                "link_text": "Providence & God\u2019s Will",
+                "number": 8
+            },
+            "Regeneration": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30842",
+                "link_text": "Regeneration",
+                "number": 8
+            },
+            "Sovereignty of God": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30870",
+                "link_text": "Sovereignty of God",
+                "number": 8
+            },
+            "Depression & Grief": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30777",
+                "link_text": "Depression & Grief",
+                "number": 7
+            },
+            "Heaven & Rewards": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30810",
+                "link_text": "Heaven & Rewards",
+                "number": 7
+            },
+            "Preaching": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30848",
+                "link_text": "Preaching",
+                "number": 7
+            },
+            "Biography": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30761",
+                "link_text": "Biography",
+                "number": 6
+            },
+            "Free Will": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30800",
+                "link_text": "Free Will",
+                "number": 6
+            },
+            "Sanctification": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30872",
+                "link_text": "Sanctification",
+                "number": 6
+            },
+            "Calvinism": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30763",
+                "link_text": "Calvinism",
+                "number": 5
+            },
+            "Covenant Theology": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30768",
+                "link_text": "Covenant Theology",
+                "number": 5
+            },
+            "Family and Marriage": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30794",
+                "link_text": "Family and Marriage",
+                "number": 5
+            },
+            "Perseverance of Saints": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30753",
+                "link_text": "Perseverance of Saints",
+                "number": 5
+            },
+            "Repentance": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30841",
+                "link_text": "Repentance",
+                "number": 5
+            },
+            "Suffering": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30833",
+                "link_text": "Suffering",
+                "number": 5
+            },
+            "Works": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30819",
+                "link_text": "Works",
+                "number": 5
+            },
+            "Abraham": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30749",
+                "link_text": "Abraham",
+                "number": 4
+            },
+            "Anthropology": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30748",
+                "link_text": "Anthropology",
+                "number": 4
+            },
+            "Arminianism": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30752",
+                "link_text": "Arminianism",
+                "number": 4
+            },
+            "Baptism": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30758",
+                "link_text": "Baptism",
+                "number": 4
+            },
+            "Biblical Counseling": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30888",
+                "link_text": "Biblical Counseling",
+                "number": 4
+            },
+            "Law and Gospel": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30877",
+                "link_text": "Law and Gospel",
+                "number": 4
+            },
+            "Resurrection": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30875",
+                "link_text": "Resurrection",
+                "number": 4
+            },
+            "Angels & Demons": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A39085",
+                "link_text": "Angels & Demons",
+                "number": 3
+            },
+            "Conversion": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30911",
+                "link_text": "Conversion",
+                "number": 3
+            },
+            "Fruit of the Spirit": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30798",
+                "link_text": "Fruit of the Spirit",
+                "number": 3
+            },
+            "God\u2019s Glory": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30802",
+                "link_text": "God\u2019s Glory",
+                "number": 3
+            },
+            "Hell": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30811",
+                "link_text": "Hell",
+                "number": 3
+            },
+            "Holiness of God": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30813",
+                "link_text": "Holiness of God",
+                "number": 3
+            },
+            "Predestination": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30847",
+                "link_text": "Predestination",
+                "number": 3
+            },
+            "Revival": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30840",
+                "link_text": "Revival",
+                "number": 3
+            },
+            "Time": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30830",
+                "link_text": "Time",
+                "number": 3
+            },
+            "Union with Christ": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30826",
+                "link_text": "Union with Christ",
+                "number": 3
+            },
+            "Warnings": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30824",
+                "link_text": "Warnings",
+                "number": 3
+            },
+            "Adam": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30914",
+                "link_text": "Adam",
+                "number": 2
+            },
+            "Adoption": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30750",
+                "link_text": "Adoption",
+                "number": 2
+            },
+            "Assurance": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30917",
+                "link_text": "Assurance",
+                "number": 2
+            },
+            "Bible Study": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30907",
+                "link_text": "Bible Study",
+                "number": 2
+            },
+            "Biblical Theology": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30760",
+                "link_text": "Biblical Theology",
+                "number": 2
+            },
+            "Creeds and Confessions": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30886",
+                "link_text": "Creeds and Confessions",
+                "number": 2
+            },
+            "Cross / Crucifixion": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30771",
+                "link_text": "Cross / Crucifixion",
+                "number": 2
+            },
+            "Definite Atonement": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30775",
+                "link_text": "Definite Atonement",
+                "number": 2
+            },
+            "Ecclesiology": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30766",
+                "link_text": "Ecclesiology",
+                "number": 2
+            },
+            "Education & Academia": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30784",
+                "link_text": "Education & Academia",
+                "number": 2
+            },
+            "Eschatology": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30787",
+                "link_text": "Eschatology",
+                "number": 2
+            },
+            "Fear of God": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30795",
+                "link_text": "Fear of God",
+                "number": 2
+            },
+            "Foreknowledge of God": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30797",
+                "link_text": "Foreknowledge of God",
+                "number": 2
+            },
+            "Guidance & God\u2019s Will": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30806",
+                "link_text": "Guidance & God\u2019s Will",
+                "number": 2
+            },
+            "Hermeneutics": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30812",
+                "link_text": "Hermeneutics",
+                "number": 2
+            },
+            "Joy": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30861",
+                "link_text": "Joy",
+                "number": 2
+            },
+            "Judgment": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30910",
+                "link_text": "Judgment",
+                "number": 2
+            },
+            "Lord\u2019s Supper": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30790",
+                "link_text": "Lord\u2019s Supper",
+                "number": 2
+            },
+            "Original Sin & The Fall": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30852",
+                "link_text": "Original Sin & The Fall",
+                "number": 2
+            },
+            "Redemption": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30827",
+                "link_text": "Redemption",
+                "number": 2
+            },
+            "Seeker Sensitive": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30838",
+                "link_text": "Seeker Sensitive",
+                "number": 2
+            },
+            "Sermons": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30904",
+                "link_text": "Sermons",
+                "number": 2
+            },
+            "Spiritual Disciplines": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30835",
+                "link_text": "Spiritual Disciplines",
+                "number": 2
+            },
+            "Theology": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30831",
+                "link_text": "Theology",
+                "number": 2
+            },
+            "Total Depravity of Man": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30776",
+                "link_text": "Total Depravity of Man",
+                "number": 2
+            },
+            "What is a Christian?": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30916",
+                "link_text": "What is a Christian?",
+                "number": 2
+            },
+            "Worry, Fear & Anxiety": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30820",
+                "link_text": "Worry, Fear & Anxiety",
+                "number": 2
+            },
+            "31762": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A31762",
+                "link_text": "31762",
+                "number": 1
+            },
+            "32512": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A32512",
+                "link_text": "32512",
+                "number": 1
+            },
+            "Bibliology": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30759",
+                "link_text": "Bibliology",
+                "number": 1
+            },
+            "Ethics": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30788",
+                "link_text": "Ethics",
+                "number": 1
+            },
+            "Evil": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30792",
+                "link_text": "Evil",
+                "number": 1
+            },
+            "Federal Headship": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30913",
+                "link_text": "Federal Headship",
+                "number": 1
+            },
+            "Genesis": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30844",
+                "link_text": "Genesis",
+                "number": 1
+            },
+            "Irresistible Grace": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30918",
+                "link_text": "Irresistible Grace",
+                "number": 1
+            },
+            "Israel / Judaism": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30818",
+                "link_text": "Israel / Judaism",
+                "number": 1
+            },
+            "Justice": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30869",
+                "link_text": "Justice",
+                "number": 1
+            },
+            "Lordship of Christ": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30859",
+                "link_text": "Lordship of Christ",
+                "number": 1
+            },
+            "Money & Generosity": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30855",
+                "link_text": "Money & Generosity",
+                "number": 1
+            },
+            "Ordo Salutis": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30853",
+                "link_text": "Ordo Salutis",
+                "number": 1
+            },
+            "Puritans": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30843",
+                "link_text": "Puritans",
+                "number": 1
+            },
+            "Sermon on the Mount": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30919",
+                "link_text": "Sermon on the Mount",
+                "number": 1
+            },
+            "Spiritual Warfare": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30834",
+                "link_text": "Spiritual Warfare",
+                "number": 1
+            },
+            "Ten Commandments": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30867",
+                "link_text": "Ten Commandments",
+                "number": 1
+            },
+            "Trinity": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30865",
+                "link_text": "Trinity",
+                "number": 1
+            },
+            "Worldviews": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30821",
+                "link_text": "Worldviews",
+                "number": 1
+            },
+            "Youth and Children": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=topic%3A30891",
+                "link_text": "Youth and Children",
+                "number": 1
+            }
+        },
+        "filter_by_format": {
+            "Ebook": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=format%3A59",
+                "link_text": "Ebook",
+                "number": 685
+            },
+            "Web Page": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=format%3A8",
+                "link_text": "Web Page",
+                "number": 488
+            },
+            "Multimedia": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=format%3A3",
+                "link_text": "Multimedia",
+                "number": 110
+            }
+        },
+        "filter_by_genre": {
+            "Essay": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=genre%3A57",
+                "link_text": "Essay",
+                "number": 287
+            },
+            "Sermon": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=genre%3A82",
+                "link_text": "Sermon",
+                "number": 135
+            },
+            "Dialogue": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=genre%3A29",
+                "link_text": "Dialogue",
+                "number": 2
+            },
+            "Lecture": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=genre%3A47",
+                "link_text": "Lecture",
+                "number": 2
+            }
+        },
+        "filter_by_web_site": {
+            "spurgeongems.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aspurgeongems.org",
+                "link_text": "spurgeongems.org",
+                "number": 648
+            },
+            "monergism.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Amonergism.com",
+                "link_text": "monergism.com",
+                "number": 158
+            },
+            "biblebb.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Abiblebb.com",
+                "link_text": "biblebb.com",
+                "number": 154
+            },
+            "mp3.sermonaudio.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Amp3.sermonaudio.com",
+                "link_text": "mp3.sermonaudio.com",
+                "number": 103
+            },
+            "chapellibrary.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Achapellibrary.org",
+                "link_text": "chapellibrary.org",
+                "number": 33
+            },
+            "romans45.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aromans45.org",
+                "link_text": "romans45.org",
+                "number": 29
+            },
+            "answersingenesis.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aanswersingenesis.org",
+                "link_text": "answersingenesis.org",
+                "number": 13
+            },
+            "spurgeon.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aspurgeon.org",
+                "link_text": "spurgeon.org",
+                "number": 13
+            },
+            "gracegems.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Agracegems.org",
+                "link_text": "gracegems.org",
+                "number": 12
+            },
+            "preceptaustin.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Apreceptaustin.org",
+                "link_text": "preceptaustin.org",
+                "number": 12
+            },
+            "archive.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aarchive.org",
+                "link_text": "archive.org",
+                "number": 11
+            },
+            "archive.spurgeon.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aarchive.spurgeon.org",
+                "link_text": "archive.spurgeon.org",
+                "number": 10
+            },
+            "grace-ebooks.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Agrace-ebooks.com",
+                "link_text": "grace-ebooks.com",
+                "number": 8
+            },
+            "apibs.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aapibs.org",
+                "link_text": "apibs.org",
+                "number": 7
+            },
+            "blueletterbible.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Ablueletterbible.org",
+                "link_text": "blueletterbible.org",
+                "number": 7
+            },
+            "youtube.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Ayoutube.com",
+                "link_text": "youtube.com",
+                "number": 5
+            },
+            "eternallifeministries.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aeternallifeministries.org",
+                "link_text": "eternallifeministries.org",
+                "number": 4
+            },
+            "onthewing.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aonthewing.org",
+                "link_text": "onthewing.org",
+                "number": 4
+            },
+            "ccel.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Accel.org",
+                "link_text": "ccel.org",
+                "number": 3
+            },
+            "bible.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Abible.org",
+                "link_text": "bible.org",
+                "number": 2
+            },
+            "bible-researcher.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Abible-researcher.com",
+                "link_text": "bible-researcher.com",
+                "number": 2
+            },
+            "docs.google.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Adocs.google.com",
+                "link_text": "docs.google.com",
+                "number": 2
+            },
+            "reformedreader.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Areformedreader.org",
+                "link_text": "reformedreader.org",
+                "number": 2
+            },
+            "sounddoctrine.net": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Asounddoctrine.net",
+                "link_text": "sounddoctrine.net",
+                "number": 2
+            },
+            "the-highway.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Athe-highway.com",
+                "link_text": "the-highway.com",
+                "number": 2
+            },
+            "agapeindia.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aagapeindia.com",
+                "link_text": "agapeindia.com",
+                "number": 1
+            },
+            "amazon.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aamazon.com",
+                "link_text": "amazon.com",
+                "number": 1
+            },
+            "angelfire.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aangelfire.com",
+                "link_text": "angelfire.com",
+                "number": 1
+            },
+            "aomin.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aaomin.org",
+                "link_text": "aomin.org",
+                "number": 1
+            },
+            "banneroftruth.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Abanneroftruth.org",
+                "link_text": "banneroftruth.org",
+                "number": 1
+            },
+            "bible.prayerrequest.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Abible.prayerrequest.com",
+                "link_text": "bible.prayerrequest.com",
+                "number": 1
+            },
+            "books.google.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Abooks.google.com",
+                "link_text": "books.google.com",
+                "number": 1
+            },
+            "crossway.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Acrossway.org",
+                "link_text": "crossway.org",
+                "number": 1
+            },
+            "effectualgrace.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aeffectualgrace.com",
+                "link_text": "effectualgrace.com",
+                "number": 1
+            },
+            "ftc.co": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aftc.co",
+                "link_text": "ftc.co",
+                "number": 1
+            },
+            "gospelweb.net": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Agospelweb.net",
+                "link_text": "gospelweb.net",
+                "number": 1
+            },
+            "gracesermons.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Agracesermons.com",
+                "link_text": "gracesermons.com",
+                "number": 1
+            },
+            "ligonier.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Aligonier.org",
+                "link_text": "ligonier.org",
+                "number": 1
+            },
+            "media.sabda.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Amedia.sabda.org",
+                "link_text": "media.sabda.org",
+                "number": 1
+            },
+            "messiahpa.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Amessiahpa.org",
+                "link_text": "messiahpa.org",
+                "number": 1
+            },
+            "ntslibrary.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Antslibrary.com",
+                "link_text": "ntslibrary.com",
+                "number": 1
+            },
+            "sermonaudio.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Asermonaudio.com",
+                "link_text": "sermonaudio.com",
+                "number": 1
+            },
+            "sg-audiotreasures.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Asg-audiotreasures.org",
+                "link_text": "sg-audiotreasures.org",
+                "number": 1
+            },
+            "sharperiron.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Asharperiron.org",
+                "link_text": "sharperiron.org",
+                "number": 1
+            },
+            "sovereignnations.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Asovereignnations.com",
+                "link_text": "sovereignnations.com",
+                "number": 1
+            },
+            "studylight.org": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Astudylight.org",
+                "link_text": "studylight.org",
+                "number": 1
+            },
+            "teampyro.blogspot.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Ateampyro.blogspot.com",
+                "link_text": "teampyro.blogspot.com",
+                "number": 1
+            },
+            "teampyro.blogspot.nl": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Ateampyro.blogspot.nl",
+                "link_text": "teampyro.blogspot.nl",
+                "number": 1
+            },
+            "theologue.files.wordpress.com": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=website%3Atheologue.files.wordpress.com",
+                "link_text": "theologue.files.wordpress.com",
+                "number": 1
+            }
+        },
+        "filter_by_author": {
+            "": {
+                "url": "https://www.monergism.com/search",
+                "link_text": "",
+                "number": null
+            },
+            "J C Ryle": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A35296",
+                "link_text": "J C Ryle",
+                "number": 14
+            },
+            "A W Pink": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A35278",
+                "link_text": "A W Pink",
+                "number": 7
+            },
+            "Jonathan  Edwards": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34270",
+                "link_text": "Jonathan  Edwards",
+                "number": 7
+            },
+            "John  Calvin": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34198",
+                "link_text": "John  Calvin",
+                "number": 6
+            },
+            "John  Owen": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34180",
+                "link_text": "John  Owen",
+                "number": 6
+            },
+            "George  Whitefield": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A35404",
+                "link_text": "George  Whitefield",
+                "number": 5
+            },
+            "Dr. John MacArthur": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34576",
+                "link_text": "Dr. John MacArthur",
+                "number": 3
+            },
+            "Thomas  Boston": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A36052",
+                "link_text": "Thomas  Boston",
+                "number": 3
+            },
+            "Thomas  Brooks": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34252",
+                "link_text": "Thomas  Brooks",
+                "number": 3
+            },
+            "Charles  Hodge": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A36881",
+                "link_text": "Charles  Hodge",
+                "number": 2
+            },
+            "Dr. Martyn  Lloyd-Jones": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34450",
+                "link_text": "Dr. Martyn  Lloyd-Jones",
+                "number": 2
+            },
+            "Edward  Donnelly": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34720",
+                "link_text": "Edward  Donnelly",
+                "number": 2
+            },
+            "John  Bunyan": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A35332",
+                "link_text": "John  Bunyan",
+                "number": 2
+            },
+            "John  Flavel": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34936",
+                "link_text": "John  Flavel",
+                "number": 2
+            },
+            "Loraine  Boettner": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34864",
+                "link_text": "Loraine  Boettner",
+                "number": 2
+            },
+            "Richard  Baxter": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34324",
+                "link_text": "Richard  Baxter",
+                "number": 2
+            },
+            "Thomas  Manton": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34306",
+                "link_text": "Thomas  Manton",
+                "number": 2
+            },
+            "Thomas R Schreiner": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A35008",
+                "link_text": "Thomas R Schreiner",
+                "number": 2
+            },
+            "Thomas  Watson": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34234",
+                "link_text": "Thomas  Watson",
+                "number": 2
+            },
+            "William  Whitaker": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34728",
+                "link_text": "William  Whitaker",
+                "number": 2
+            },
+            "A A Hodge": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A37420",
+                "link_text": "A A Hodge",
+                "number": 1
+            },
+            "Alistair  Begg": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34738",
+                "link_text": "Alistair  Begg",
+                "number": 1
+            },
+            "Archibald  Alexander": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A37007",
+                "link_text": "Archibald  Alexander",
+                "number": 1
+            },
+            "Charles  Bridges": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A35607",
+                "link_text": "Charles  Bridges",
+                "number": 1
+            },
+            "D A Carson": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34540",
+                "link_text": "D A Carson",
+                "number": 1
+            },
+            "Ebenezer  Erskine": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A36179",
+                "link_text": "Ebenezer  Erskine",
+                "number": 1
+            },
+            "Edward  Fisher": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A38098",
+                "link_text": "Edward  Fisher",
+                "number": 1
+            },
+            "George  Whitfield": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A37082",
+                "link_text": "George  Whitfield",
+                "number": 1
+            },
+            "Horatius  Bonar": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A37457",
+                "link_text": "Horatius  Bonar",
+                "number": 1
+            },
+            "Joel R Beeke": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A35098",
+                "link_text": "Joel R Beeke",
+                "number": 1
+            },
+            "John A James": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A37295",
+                "link_text": "John A James",
+                "number": 1
+            },
+            "John  Gill": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A35566",
+                "link_text": "John  Gill",
+                "number": 1
+            },
+            "John  Murray": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A35638",
+                "link_text": "John  Murray",
+                "number": 1
+            },
+            "Martin  Luther": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34216",
+                "link_text": "Martin  Luther",
+                "number": 1
+            },
+            "Octavius  Winslow": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A37634",
+                "link_text": "Octavius  Winslow",
+                "number": 1
+            },
+            "Paul  Helm": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A38246",
+                "link_text": "Paul  Helm",
+                "number": 1
+            },
+            "Richard  Sibbes": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34378",
+                "link_text": "Richard  Sibbes",
+                "number": 1
+            },
+            "Stephen  Charnock": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A35386",
+                "link_text": "Stephen  Charnock",
+                "number": 1
+            },
+            "Thomas  Vincent": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A34543",
+                "link_text": "Thomas  Vincent",
+                "number": 1
+            },
+            "Tony  Reinke": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A36920",
+                "link_text": "Tony  Reinke",
+                "number": 1
+            },
+            "Wilhelmus a Brakel": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A37983",
+                "link_text": "Wilhelmus a Brakel",
+                "number": 1
+            },
+            "William  Hendriksen": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A37907",
+                "link_text": "William  Hendriksen",
+                "number": 1
+            },
+            "William S Plumer": {
+                "url": "https://www.monergism.com/search?f%5B0%5D=author%3A34468&f%5B1%5D=author%3A37331",
+                "link_text": "William S Plumer",
+                "number": 1
+            }
+        },
+        "filter_by_serie_data": {}
+    }
+}

@@ -16,9 +16,11 @@ from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.text_sermon import si
 ###################################
 ###################################
 
+root_folder ='/home/elvis/Documents/ForGod/Scraping General/test_folder' 
+
+
 # Text sermon speakers 
 def test_vintage_image_scrap_all_speaker_main_info_sermoindex():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     material_folder = my_constants.SERMONINDEX_VINTAGE_IMAGE_ROOT_FOLDER
     browse_by_type = my_constants.SPEAKER_NAME
     ob = si_scrap_general_information.SermonIndexScrapSpeakerMainInformation_ALL(
@@ -29,7 +31,6 @@ def test_vintage_image_scrap_all_speaker_main_info_sermoindex():
     )    
     #print(ob.__dict__)
     asyncio.run(ob.download(2))
-    ob.update_downloaded_and_to_download()
     ob.write_log_file()
     
 

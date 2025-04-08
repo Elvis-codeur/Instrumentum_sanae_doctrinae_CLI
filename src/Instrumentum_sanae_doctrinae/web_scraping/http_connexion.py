@@ -7,6 +7,7 @@ import os
 import urllib
 import pathlib
 import aiohttp
+import requests
 
 from bs4 import BeautifulSoup
 
@@ -98,6 +99,9 @@ class ScrapDataFromURL():
         
         self.main_request_session = None
         
+        # The secondary is a non asynchronous http client 
+        self.secondary_request_session = requests.Session() 
+        
     
         
     async def close(self):
@@ -111,13 +115,6 @@ class ScrapDataFromURL():
         Connect to an html page whose url has been given 
         """
 
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Connection": "close",
-        }
         
         self.main_request_session = aiohttp.ClientSession()
         
@@ -127,7 +124,6 @@ class ScrapDataFromURL():
             #timeout = aiohttp.ClientTimeout(total=15)
             #print(url_dict)
             async with self.main_request_session.get(url=url) as response:
-                
                 
                 if response.status == 404:
                     raise my_errors.HTTP404Error(url)
@@ -299,10 +295,11 @@ class ScrapDataFromURL():
 
 
 class ParallelHttpConnexionWithLogManagement():
-    def __init__(self,log_filepath,input_data,overwrite_log = False,update_log = True,input_root_folder = ""):
+    def __init__(self,log_filepath,input_data,overwrite_log = False,input_root_folder = ""):
         """
         :param log_filepath: The path of the log file used to store and manage the downloaded, undownloaded, not found etc 
         :param input_data: A dictionnary where the keys are the file path and the value the content of the file
+        :param overwrite_log: If true, the existing log file is overwriten. If not, the older log file is read and the updates are made from it 
         :param input_root_folder: The folder from which all the json files are searched from to be used as input files 
         """
         self.log_filepath = log_filepath
@@ -363,7 +360,7 @@ class ParallelHttpConnexionWithLogManagement():
             if not os.path.exists(self.log_filepath):
                 await _my_tools.async_write_json(self.log_filepath,self.create_default_log_file_content())
             else:
-                # Create the log dict 
+                # Read the log dict 
                 self.log_file_content = await _my_tools.async_read_json(self.log_filepath)
                 # Update it in with based on things downloaded or not 
                 await self.update_to_download_list()   
@@ -372,7 +369,7 @@ class ParallelHttpConnexionWithLogManagement():
         """
         Open the log file and update to download and downloaded informations 
         """
-        await self.update_downloaded_and_to_download(add_not_found_404_elements=False)
+        await self.update_downloaded_and_to_download_from_drive(add_not_found_404_elements=False)
         
         await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
         
@@ -385,25 +382,27 @@ class ParallelHttpConnexionWithLogManagement():
         the to_download list. That happen if after the last scraping, new elements have been scrapped 
         and not yet downloaded
         """
+        
         # A list of the url of of the link object which have been already downloaded 
-        downloaded_link_url_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
-        to_downlaod_link_url_list = [i for i in self.log_file_content.get("to_download")] if self.log_file_content.get("to_download") else []
+        downloaded_list = [i for i in self.log_file_content.get("downloaded")] if self.log_file_content.get("downloaded") else []
+        to_downlaod_list = [i for i in self.log_file_content.get("to_download")] if self.log_file_content.get("to_download") else []
 
+        
         # We take "element_list" variable because it contains the link of the author, scripture or topic
         for element_name in self.element_dict:
-            for url in self.element_dict[element_name]:
-                if url not in downloaded_link_url_list: # If it is not already downloaded 
-                    if url not in to_downlaod_link_url_list: # It is not in the link prepared to for download. 
-                        print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",url,element_name)
-                    
-                        self.log_file_content["to_download"][url] = self.element_dict[url]
-                    else: # If the element is already in the "to_download" list, there is no need to add it 
-                        pass 
-                else: # If the link is already downlaed. There is no need of modification of anything 
+            #print(element_name,self.element_dict[element_name],"Elvis","\n\n\n")
+            if element_name not in downloaded_list: # If it is not already downloaded 
+                if element_name not in to_downlaod_list: # It is not in the link prepared to for download. 
+                    #print("\n\n\n\n\n",self.log_file_content["to_download"].keys(),"\n\n\n",self.element_dict.keys(),"\n\n\n\n",url,element_name)
+                    #print(element_name)
+                    self.log_file_content["to_download"][element_name] = self.element_dict[element_name]
+                else: # If the element is already in the "to_download" list, there is no need to add it 
                     pass 
+            else: # If the link is already downlaed. There is no need of modification of anything 
+                pass
 
 
-    async def update_downloaded_and_to_download(self,add_not_found_404_elements):
+    async def update_downloaded_and_to_download_from_drive(self,add_not_found_404_elements):
         """
         This function verify if the data of the links in "downloaded" list are truly downloaded. 
         If not this link is put back in the "to_download" list. 
@@ -417,6 +416,7 @@ class ParallelHttpConnexionWithLogManagement():
         downloaded = {}
         to_download = {}
         
+        
         if add_not_found_404_elements:
             element_dict = {**self.log_file_content["to_download"],
                         ** self.log_file_content["downloaded"],
@@ -427,6 +427,8 @@ class ParallelHttpConnexionWithLogManagement():
             
 
         for key in element_dict:
+            #print(element_dict.keys())
+            #print(key,element_dict[key],"\n",self.element_dict[key],"\n\n\n")
             is_downloaded = await self.is_element_data_downloaded(element_dict[key])
             #print(key,is_downloaded)
             if is_downloaded:
@@ -439,6 +441,26 @@ class ParallelHttpConnexionWithLogManagement():
         
         self.log_file_content["to_download"] = to_download
         self.log_file_content["downloaded"] = downloaded
+    
+    
+    async def update_downloaded_and_to_download_from_download_result(self,download_result_list):
+        """
+        This method take the result of downloads and update the downloaded and to download 
+        dict of the log file content 
+        """
+
+     
+        for download_result in download_result_list:
+            #print(download_result,"--------- download result --------------")
+            if download_result.get("success"):
+                # Add the downloaded element to the downloaded list
+                self.log_file_content["downloaded"][download_result.get("element").get("name")] = download_result.get("element")
+                
+                if download_result.get("element").get("name") in self.log_file_content["to_download"].keys():
+                    # Delete it from the to_download list 
+                    del self.log_file_content["to_download"][download_result.get("element").get("name")]
+                    
+    
     
 
     def create_default_log_file_content(self):
@@ -465,9 +487,10 @@ class ParallelHttpConnexionWithLogManagement():
         # Init the log informations 
         await self.init_log_data() 
         
+        #print(self.log_file_content.keys())
         
         # Update before the begining of downloads
-        await self.update_downloaded_and_to_download(add_not_found_404_elements = True) 
+        await self.update_downloaded_and_to_download_from_drive(add_not_found_404_elements = True) 
         
         
         
@@ -488,11 +511,124 @@ class ParallelHttpConnexionWithLogManagement():
         for download_batch in element_to_download_splitted:
             tasks = [self.download_element_data(element) for element in download_batch]
             result = await asyncio.gather(*tasks)
-            await self.update_downloaded_and_to_download(add_not_found_404_elements=False)
+           
+            await self.update_downloaded_and_to_download_from_download_result(result)
+           
+            await self.print_download_informations(check_from_file=False)
+        
+            await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
+            
+    
+    
+    async def download_from_element_list(self,element_list,download_batch_size):
+        """
+        Download the content of the input files concurrently 
+        by a batch of size :data:`download_batch` 
+        """
+        result = []
+
+        # Init the log informations 
+        await self.init_log_data() 
+        
+        
+        # Update before the begining of downloads
+        await self.update_downloaded_and_to_download_from_drive(add_not_found_404_elements = False) 
+               
+        # Split it by size download_batch_size to download
+        #  them in parralel 
+        element_to_download_splitted = _my_tools.sample_list(element_list,
+                                                      download_batch_size)
+
+        
+        # This is used to show a progress bar 
+        for download_batch in element_to_download_splitted:
+            #print([type(element) for element in download_batch_size])
+            tasks = [self.download_element_data(element) for element in download_batch]
+            result = await asyncio.gather(*tasks)
+            #print(result)
+            await self.update_downloaded_and_to_download_from_download_result(result)
+            
+            
             #break 
             await self.print_download_informations(check_from_file=False)
+        
+            await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
+           
+           
+           
+    async def is_key_in_logfile_keys(self,key:str) -> bool:
+        """
+
+        Args:
+            key (str): The key to check if it is in the log file to_download dict or downloaded dict. 
+
+        Returns:
+            bool: 
+        """
+
+        
+
+        # Init the log informations 
+        await self.init_log_data() 
+        
+        
+        # Update before the begining of downloads
+        await self.update_downloaded_and_to_download_from_drive(add_not_found_404_elements = True) 
+        
+        return (key in self.log_file_content["to_download"] or key in self.log_file_content["downloaded"])
+    
+    async def download_from_element_key_list(self,key_list,download_batch_size):
+        """
+        Download the content of the input files concurrently 
+        by a batch of size :data:`download_batch` 
+        """
+        result = []
+
+        # Init the log informations 
+        await self.init_log_data() 
+        
+        
+        # Update before the begining of downloads
+        await self.update_downloaded_and_to_download_from_drive(add_not_found_404_elements = True) 
+        
+        element_to_download = []
+        
+        
+        #print(self.log_file_content["to_download"].keys())
+        #print(self.log_file_content["downloaded"].keys())
+        #print(self.element_dict.keys())
+        #print(self.input_root_folder)
+        
+        
+        
+        for key in key_list:
+            if key in self.log_file_content["to_download"]:
+                element_to_download.append(self.log_file_content["to_download"][key])
+            elif key in self.log_file_content["downloaded"]:
+                element_to_download.append(self.log_file_content["downloaded"][key])
+            else:
+                raise ValueError(f'The element "{key}" is not available')
+                
+       
+        # Split it by size download_batch_size to download
+        #  them in parralel 
+        element_to_download_splitted = _my_tools.sample_list(element_to_download,
+                                                      download_batch_size)
+
+        
+        # This is used to show a progress bar 
+        for download_batch in element_to_download_splitted:
+            tasks = [self.download_element_data(element) for element in download_batch]
+            result = await asyncio.gather(*tasks)
+           
+            await self.update_downloaded_and_to_download_from_download_result(result)
+           
+            await self.print_download_informations(check_from_file=False)
+        
+            await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
+ 
                
-               
+  
     
     def prepare_input_data(self,**kwargs):
         """
@@ -525,7 +661,7 @@ class ParallelHttpConnexionWithLogManagement():
         """
         if check_from_file:
             await self.init_log_data()
-            await self.update_downloaded_and_to_download(add_not_found_404_elements=False)
+            await self.update_downloaded_and_to_download_from_drive(add_not_found_404_elements=False)
         
         
         #print(self.log_file_content)

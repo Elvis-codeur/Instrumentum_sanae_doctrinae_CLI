@@ -1,21 +1,18 @@
 
 
-
+import asyncio
+import time 
 # This class works for the audio sermons 
+from bs4 import NavigableString
 
-import json
-import os
-import pathlib
-
-from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_work import SI_ScrapWork_ALL
-import bs4 
 from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, my_constants
 from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
 
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_metadata import SermonIndexScrapAuthorTopicScripturePage
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_work import SI_ScrapWork_ALL
 
 
-class SI_ScrapVintageImageWork(SermonIndexScrapAuthorTopicScripturePage):
+class SermonIndexScrapChristianBookTextSermonWork(SermonIndexScrapAuthorTopicScripturePage):
     def __init__(self, name, root_folder,browse_by_type, url_list,material_root_folder,intermdiate_folders=None):
         
         super().__init__(name, root_folder, url_list,browse_by_type,
@@ -40,55 +37,34 @@ class SI_ScrapVintageImageWork(SermonIndexScrapAuthorTopicScripturePage):
 
             result = []
             
-            table = soup.find("table",attrs = {
-                "width":"100%",
-                "cellspacing":"0",
-                "cellpadding":"10",
-                "border":"0"
-                
-            })
+            book_text_div =  soup.find("div",class_ = "bookText")
             
-            for tr_object in table.find_all("tr",recursive = False):
+            #print(book_text_div)
+            
+            for element in book_text_div.contents:
                 
-                td_objects = tr_object.find_all("td")
+                if(isinstance(element, NavigableString)):
+                    element_content = repr(element.string)  
+                else:
+                    element_content = element.get_text()
                 
-                image_td_object = td_objects[0]
-                
-                description_td_object = td_objects[1]
-                
-                img_url = image_td_object.find("img").get("src")
-                
-                # img_url is actually the url of thumnail. I convert it the url of a jpg image url 
-                img_url = img_url.replace("thumbs/","")
-                
-                
-                decription_anchor_object = description_td_object.find_all("a",recursive = False)[-1]
-                
-                
-                description = "".join((i.strip() for i in description_td_object.contents 
-                                       if isinstance(i,bs4.NavigableString))).strip()
-                
-                result.append(
-                    {
-                        "img_url":img_url,
-                        "url":decription_anchor_object.get("href"),
-                        "link_text":decription_anchor_object.get_text(),
-                        "description":description,
-                    }
-                )
-                
-                
+                if element_content:
+                    result.append(element_content)
+                    
             final_result[current_page_url] = result
-
+            
+        #await asyncio.sleep(0.3)
+        
         return final_result
 
-
-class SI_ScrapVintageImageWork_ALL(SI_ScrapWork_ALL):
+   
+   
+class SI_ScrapTextSermonChristianBookWork_ALL(SI_ScrapWork_ALL):
     def __init__(self, root_folder, material_root_folder, browse_by_type,
                  overwrite_log=False, update_log=True,
                  intermdiate_folders=None):
         super().__init__(root_folder, material_root_folder, browse_by_type,
-                         overwrite_log, update_log, intermdiate_folders)
+                         overwrite_log, update_log, intermdiate_folders)      
           
     
     async def download_element_data(self,element):
@@ -96,8 +72,9 @@ class SI_ScrapVintageImageWork_ALL(SI_ScrapWork_ALL):
         and download the data that must be downloaded from it """
 
         #print(self.root_folder,self.browse_by_type)
+
         try:
-            ob = SI_ScrapVintageImageWork(
+            ob = SermonIndexScrapChristianBookTextSermonWork(
                 name = element.get("name"),
                 root_folder = self.root_folder,
                 browse_by_type = self.browse_by_type,
@@ -112,7 +89,8 @@ class SI_ScrapVintageImageWork_ALL(SI_ScrapWork_ALL):
             
 
     async def is_element_data_downloaded(self,element):
-        ob = SI_ScrapVintageImageWork(
+        
+        ob = SermonIndexScrapChristianBookTextSermonWork(
             name = element.get("name"),
             root_folder = self.root_folder,
             browse_by_type =self.browse_by_type,
@@ -120,4 +98,5 @@ class SI_ScrapVintageImageWork_ALL(SI_ScrapWork_ALL):
             intermdiate_folders = element.get("download_log").get("intermediate_folders"),
             material_root_folder = self.material_root_folder
         )
-        return await ob.is_data_downloaded() 
+        return await ob.is_data_downloaded()
+        

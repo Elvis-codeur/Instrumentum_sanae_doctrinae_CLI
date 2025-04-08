@@ -62,3 +62,27 @@ class SermonIndexScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicSc
         super().__init__(name,metadata_root_folder,log_root_folder,url,
                          browse_by_type,information_type_root_folder,
                          intermdiate_folders)
+
+
+
+    async def is_data_downloaded(self):
+
+        for url in self.url_informations:
+            file_path = self.url_informations[url].get("json_filepath")
+            if not os.path.exists(file_path):
+                return False
+            
+            
+            file_content = await _my_tools.async_read_json(file_path)
+            
+            if not file_content:
+                return False
+            
+            try:
+                file_content = json.loads(file_content)
+            except:
+                return False
+
+            if not file_content.get("url"):
+                return False
+   

@@ -59,6 +59,9 @@ WORK_INFORMATION_ROOT_FOLDER = "work"
 BY_SPEAKER_ROOT_FOLDER = "by_speaker"
 SPEAKER_NAME = "speaker"
 
+BY_CHRISTIANBOOK_ROOT_FOLDER = "by_christian_book"
+CHRISTIANBOOK_NAME = "christian_book"
+
 BY_TOPIC_ROOT_FOLDER = "by_topic"
 TOPIC_NAME = "topic"
 
@@ -92,10 +95,15 @@ SERMONINDEX_VIDEO_SERMONS_ROOT_FOLDER = "video_sermon"  #: The metadata, downloa
 SERMONINDEX_VINTAGE_IMAGE_ROOT_FOLDER = "vintage_image"  #: The metadata, downloads of the **Text Sermons** will be here. For the logs, **Text Sermons** they will be in the  of the log folder  
 
 SERMONINDEX_CHRISTIAN_BOOKS_ROOT_FOLDER = "christian_book" #: The metadata, download of the **Christian books** will be in this subfolder of :data:`SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER`
+SERMONINDEX_CHRISTIAN_BOOKS_NAME =  "christian_book" #: The metadata, download of the **Christian books** will be in this subfolder of :data:`SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER`
 SERMONINDEX_ONLINE_BIBLES_ROOT_FOLDER = "online_bible" #: The metadata, download of the **Online Bibles** will be in this folder
  
 SERMONINDEX_VIDEO_SERMONS_ROOT_FOLDER = "video_sermon"  #: The metadata, download of the **Video Sermons** will be in this folder
 
+SERMONINDEX_AUDIO = "audio"
+SERMONINDEX_TEXT = "text"
+SERMONINDEX_VIDEO = "video"
+SERMONINDEX_VINTAGE_IMAGE = "vintage_image"
 
 SERMONINDEX_LOG_ROOT_FOLDER = pathlib.Path(os.path.join(LOGS_ROOT_FOLDER,SERMONINDEX_ROOT_FOLDER)).as_posix() #: The folder where all the log files related to sermonindex will be stored
 SERMONINDEX_METADATA_ROOT_FOLDER = pathlib.Path(os.path.join(METADATA_ROOT_FOLDER,SERMONINDEX_ROOT_FOLDER)).as_posix() #: The folder where all the metadata files related to **sermonindex** will be stored

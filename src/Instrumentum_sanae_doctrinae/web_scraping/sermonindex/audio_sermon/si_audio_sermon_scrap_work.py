@@ -7,6 +7,7 @@ import json
 import os
 import pathlib
 
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_work import SI_ScrapWork_ALL
 from bs4 import BeautifulSoup
 import urllib
 from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, my_constants
@@ -50,7 +51,7 @@ class SI_AudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
 
             #print(*main_links_element[:2],sep="\n\n\n")
 
-            author_name = ""
+            name = ""
 
 
             result = []
@@ -87,10 +88,10 @@ class SI_AudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
                     
                         for comp in element_content[1].contents[0].contents[1:]:
                             if "by" in comp.get_text():
-                                author_name = comp.get_text().split(" ")
-                                if len(author_name) > 1:
+                                name = comp.get_text().split(" ")
+                                if len(name) > 1:
 
-                                    author_name = " ".join(author_name[1:]).strip()
+                                    name = " ".join(name[1:]).strip()
 
                             if  "topic" in comp.get_text().lower():
                                 add_element_to_topic = True
@@ -144,7 +145,7 @@ class SI_AudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
 
                         result.append({
                             "url":url,
-                            "author_name":author_name,
+                            "name":name,
                             "downlaod_number":download_number,
                             "topics":topic_list,
                             "scriptures":scripture_list,
@@ -205,169 +206,37 @@ class SI_AudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
                 "comments":comments_list}
     
 
-    def is_data_downloaded(self):
 
-        for url in self.url_informations:
-            file_path = self.url_informations[url].get("json_filepath")
-            if not os.path.exists(file_path):
-                return False
-            
-            
-            file_content = _my_tools.read_file(file_path)
-            
-            if not file_content:
-                return False
-            
-            try:
-                file_content = json.loads(file_content)
-            except:
-                return False
-
-            #print(file_content,file_path)
-
-            
-            # Check mandatory information in the json file 
-
-            if not file_content.get("url"):
-                return False
-            
-        return True
-    
-    async def async_is_data_downloaded(self):
-
-        for url in self.url_informations:
-            file_path = self.url_informations[url].get("json_filepath")
-            if not os.path.exists(file_path):
-                return False
-            
-            
-            file_content = _my_tools.async_read_file(file_path)
-            
-            if not file_content:
-                return False
-            
-            try:
-                file_content = json.loads(file_content)
-            except:
-                return False
-
-            #print(file_content,file_path)
-
-            
-            # Check mandatory information in the json file 
-
-            if not file_content.get("url"):
-                return False
-            
-        return True
-
-
-class SI_ScrapAudioSermonWork_ALL(http_connexion.ParallelHttpConnexionWithLogManagement):
-    def __init__(self,root_folder,material_root_folder,browse_by_type, overwrite_log=False, update_log=True,intermdiate_folders=None):
-        
-        root_folder = _my_tools.process_path_according_to_cwd(root_folder)
-
-        log_filepath = os.path.join(root_folder,my_constants.LOGS_ROOT_FOLDER,
-                                       my_constants.SERMONINDEX_NAME,
-                                       material_root_folder,
-                                       my_constants.ELABORATED_DATA_FOLDER,
-                                       browse_by_type,
-                                       my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
-                                       my_constants.get_default_json_filename(0))
-        
-        input_root_folder = os.path.join(root_folder,
-                                         my_constants.METADATA_ROOT_FOLDER,
-                                         my_constants.SERMONINDEX_NAME,
-                                         material_root_folder,
-                                         my_constants.ELABORATED_DATA_FOLDER,
-                                         browse_by_type)
-        
-        input_data = {}
-        
-        self.input_root_folder = input_root_folder
-        
-        for file in self.prepare_input_json_file(input_root_folder):
-            input_data[file.as_posix()] = _my_tools.read_json(file)
-
-        super().__init__(log_filepath = log_filepath,
-                         input_root_folder = input_root_folder,
-                         input_data=input_data,
-                         overwrite_log = overwrite_log,
-                         update_log = update_log)
-        
-        self.material_root_folder = material_root_folder
-        self.browse_by_type = browse_by_type
-        self.root_folder = root_folder
-
-
-    
-    def prepare_input_json_file(self,input_root_folder):
-        """
-        :param matching_subfolders: The folders from wich the json files will be searched out 
-        """
-        # List of folder in which name  :data:`my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER`
-        input_json_files = []
-
-        folder = os.path.join(input_root_folder,my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER)
-    
-        for file in [i for i in pathlib.Path(folder).rglob("*.json") if i.is_file()]:
-            if str(file.parent).endswith(my_constants.MAIN_INFORMATION_ROOT_FOLDER):
-                input_json_files.append(file)
-
-        return input_json_files
-
-    
-
-    def prepare_input_data(self,**kwargs):
-        """
-        This method take a json file content and create input data for download 
-        that are put int dict self.element_dict
-
-        :param file_content: the content of a json file where input data will be taken 
-        :param intermediate_folders: The intermediate folders from the root folder to 
-        the json file 
-        :param file_path: The path of the json file 
-        """
-
-        element = kwargs.get("file_content").get("data")
-        
-        name  = pathlib.Path(kwargs.get("file_path")).parent.parent.as_posix()
-        
-        name = name.split("/")[-1]
-        
-        self.element_dict[name] = {
-            **{"pages":element.get("pages"),"name":name},
-            
-            **{"download_log":{
-                "input_file_index":self.meta_informations["input_files_information"]\
-                                                        ["input_files"].index(kwargs.get("file_path")),
-                "intermediate_folders":[]} #kwargs.get("intermediate_folders")
-                }
-                }
-        
+class SI_ScrapAudioSermonWork_ALL(SI_ScrapWork_ALL):
+    def __init__(self, root_folder, material_root_folder, browse_by_type,
+                 overwrite_log=False, update_log=True,
+                 intermdiate_folders=None):
+        super().__init__(root_folder, material_root_folder, browse_by_type, 
+                         overwrite_log, update_log, intermdiate_folders)
+          
     
     async def download_element_data(self,element):
         """This element take an element ( for example the information of an author or topic) 
         and download the data that must be downloaded from it """
 
         #print(self.root_folder,self.browse_by_type)
+        #print(element.get("name"))
 
-        
-        ob = SI_AudioSermonWork(
-            name = element.get("name"),
-            root_folder = self.root_folder,
-            browse_by_type = self.browse_by_type,
-            url_list = element.get("pages"),
-            intermdiate_folders = element.get("download_log").get("intermediate_folders"),
-            material_root_folder = self.material_root_folder
-        )
+        try:
+            ob = SI_AudioSermonWork(
+                name = element.get("name"),
+                root_folder = self.root_folder,
+                browse_by_type = self.browse_by_type,
+                url_list = element.get("pages"),
+                intermdiate_folders = element.get("download_log").get("intermediate_folders"),
+                material_root_folder = self.material_root_folder
+            )
+            await ob.scrap_and_write()
+            return {"success":True,"element":element}
+        except:
+            return {"success":False,"element":element}
 
-        print(element.get("name"))
-        
-
-        await ob.scrap_and_write()
-
-    def is_element_data_downloaded(self,element):
+    async def is_element_data_downloaded(self,element):
         ob = SI_AudioSermonWork(
             name = element.get("name"),
             root_folder = self.root_folder,
@@ -376,5 +245,5 @@ class SI_ScrapAudioSermonWork_ALL(http_connexion.ParallelHttpConnexionWithLogMan
             intermdiate_folders = element.get("download_log").get("intermediate_folders"),
             material_root_folder = self.material_root_folder
         )
-        return ob.is_data_downloaded()
+        return await ob.is_data_downloaded()
         

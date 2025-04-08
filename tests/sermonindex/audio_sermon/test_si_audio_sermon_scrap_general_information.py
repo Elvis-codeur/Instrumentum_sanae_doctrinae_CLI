@@ -3,9 +3,12 @@ import sys
 from Instrumentum_sanae_doctrinae.web_scraping import my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex import si_scrap_general_information
 
+
+root_folder ='/home/elvis/Documents/ForGod/Scraping General/test_folder' 
+
+
 # Test on one author 
 def test_scrap_author_work():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     url = "https://www.sermonindex.net/modules/mydownloads/viewcat.php?cid=1"
     name = "Leonard Ravenhill"
     ob = si_scrap_general_information.SermonIndexScrapGeneralInformation(
@@ -13,7 +16,7 @@ def test_scrap_author_work():
         browse_by_type="speaker",url_list=[url],
         material_root_folder=my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER,intermdiate_folders=[],
     )
-    print(ob.__dict__)
+    #print(ob.__dict__)
     
     asyncio.run(ob.scrap_and_write())
     
@@ -33,22 +36,19 @@ def test_scrap_author_work():
 
 # Audio sermon speakers
 def test_scrap_all_audio_sermon_author_main_info_sermoindex():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
     browse_by_type = my_constants.SPEAKER_NAME
     ob = si_scrap_general_information.SermonIndexScrapSpeakerMainInformation_ALL(
         root_folder,
         material_folder,
         browse_by_type,
-        overwrite_log=True
+        overwrite_log=False
     )    
     asyncio.run(ob.download(2))
-    ob.update_downloaded_and_to_download()
     ob.write_log_file()
 
 # Audio sermon topics 
 def test_scrap_all_audio_sermon_topic_main_info_sermoindex():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
     browse_by_type = my_constants.TOPIC_NAME
     ob = si_scrap_general_information.SermonIndexScrapSpeakerMainInformation_ALL(
@@ -58,13 +58,11 @@ def test_scrap_all_audio_sermon_topic_main_info_sermoindex():
         overwrite_log=True
     )    
     asyncio.run(ob.download(2))
-    ob.update_downloaded_and_to_download()
     ob.write_log_file()
     
 
 # Audio sermon scriptures 
 def test_scrap_all_audio_sermon_scripture_main_info_sermoindex():
-    root_folder ='D:/projet_github/FOR GOD/Scraping general/test_folder'
     material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
     browse_by_type = my_constants.SCRIPTURE_NAME
     ob = si_scrap_general_information.SermonIndexScrapSpeakerMainInformation_ALL(
@@ -74,7 +72,6 @@ def test_scrap_all_audio_sermon_scripture_main_info_sermoindex():
         overwrite_log=True
     )    
     asyncio.run(ob.download(2))
-    ob.update_downloaded_and_to_download()
     ob.write_log_file()
 
 
