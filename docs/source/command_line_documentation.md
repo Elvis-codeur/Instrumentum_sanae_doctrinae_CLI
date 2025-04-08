@@ -363,13 +363,171 @@ $ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_general_info
 
 ### Description 
 
-This command download the work of an authors, topic, bible book etc. 
+This command scrap the work of an authors, topic, bible book etc. 
 
-This method download general information of 
+This method scrap general information of 
 - For the audio format 
     - speakers
     - topics
-    - podcasts
+    - scriptures
+
+- For the text format 
+    - speakers 
+    - christian books 
+
+- For the video format 
+    - speakers 
+
+- For the vintage images 
+    - speakers 
+
+
+
+### Arguments 
+
+- browse_by_type
+    - For audio format: 
+        The possible values are :  **speaker**, **topic**, **scripture** 
+    - For text format
+        The possible values are : **speaker** or **christian_book**
+    - For video format
+        The possible values are : **speaker** 
+    - For vinttage image: 
+        The possible values are : **speaker** 
+
+- material_type  
+    It is the parameter that sets if we are working with audio, text, video or vintage image. 
+    The possible values are : **audio**,**text**,**video**,**vintage_image**
+
+- target
+    The targeted element. It can be a particular author, topic, book, etc. 
+    To target all the authors, topics, books use the value **all**. 
+
+    
+    To target a particular author for audio file, the name of the author must be given and the <browse_by_type> must be **speaker** and <material_type> be **audio** 
+    
+- output_folder 
+    This parameter set the folder where the data have to be downloaded. 
+
+
+### Examples 
+
+#### Audio examples 
+
+##### Speakers
+- Scrap the work of all speakers for audio format 
+
+```console 
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker audio all "test_folder"
+```
+
+- Scrap the work of the speaker **Leonard Ravenhill** for audio format 
+
+```console 
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker audio "Leonard Ravenhill" "test_folder"
+```
+
+##### Topics 
+
+- Scrap the work of all topics for audio format 
+
+```console 
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work topic audio all  "test_folder"
+```
+
+- Scrap the work of the topic **Early Church** for audio format 
+
+```console 
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work topic audio "Early Church" "test_folder"
+```
+
+##### Scriptures
+
+- Scrap the works of all scriptures for audio format 
+
+```console 
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work scripture audio all  "test_folder"
+```
+
+- Scrap the works of the bible book **Genesis** for audio format 
+
+```console 
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work scripture audio Genesis "test_folder"
+```
+
+#### Text examples 
+
+##### Speakers 
+
+- Scrap the works of all the speakers for text format  
+
+```console 
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker text all  "test_folder"
+```
+
+- Scrap the works of the speaker **C.H. Spurgeon** for text format 
+
+```console 
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker text "C.H. Spurgeon" "test_folder"
+```
+
+##### Christian books 
+
+- Scrap the works of all the christian books for text format  
+
+```console 
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work christian_book text all "test_folder"
+```
+
+- Scrap the works of the book **Tertullian - On The Flesh Of Christ** for text format  
+
+```console 
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work christian_book text "Tertullian - On The Flesh Of Christ" "test_folder"
+```
+
+#### Video books
+##### Speakers 
+
+- Scrap the work all the speakers for video 
+```console 
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker video all "test_folder"
+```
+
+- Scrap the work of the speaker **Art Katz** for text video  
+
+```console 
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker video "Art Katz" "test_folder"
+```
+
+
+#### Vintage images
+##### Speakers 
+
+- Scrap the works all the speakers for vintage image 
+```console 
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker vintage_image all "test_folder"
+```
+
+- Scrap the works of the speaker **C.H. Spurgeon** for vintage image  
+
+```console 
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker vintage_image "C.H. Spurgeon" "test_folder"
+```
+
+
+
+
+## 4 - download 
+
+### Description 
+
+This command download the work of an authors, topic, bible book etc. 
+
+This method download filees of 
+- For the audio format 
+    - speakers
+    - topics
+    - scriptures
 
 - For the text format 
     - speakers 

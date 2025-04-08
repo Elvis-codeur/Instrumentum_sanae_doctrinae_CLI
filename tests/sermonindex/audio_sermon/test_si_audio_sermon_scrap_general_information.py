@@ -16,7 +16,7 @@ def test_scrap_author_work():
         browse_by_type="speaker",url_list=[url],
         material_root_folder=my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER,intermdiate_folders=[],
     )
-    print(ob.__dict__)
+    #print(ob.__dict__)
     
     asyncio.run(ob.scrap_and_write())
     

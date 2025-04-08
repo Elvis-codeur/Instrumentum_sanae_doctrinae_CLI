@@ -13,6 +13,9 @@ from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.video_sermon import s
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.vintage_image import si_vin_im_scrap_work
 import click
 
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.video_sermon import si_video_sermon_download
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.audio_sermon import si_audio_sermon_download
+
 
 def sermonindex_scrap_list(root_folder):
     # Audio sermon 
@@ -249,7 +252,175 @@ def sermonindex_scrap_work(browse_by_type:str,material_type:str,
         else:
             asyncio.run(ob.download_from_element_key_list([target_name],1))
             ob.write_log_file() 
+    
+    
+def sermonindex_donwload(browse_by_type:str,material_type:str,
+                                       target:str,output_folder,
+                                       overwrite_log,download_batch_size:int):
+    
+    
+    target_name = general_tools.remove_forbiden_char_in_text(target)
+
+    if material_type == my_constants.SERMONINDEX_AUDIO:
+        material_folder = my_constants.SERMONINDEX_AUDIO_SERMONS_ROOT_FOLDER
+        
+        if browse_by_type == my_constants.SPEAKER_NAME:
+            
+            list_ob = si_scrap_get_speaker_list.GetAudioSermonSpeakerList(root_folder=output_folder)
+            
+            speaker_list = list_ob.get_list_from_local_data()
+            
+            
+            if target == "all":
+                # Make the download for each spaker
+                for speaker_name in speaker_list:
+                    ob =si_audio_sermon_download.SI_Download_ListOfAudioWork(
+                        speaker_name,
+                        material_type,
+                        output_folder,
+                        browse_by_type,
+                        overwrite_log=True
+                    )
                     
+                    async def  f():
+                        await ob.init_aiohttp_session()
+                        await ob.download(download_batch_size=download_batch_size)
+                        ob.write_log_file()
+                        
+                    asyncio.run(f())
+                
+            else:
+                
+                ob = si_audio_sermon_download.SI_Download_ListOfAudioWork(
+                        target_name,
+                        material_type,
+                        output_folder,
+                        browse_by_type,
+                        overwrite_log=True
+                    )
+                
+                    
+                async def f():
+                    await ob.init_aiohttp_session()
+                    await ob.download(download_batch_size=download_batch_size)
+                    ob.write_log_file()
+                    
+                asyncio.run(f())
+                
+        elif browse_by_type == my_constants.TOPIC_NAME:
+            list_ob = si_audio_sermon_scrap_get_list.GetAudioSermonTopicList(root_folder=output_folder)
+            
+            speaker_list = list_ob.get_list_from_local_data()
+            
+            
+            if target == "all":
+                # Make the download for each spaker
+                for speaker_name in speaker_list:
+                    ob =si_audio_sermon_download.SI_Download_ListOfAudioWork(
+                        speaker_name,
+                        material_type,
+                        output_folder,
+                        browse_by_type,
+                        overwrite_log=True
+                    )
+                    
+                    async def  f():
+                        await ob.init_aiohttp_session()
+                        await ob.download(download_batch_size=download_batch_size)
+                        ob.write_log_file()
+                        
+                    asyncio.run(f())
+                
+            else:
+                
+                ob = si_audio_sermon_download.SI_Download_ListOfAudioWork(
+                        target_name,
+                        material_type,
+                        output_folder,
+                        browse_by_type,
+                        overwrite_log=True
+                    )
+                
+                async def f():
+                    await ob.init_aiohttp_session()
+                    await ob.download(download_batch_size=download_batch_size)
+                    ob.write_log_file()
+                    
+                asyncio.run(f())
+                
+            
+            
+            
+            
+    elif material_type == my_constants.SERMONINDEX_TEXT:
+        material_folder = my_constants.SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER
+        
+        # Download work of a speaker 
+        if browse_by_type == my_constants.SPEAKER_NAME:
+            ob = si_text_sermon_speaker_scrap_work.SI_ScrapTextSermonSpeakerWork_ALL(
+                    root_folder=output_folder,
+                    material_root_folder=material_folder,
+                    browse_by_type = browse_by_type,
+                    overwrite_log=overwrite_log
+            )
+            
+            if target == "all":
+                asyncio.run(ob.download(download_batch_size=download_batch_size))
+                ob.write_log_file()
+            else:
+                asyncio.run(ob.download_from_element_key_list([target_name],1))
+                ob.write_log_file()
+        else:
+            ob = si_text_sermon_christianbook_scrap_work.SI_ScrapTextSermonChristianBookWork_ALL(
+                    root_folder=output_folder,
+                    material_root_folder=material_folder,
+                    browse_by_type = browse_by_type,
+                    overwrite_log=overwrite_log
+            )
+            
+            if target == "all":
+                asyncio.run(ob.download(download_batch_size=download_batch_size))
+                ob.write_log_file()
+            else:
+                asyncio.run(ob.download_from_element_key_list([target_name],1))
+                ob.write_log_file()
+            
+           
+    
+    elif material_type == my_constants.SERMONINDEX_VIDEO:
+        material_folder = my_constants.SERMONINDEX_VIDEO_SERMONS_ROOT_FOLDER
+        
+        ob = si_vin_im_scrap_work.SI_ScrapVintageImageWork_ALL(
+                root_folder=output_folder,
+                material_root_folder=material_folder,
+                browse_by_type = browse_by_type,
+                overwrite_log=overwrite_log
+        )
+        
+        if target == "all":
+            asyncio.run(ob.download(download_batch_size=download_batch_size))
+            ob.write_log_file()
+        else:
+            asyncio.run(ob.download_from_element_key_list([target_name],1))
+            ob.write_log_file()
+            
+    elif material_type == my_constants.SERMONINDEX_VINTAGE_IMAGE:
+        material_folder = my_constants.SERMONINDEX_VINTAGE_IMAGE_ROOT_FOLDER
+        
+        ob = si_vin_im_scrap_work.SI_ScrapVintageImageWork_ALL(
+                root_folder=output_folder,
+                material_root_folder=material_folder,
+                browse_by_type = browse_by_type,
+                overwrite_log=overwrite_log
+        )
+        
+        if target == "all":
+            asyncio.run(ob.download(download_batch_size=download_batch_size))
+            ob.write_log_file()
+        else:
+            asyncio.run(ob.download_from_element_key_list([target_name],1))
+            ob.write_log_file() 
+     
     
     
 
@@ -308,4 +479,25 @@ def sermonindex_scrap_work_command(context:click.Context,browse_by_type:str,
                            download_batch_size=download_batch_size,
                            output_folder=output_folder)
     
+
+@click.command()
+@click.argument("browse_by_type",required = True,type = str)
+@click.argument("material_type",required = True,type=str)
+@click.argument("target",required = True,type = str)
+@click.argument("output_folder",required = True,type=str)
+@click.option('-u', '--overwrite-log',"overwrite_log",
+              default = False,required =  False)
+@click.option("-bs","--download_batch_size","download_batch_size",
+              default = 10,type = int,required = False)
+
+@click.pass_context
+def sermonindex_download_command(context:click.Context,browse_by_type:str,
+                                                  material_type:str,target:str,output_folder,
+                                                  overwrite_log,download_batch_size:int):
     
+    output_folder = parse_argument(output_folder)
+    
+    sermonindex_donwload(browse_by_type=browse_by_type,material_type=material_type,
+                           target=target,overwrite_log=overwrite_log,
+                           download_batch_size=download_batch_size,
+                           output_folder=output_folder)

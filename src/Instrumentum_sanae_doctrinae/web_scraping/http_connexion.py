@@ -593,9 +593,11 @@ class ParallelHttpConnexionWithLogManagement():
         
         element_to_download = []
         
+        
         #print(self.log_file_content["to_download"].keys())
         #print(self.log_file_content["downloaded"].keys())
         #print(self.element_dict.keys())
+        #print(self.input_root_folder)
         
         
         
