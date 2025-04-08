@@ -115,6 +115,7 @@ class SI_Download_Speaker_ListOfTextWork(SI_Download_Work):
         )
         #print(element_value,"\n\n")
         result = await ob.download()
+        
         #print(result)
         return result 
         

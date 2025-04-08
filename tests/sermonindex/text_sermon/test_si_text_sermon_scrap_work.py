@@ -11,14 +11,14 @@ root_folder ='/home/elvis/Documents/ForGod/Scraping General/test_folder'
 def test_text_sermon_get_speaker_work():
     material_folder = my_constants.SERMONINDEX_TEXT_SERMONS_ROOT_FOLDER
     browse_by_type = my_constants.SPEAKER_NAME
-    ob = si_text_sermon_speaker_scrap_work.SI_ScrapTextSermonWork_ALL(
+    ob = si_text_sermon_speaker_scrap_work.SI_ScrapTextSermonSpeakerWork_ALL(
         root_folder,
         material_folder,
         browse_by_type,
         overwrite_log=True
     )
     #print(ob.__dict__)
-    asyncio.run(ob.download(2))
+    asyncio.run(ob.download_from_element_key_list(["A Collection of Hymns"],1))
     #ob.update_downloaded_and_to_download()
     #ob.write_log_file()
     
@@ -40,4 +40,4 @@ def test_text_sermon_get_christianbook_work():
 if __name__ == "__main__":
     if sys.platform == "win32":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    test_text_sermon_get_christianbook_work()
+    test_text_sermon_get_speaker_work()

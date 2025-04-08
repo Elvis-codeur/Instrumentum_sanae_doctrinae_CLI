@@ -86,8 +86,13 @@ class SI_Download_ChristianBooks_ListOfTextWork(SI_Download_Work):
             if name in intermediate_folders:
                 local_intermediate_folders = intermediate_folders[:intermediate_folders.index(name)].copy()
         
-        for element in element_list.get("pages"):   
+        #print(element_list)
+        
+        for element in element_list.get("pages"): 
+            #print(element)  
+            
             link_text = element.get("link_text")
+            
             if link_text.endswith("."):
                 link_text = link_text[:-1]
                  
