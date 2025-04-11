@@ -448,38 +448,46 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
     elif material_type == my_constants.SERMONINDEX_VIDEO:
         material_folder = my_constants.SERMONINDEX_VIDEO_SERMONS_ROOT_FOLDER
         
-        ob = si_vin_im_scrap_work.SI_ScrapVintageImageWork_ALL(
-                root_folder=output_folder,
-                material_root_folder=material_folder,
-                browse_by_type = browse_by_type,
-                overwrite_log=overwrite_log
-        )
-        
         if target == "all":
-            asyncio.run(ob.download(download_batch_size=download_batch_size))
-            ob.write_log_file()
-        else:
-            asyncio.run(ob.download_from_element_key_list([target_name],1))
-            ob.write_log_file()
+            list_ob = si_scrap_get_speaker_list.GetVideoSermonSpeakerList(root_folder=output_folder)
+            speaker_list = list_ob.get_list_from_local_data()
             
-    elif material_type == my_constants.SERMONINDEX_VINTAGE_IMAGE:
-        material_folder = my_constants.SERMONINDEX_VINTAGE_IMAGE_ROOT_FOLDER
-        
-        ob = si_vin_im_scrap_work.SI_ScrapVintageImageWork_ALL(
-                root_folder=output_folder,
-                material_root_folder=material_folder,
-                browse_by_type = browse_by_type,
-                overwrite_log=overwrite_log
-        )
-        
-        if target == "all":
-            asyncio.run(ob.download(download_batch_size=download_batch_size))
-            ob.write_log_file()
+            for speaker in speaker_list:
+               
+                ob = si_video_sermon_download.SI_Download_ListOfVideoWork(
+                    speaker,
+                    material_type,
+                    output_folder,
+                    browse_by_type,
+                    overwrite_log=True
+                )
+                async def f():
+                    await ob.init_aiohttp_session()
+                    await ob.init_log_data()
+                    #print(ob.__dict__)
+                    await ob.download(download_batch_size=download_batch_size)
+                    await ob.close_aiohttp_session()
+                    
+                asyncio.run(f())
+            
+            
         else:
-            asyncio.run(ob.download_from_element_key_list([target_name],1))
-            ob.write_log_file() 
-     
-    
+            ob = si_video_sermon_download.SI_Download_ListOfVideoWork(
+                target_name,
+                material_type,
+                output_folder,
+                browse_by_type,
+                overwrite_log=True
+            )
+            async def f():
+                await ob.init_aiohttp_session()
+                await ob.init_log_data()
+                #print(ob.__dict__)
+                await ob.download(download_batch_size=download_batch_size)
+                await ob.close_aiohttp_session()
+                
+            asyncio.run(f())
+        
     
 
 @click.command()
