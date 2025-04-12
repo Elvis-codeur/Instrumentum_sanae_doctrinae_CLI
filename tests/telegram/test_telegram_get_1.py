@@ -3,6 +3,7 @@ from pathlib import Path
 import os
 import re 
 
+from Instrumentum_sanae_doctrinae.telegram_scraping.telegram_tools import TelegramTextMessage
 from dotenv import load_dotenv
 from telethon.sync import TelegramClient
 from telethon.tl.functions.messages import GetHistoryRequest
@@ -72,10 +73,11 @@ class ScrapTelegramGroup():
             for message in message_retrieved.messages:
                 text = getattr(message, 'message', None)  # message.message is the actual text field
                 if text and isinstance(text, str):
-                    result.append({
-                        "text":text,
-                        "datetime":message.date.strftime('%Y-%m-%d %H:%M:%S')
-                    })
+                    result.append(TelegramTextMessage(
+                        text = text,
+                        datetime = message.date.strftime('%Y-%m-%d %H:%M:%S')
+                    ))
+                    
                     last_message_date = message_retrieved.messages[-1].message.date + datetime.timedelta(30)
                     
         
@@ -107,7 +109,7 @@ if __name__ == "__main__":
     youtube_regex = re.compile(r'(https?://)?(www\.)?(youtube\.com|youtu\.be)/[^\s]+')
     
     telegram_client = MyTelegramClient(api_id,api_hash,phone_number)
-    scraper =  ScrapTelegramGroup(group_username,telegram_client)
+    scraper =  ScrapTelegramGroup(group_username,telegram_client,"telegram_data.json")
     print(telegram_client.client.loop.run_until_complete(scraper.scrap_from_date_to_date(date_begin=datetime.datetime(2021,1,1),
                                                                                                     date_end=datetime.datetime.now())))
     

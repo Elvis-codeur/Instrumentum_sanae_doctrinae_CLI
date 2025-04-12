@@ -2,9 +2,10 @@ import datetime
 from pathlib import Path
 import os
 import re 
+import asyncio
 
+from Instrumentum_sanae_doctrinae.telegram_scraping.telegram_tools import MyTelegramClient, TelegramTextMessage
 from dotenv import load_dotenv
-from telethon.sync import TelegramClient
 from telethon.tl.functions.messages import GetHistoryRequest
 from Instrumentum_sanae_doctrinae.my_tools import general_tools
 
@@ -12,8 +13,11 @@ from Instrumentum_sanae_doctrinae.my_tools import general_tools
 
 
 
+
+
+
 class ScrapTelegramGroup():
-    def __init__(self,group_username:str,client:TelegramClient):
+    def __init__(self,group_username:str,client:MyTelegramClient,output_filepath):
         """This class scrap the text messages in a telegram group posts. 
 
         Args:
@@ -23,18 +27,25 @@ class ScrapTelegramGroup():
         self.group_username = group_username
         self.date_last_scraping:datetime.datetime = None  
         self.client = client  
+        self.output_filepath = output_filepath
+        self.file_content = {}
+        self.newly_scraped_data = []
         
+    
+    def load_file_content(self):
         
-    async def laod_data_from_json(self,filepath):
-        data = general_tools.async_read_json(filepath)
+        self.file_content = general_tools.read_json(self.output_filepath)
+    
+        self.group_username = self.file_content.get("group_username")
         
-        self.group_username = data.get("group_username")
-        self.date_last_scraping = data.get("date_last_scraping")
+        self.date_last_scraping = general_tools.datetimeFromGoogleFormat(self.file_content.get("date_last_scraping"))
         
+        self.data = getattr(self.file_content,"data",[])
+        
+    
         
     async def scrap_from_date_to_date(self,date_begin:datetime.datetime,
-                                      date_end:datetime.datetime,
-                                      outpout_filepath):
+                                      date_end:datetime.datetime):
         
         result = []
         
@@ -51,8 +62,8 @@ class ScrapTelegramGroup():
         
         #print(date_begin,date_end)
         
-        while last_message_date < date_end + datetime.timedelta(30) or message_retrieved:
-            
+        while last_message_date < date_end + datetime.timedelta(30):
+            print(last_message_date)
             message_retrieved = await self.client.client(GetHistoryRequest(
                 peer=entity,
                 limit=500,  # change to what you need
@@ -65,45 +76,60 @@ class ScrapTelegramGroup():
             ))
 
             for message in message_retrieved.messages:
+                #print(type(message))
                 text = getattr(message, 'message', None)  # message.message is the actual text field
                 if text and isinstance(text, str):
-                    result.append({
-                        "text":text,
-                        "datetime":message.date.strftime('%Y-%m-%d %H:%M:%S')
-                    })
-                    last_message_date = message_retrieved.messages[-1].message.date + datetime.timedelta(30)
-                    
-        
-        result = list(set(result)) # I used set to remove any duplicate 
-        
-        if outpout_filepath:
-            general_tools.async_write_json(outpout_filepath,result)        
+                    result.append(TelegramTextMessage(
+                        text=text,
+                        datetime = message.date
+                    ))
             
-        return result 
+            if message_retrieved.messages and getattr(message_retrieved.messages[-1].message,"date",None):
+                #print(message_retrieved.messages[-1].message,type(message_retrieved.messages[-1].message))
+                last_message_date = message_retrieved.messages[-1].message.date + datetime.timedelta(30)
+            else:
+                last_message_date = last_message_date + datetime.timedelta(30)
+        
+        #result = list(set(result)) # I used set to remove any duplicate 
+        
+        # Store it in the newly scraped data 
+        self.newly_scraped_data = result 
+        
+        #Update the date of the last scraping 
+        self.date_last_scraping = date_end
+        
+        return result.sort(key=lambda message: message.datetime_object) 
+    
+    def update_file_content(self):
+        """ 
+        This function update the content of the actual filepath with 
+        """
+      
+        
+        self.file_content = {
+            "date_last_scraping" : general_tools.datetimeToGoogleFormat(self.date_last_scraping),
+            "group_username" : self.group_username,
+            "data":getattr(self.file_content,"data",[]) + self.newly_scraped_data
+        }
+        
+        general_tools.write_json(self.output_filepath,self.file_content)
+    
+    def overide_file_content(self):
+        self.file_content = {
+            "date_last_scraping" : general_tools.datetimeToGoogleFormat(self.date_last_scraping),
+            "group_username" : self.group_username,
+            "data": self.newly_scraped_data
+        }
+        
+        general_tools.write_json(self.output_filepath,self.file_content)
+    
+        
+        
                 
                         
     async def scrap_from_last_scraping_date(self):
-        pass 
-    
+        datetime_now = datetime.datetime.now()
         
-
-
-load_dotenv(dotenv_path=Path("telegram.env"))
-
-if __name__ == "__main__":
-    api_id = os.getenv("API_ID")
-    api_hash = os.getenv("API_HASH")
-    phone_number = os.getenv("MY_PHONE_NUMBER")
-    
-    
-
-    group_username = 'ChristianSermonsAndAudioBooks'
-    # Regex for YouTube URLs (handles youtu.be and youtube.com links)
-    youtube_regex = re.compile(r'(https?://)?(www\.)?(youtube\.com|youtu\.be)/[^\s]+')
-    
-    telegram_client = MyTelegramClient(api_id,api_hash,phone_number)
-    scraper =  ScrapTelegramGroup(group_username,telegram_client)
-    print(telegram_client.client.loop.run_until_complete(scraper.scrap_from_date_to_date(date_begin=datetime.datetime(2021,1,1),
-                                                                                                    date_end=datetime.datetime.now())))
-    
-    
+        result = await self.scrap_from_date_to_date(self.date_last_scraping,datetime_now)
+                 
+        return result
