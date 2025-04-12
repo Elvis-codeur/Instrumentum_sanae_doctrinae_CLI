@@ -290,8 +290,8 @@ def process_path_according_to_cwd(folder_path):
     """
     This method verify if the output folder is child of the current working directory and folder path accordingly
     """
-    result,_ = get_uncommon_part_of_two_path(folder_path,os.getcwd())
+    #result,_ = get_uncommon_part_of_two_path(folder_path,os.getcwd())
 
-    return result
+    return folder_path
 
 

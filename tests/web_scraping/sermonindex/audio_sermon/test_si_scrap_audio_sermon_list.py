@@ -11,7 +11,7 @@ from Instrumentum_sanae_doctrinae.my_tools import my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex import si_scrap_get_speaker_list 
 
         
-root_folder ='/home/elvis/Documents/ForGod/Scraping General/test_folder' 
+root_folder ='/home/elvis/Documents/ForGod/outside_test_folder' 
 
 def test_get_text_sermons_speakers_list():
     ob = si_scrap_get_speaker_list.GetAudioSermonSpeakerList(root_folder)
@@ -77,8 +77,9 @@ if __name__ == "__main__":
     if sys.platform == 'win32':
 	    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
      
-     
-    test_get_audio_sermon_topic_list_from_drive()
+    test_get_text_sermons_speakers_list()
+    
+    #test_get_audio_sermon_topic_list_from_drive()
     
     
     #test_get_audio_sermon_topic()
