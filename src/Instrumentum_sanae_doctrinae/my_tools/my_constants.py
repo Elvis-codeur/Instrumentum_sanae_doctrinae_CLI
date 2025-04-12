@@ -207,6 +207,9 @@ TELEGRAM_LOG_ROOT_FOLDER = pathlib.Path(os.path.join(LOGS_ROOT_FOLDER,TELEGRAM_R
 TELEGRAM_METADATA_ROOT_FOLDER = pathlib.Path(os.path.join(METADATA_ROOT_FOLDER,TELEGRAM_ROOT_FOLDER)).as_posix() #: The folder where all the metadata files related to monergism will be stored
 TELEGRAM_DOWNLOAD_ROOT_FOLDER = pathlib.Path(os.path.join(DOWNLOAD_ROOT_FOLDER,TELEGRAM_ROOT_FOLDER)).as_posix() #: The folder where all the metadata files related to monergism will be stored
 
+TELEGRAM_CHANNEL_ROOT_FOLDER = "channel"
+TELEGRAM_CHANNEL_TEXT_MESSAGE_ROOT_FOLDER = "text_message"
+
 
 def get_default_json_filename(indice:int):
     """

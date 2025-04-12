@@ -26,7 +26,7 @@ import json
 
 from ..web_scraping import http_connexion
 from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
-from ..web_scraping import my_constants
+from ..my_tools import my_constants
 
 
 

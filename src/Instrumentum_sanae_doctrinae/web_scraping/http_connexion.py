@@ -9,7 +9,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-from ..web_scraping import my_constants
+from ..my_tools import my_constants
 from . import my_errors
 from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
 

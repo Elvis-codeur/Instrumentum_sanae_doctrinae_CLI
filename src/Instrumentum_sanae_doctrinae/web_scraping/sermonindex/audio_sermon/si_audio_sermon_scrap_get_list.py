@@ -1,8 +1,8 @@
 
 
 import os
-from Instrumentum_sanae_doctrinae.web_scraping import my_constants, scrap_metadata
-from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
+from Instrumentum_sanae_doctrinae.web_scraping import scrap_metadata
+from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools, my_constants
 
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_metadata import get_sermonindex_metadata_and_log_folder
 

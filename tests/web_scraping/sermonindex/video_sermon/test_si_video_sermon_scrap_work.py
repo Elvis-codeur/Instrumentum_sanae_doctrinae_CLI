@@ -1,6 +1,6 @@
 import asyncio
 import sys
-from Instrumentum_sanae_doctrinae.web_scraping import my_constants
+from Instrumentum_sanae_doctrinae.my_tools import my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.video_sermon import  si_video_sermon_scrap_work
 
 root_folder ='/home/elvis/Documents/ForGod/Scraping General/test_folder' 

@@ -4,7 +4,7 @@ import os
 import re 
 import asyncio
 
-from Instrumentum_sanae_doctrinae.telegram_scraping.telegram_tools import MyTelegramClient, TelegramTextMessage
+from Instrumentum_sanae_doctrinae.telegram_scraping.telegram_tools import *
 from dotenv import load_dotenv
 from telethon.tl.functions.messages import GetHistoryRequest
 from Instrumentum_sanae_doctrinae.my_tools import general_tools
@@ -17,17 +17,18 @@ from Instrumentum_sanae_doctrinae.my_tools import general_tools
 
 
 class ScrapTelegramGroup():
-    def __init__(self,group_username:str,client:MyTelegramClient,output_filepath):
+    def __init__(self,group_username:str,client:MyTelegramClient,output_folder):
         """This class scrap the text messages in a telegram group posts. 
 
         Args:
             group_username (str): The user name of the group. The name in it telegram link 
             for exemple for the url t.me/ChristianSermonsAndAudioBooks, the group_username is ChristianSermonsAndAudioBooks
         """
+        
         self.group_username = group_username
         self.date_last_scraping:datetime.datetime = None  
         self.client = client  
-        self.output_filepath = output_filepath
+        self.output_filepath =  get_telegram_channel_text_message_filepath(output_folder,self.group_username)
         self.file_content = {}
         self.newly_scraped_data = []
         
@@ -49,9 +50,9 @@ class ScrapTelegramGroup():
         
         result = []
         
-        await self.client.client.start(phone=phone_number)
+        await self.client.client.start(phone=self.client.phone_number)
     
-        entity = await self.client.client.get_entity(group_username)
+        entity = await self.client.client.get_entity(self.group_username)
         
         # GetHistoryRequest return publication up to the date offset_date
         # with a limit of 100 publications 
