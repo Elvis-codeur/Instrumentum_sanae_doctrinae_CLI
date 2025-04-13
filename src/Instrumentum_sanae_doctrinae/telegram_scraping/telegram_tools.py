@@ -21,6 +21,7 @@ def get_telegram_channel_root_folder(root_folder,channel_username):
 def get_telegram_channel_text_message_filepath(root_folder,channel_username):
     return os.path.join(
         get_telegram_channel_root_folder(root_folder,channel_username),
+        my_constants.RAW_DATA_FOLDER,
         my_constants.TELEGRAM_CHANNEL_TEXT_MESSAGE_ROOT_FOLDER,
         my_constants.get_default_json_filename(0))
     
@@ -28,6 +29,7 @@ def get_telegram_channel_text_message_filepath(root_folder,channel_username):
 def get_telegram_channel_speaker_filepath(root_folder,channel_username,speaker_name,file_name):
     return os.path.join(
         get_telegram_channel_root_folder(root_folder,channel_username),
+        my_constants.RAW_DATA_FOLDER,
         my_constants.TELEGRAM_CHANNEL_SPEAKER_ROOT_FOLDER,
         speaker_name,file_name)
         

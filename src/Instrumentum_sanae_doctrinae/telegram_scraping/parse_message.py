@@ -4,6 +4,26 @@ import datetime
 from Instrumentum_sanae_doctrinae.telegram_scraping.telegram_tools import TelegramTextMessage, get_telegram_channel_speaker_filepath, get_telegram_channel_text_message_filepath
 from  Instrumentum_sanae_doctrinae.my_tools import general_tools
 
+
+
+def get_youtube_url_from_message_list(message_list:list[TelegramTextMessage]):
+    video_id_list = []
+    playlist_id_list = []
+    
+    for message in message_list:
+        url_list = [general_tools.YouTubeURL(url) for url in general_tools.get_youtube_url_list_in_text(message.text)]
+        
+        for url in url_list:
+            #print(url.__dict__)
+            if url.is_youtube_video():
+                video_id_list.append(url.get_video_id())
+                
+            if url.is_playlist():
+                playlist_id_list.append(url.get_playlist_id())
+                
+    return {"playlist_list":playlist_id_list,"video_list":video_id_list}
+                    
+
 class ParseChannelTextMessages():
     def __init__(self,group_username,output_folder):
         self.output_folder = output_folder 
@@ -39,7 +59,8 @@ class ParseChannelTextMessages():
             return all(item.lower() in text.lower() for item in keyword_list)
         
         
-            
+        
+    
     def filter_message_by_hashtag(self,hashtag_list,condition = "or"):
         prepared_hash_list = []
         for hashtag in hashtag_list:
@@ -75,4 +96,4 @@ if __name__ == "__main__":
     
     spurgeon_hashtag_list = ["#CharlesSpurgeon", "#Spurgeon", "#SpurgeonSermons", "#CHSpurgeon"]
     
-    ob.save_speaker_parsed_data(ob.filter_message_by_hashtag(spurgeon_hashtag_list),"CH_Spurgeon","all_messages.json")
+    print(get_youtube_video_and_playlist_from_message_list(ob.filter_message_by_hashtag(spurgeon_hashtag_list)))

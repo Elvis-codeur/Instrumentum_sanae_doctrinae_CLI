@@ -14,6 +14,16 @@ url_pattern = re.compile(
 
 hashtag_pattern = re.compile(r'#\w+')
 
+youtube_url_pattern = re.compile(
+    r'''(?xi)
+    (https?://(?:www\.)?               # http(s) and optional www
+    (?:youtube\.com|youtu\.be)         # youtube.com or youtu.be
+    /(?:[\w\-\?=&#./]+))               # everything after the domain
+    '''
+)
+
+
+
 def datetimeToGoogleFormat(date:datetime.datetime):
     """
     Return A datetime in the google format(the format is like this "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -308,10 +318,12 @@ def get_url_list_in_text(text):
 def get_hashtag_list_in_text(text):
     return hashtag_pattern.findall(text)
 
-
+def get_youtube_url_list_in_text(text):
+    return youtube_url_pattern.findall(text)
 
 class YouTubeURL:
     def __init__(self, url):
+        #print("URL = ",url)
         self.url = url
         self.parsed = urllib.parse.urlparse(url)
         self.query = urllib.parse.parse_qs(self.parsed.query)
@@ -323,6 +335,12 @@ class YouTubeURL:
     def get_playlist_id(self):
         """Returns the playlist ID if present"""
         return self.query.get('list', [None])[0]
+    
+    def is_youtube_video(self):
+        return any([self.query.get("v", [None])[0],self.query.get("index",[None])[0]])
+    
+    def is_playlist(self):
+        return self.query.get('list', [None])[0] != None and not self.is_youtube_video()
 
     def get_channel_id(self):
         """Returns the channel or user from the path if present"""
@@ -331,6 +349,7 @@ class YouTubeURL:
             return parts[1] if len(parts) > 1 else None
         return None
 
+    
     def get_full_info(self):
         return {
             'video_id': self.get_video_id(),
