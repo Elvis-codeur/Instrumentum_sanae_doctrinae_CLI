@@ -5,7 +5,14 @@ import shutil
 import string
 import json 
 import aiofiles
+import re
+import urllib.parse
 
+url_pattern = re.compile(
+    r'https?://(?:www\.)?[-\w@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-\w()@:%_\+.~#?&//=]*)'
+)
+
+hashtag_pattern = re.compile(r'#\w+')
 
 def datetimeToGoogleFormat(date:datetime.datetime):
     """
@@ -295,3 +302,41 @@ def process_path_according_to_cwd(folder_path):
     return folder_path
 
 
+def get_url_list_in_text(text):
+    return url_pattern.findall(text)
+
+def get_hashtag_list_in_text(text):
+    return hashtag_pattern.findall(text)
+
+
+
+class YouTubeURL:
+    def __init__(self, url):
+        self.url = url
+        self.parsed = urllib.parse.urlparse(url)
+        self.query = urllib.parse.parse_qs(self.parsed.query)
+
+    def get_video_id(self):
+        """Returns the video ID if present"""
+        return self.query.get('v', [None])[0]
+
+    def get_playlist_id(self):
+        """Returns the playlist ID if present"""
+        return self.query.get('list', [None])[0]
+
+    def get_channel_id(self):
+        """Returns the channel or user from the path if present"""
+        parts = self.parsed.path.strip('/').split('/')
+        if parts and parts[0] in ('channel', 'user', 'c'):
+            return parts[1] if len(parts) > 1 else None
+        return None
+
+    def get_full_info(self):
+        return {
+            'video_id': self.get_video_id(),
+            'playlist_id': self.get_playlist_id(),
+            'channel': self.get_channel_id(),
+            'hostname': self.parsed.hostname,
+            'path': self.parsed.path,
+            'query': self.query
+        }

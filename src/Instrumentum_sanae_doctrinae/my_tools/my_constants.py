@@ -209,6 +209,7 @@ TELEGRAM_DOWNLOAD_ROOT_FOLDER = pathlib.Path(os.path.join(DOWNLOAD_ROOT_FOLDER,T
 
 TELEGRAM_CHANNEL_ROOT_FOLDER = "channel"
 TELEGRAM_CHANNEL_TEXT_MESSAGE_ROOT_FOLDER = "text_message"
+TELEGRAM_CHANNEL_SPEAKER_ROOT_FOLDER = "speaker"
 
 
 def get_default_json_filename(indice:int):

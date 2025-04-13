@@ -23,6 +23,13 @@ def get_telegram_channel_text_message_filepath(root_folder,channel_username):
         get_telegram_channel_root_folder(root_folder,channel_username),
         my_constants.TELEGRAM_CHANNEL_TEXT_MESSAGE_ROOT_FOLDER,
         my_constants.get_default_json_filename(0))
+    
+    
+def get_telegram_channel_speaker_filepath(root_folder,channel_username,speaker_name,file_name):
+    return os.path.join(
+        get_telegram_channel_root_folder(root_folder,channel_username),
+        my_constants.TELEGRAM_CHANNEL_SPEAKER_ROOT_FOLDER,
+        speaker_name,file_name)
         
 
 
@@ -39,7 +46,18 @@ class TelegramTextMessage(dict):
     def __init__(self,text:str,datetime:datetime.datetime):
         self.datetime_object = datetime
         super().__init__(text = text,datetime = general_tools.datetimeToGoogleFormat(datetime))
+    
+    
+        self.text = text 
         
+        
+        # Get all the hashtags of the messages 
+        self.hashtag_list = general_tools.get_hashtag_list_in_text(text)
+        
+        # Get all the urls of the message     
+        self.url_list = general_tools.get_url_list_in_text(text)
+    
+    
         
     def __eq__(self, value):
         return super().__eq__(value)
