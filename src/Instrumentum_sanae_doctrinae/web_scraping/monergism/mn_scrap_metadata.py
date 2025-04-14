@@ -12,8 +12,8 @@ import urllib.parse
 from urllib.parse import urlparse, parse_qs
 
 
-from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, my_constants,scrap_metadata
-from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
+from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, scrap_metadata
+from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools, my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.monergism.mn_tools import *
 
 

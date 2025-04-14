@@ -3,7 +3,7 @@
 import asyncio
 from Instrumentum_sanae_doctrinae.cli_interface.cli_tools import parse_argument
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_general_information, mn_scrap_get_list
-from Instrumentum_sanae_doctrinae.web_scraping import my_constants
+from Instrumentum_sanae_doctrinae.my_tools import my_constants
 from Instrumentum_sanae_doctrinae.my_tools import general_tools
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_work_base
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_subtopic_work

@@ -11,7 +11,7 @@ import requests
 
 
 from .. import scrap_metadata
-from .. import my_constants
+from ...my_tools import my_constants
 from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
 
 

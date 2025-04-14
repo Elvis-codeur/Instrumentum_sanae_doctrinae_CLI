@@ -3,9 +3,9 @@ import os
 import pathlib
 import re
 
-from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, my_constants
+from Instrumentum_sanae_doctrinae.web_scraping import http_connexion
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadata
-from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
+from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools, my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.monergism.mn_scrap_work_base import MN_ScrapSpeakerTopicScriptureWork_All
 
 

@@ -3,8 +3,8 @@ import aiohttp
 from charset_normalizer import detect as detect_encoding
 import os 
 from Instrumentum_sanae_doctrinae.web_scraping import download
-from Instrumentum_sanae_doctrinae.web_scraping import my_constants,http_connexion
-from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
+from Instrumentum_sanae_doctrinae.web_scraping import http_connexion
+from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools, my_constants
 
 
 class MN_DownloadFromUrl(download.DownloadFromUrl):

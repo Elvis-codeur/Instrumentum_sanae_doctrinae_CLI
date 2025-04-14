@@ -2,7 +2,8 @@ import asyncio
 import os
 from Instrumentum_sanae_doctrinae.cli_interface.web_scraping.monergism_command_executer import *
 from Instrumentum_sanae_doctrinae.cli_interface.web_scraping import sermonindex_command_executer
-from Instrumentum_sanae_doctrinae.web_scraping.my_constants import SCRIPTURE_NAME, SPEAKER_NAME, TOPIC_NAME
+from Instrumentum_sanae_doctrinae.cli_interface.telegram import telegram_command_executer
+from Instrumentum_sanae_doctrinae.my_tools.my_constants import SCRIPTURE_NAME, SPEAKER_NAME, TOPIC_NAME
 
 
 """
@@ -23,10 +24,6 @@ def entry_point():
 
 
 
-
-
-    
- 
 # The group for monergism commands
 @entry_point.group(name = "monergism")
 def monergism_group():
@@ -36,6 +33,11 @@ def monergism_group():
 # The group for sermonindex commands
 @entry_point.group(name = "sermonindex")
 def sermon_index_group():
+    pass 
+
+
+@entry_point.group(name = "telegram")
+def telegram_group():
     pass 
 
 
@@ -51,6 +53,13 @@ sermon_index_group.add_command(sermonindex_command_executer.sermonindex_scrap_li
 sermon_index_group.add_command(sermonindex_command_executer.sermonindex_scrap_general_information_command,name = "scrap_general_information")
 sermon_index_group.add_command(sermonindex_command_executer.sermonindex_scrap_work_command,name = "scrap_work")
 sermon_index_group.add_command(sermonindex_command_executer.sermonindex_download_command,name = "download")
+
+
+telegram_group.add_command(telegram_command_executer.scrap_channel_text_message_from_date_to_date,
+                           name="scrap_channel_date_to_date")
+
+
+
 
 if __name__ == "__main__":
     entry_point()
