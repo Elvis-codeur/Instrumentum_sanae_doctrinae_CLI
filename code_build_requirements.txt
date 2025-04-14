@@ -16,16 +16,19 @@ docutils==0.21.2
 frozenlist==1.5.0
 idna==3.10
 imagesize==1.4.1
--e git+https://github.com/Elvis-codeur/Instrumentum_sanae_doctrinae_CLI.git@701e67b2499e50a99ccc552f05e3dd1f1b167cf7#egg=Instrumentum_sanae_doctrinae
 Jinja2==3.1.5
 lxml==5.3.1
 MarkupSafe==3.0.2
 multidict==6.1.0
 packaging==24.2
 propcache==0.2.1
+pyaes==1.6.1
+pyasn1==0.6.1
 Pygments==2.19.1
+python-dotenv==1.1.0
 requests==2.32.3
 roman-numerals-py==3.1.0
+rsa==4.9
 snowballstemmer==2.2.0
 soupsieve==2.6
 Sphinx==8.2.1
@@ -35,6 +38,7 @@ sphinxcontrib-htmlhelp==2.1.0
 sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-qthelp==2.0.0
 sphinxcontrib-serializinghtml==2.0.0
+Telethon==1.39.0
 typing_extensions==4.12.2
 urllib3==2.3.0
 yarl==1.18.3
