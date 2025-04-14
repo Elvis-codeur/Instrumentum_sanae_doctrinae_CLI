@@ -7,8 +7,8 @@ import json
 import os
 import pathlib
 import re
-from Instrumentum_sanae_doctrinae.web_scraping import http_connexion, my_constants
-from Instrumentum_sanae_doctrinae.my_tools  import general_tools
+from Instrumentum_sanae_doctrinae.web_scraping import http_connexion
+from Instrumentum_sanae_doctrinae.my_tools  import general_tools, my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_metadata, mn_tools
 from Instrumentum_sanae_doctrinae.web_scraping.monergism.mn_scrap_subtopic_work import MN_ScrapScriptureOrTopicWork
 

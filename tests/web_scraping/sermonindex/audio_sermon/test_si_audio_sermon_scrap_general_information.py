@@ -1,6 +1,6 @@
 import asyncio
 import sys
-from Instrumentum_sanae_doctrinae.web_scraping import my_constants
+from Instrumentum_sanae_doctrinae.my_tools import my_constants
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex import si_scrap_general_information
 
 

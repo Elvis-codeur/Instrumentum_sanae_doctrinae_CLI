@@ -1,6 +1,6 @@
 import os
 
-from Instrumentum_sanae_doctrinae.web_scraping import my_constants
+from Instrumentum_sanae_doctrinae.my_tools import my_constants
 
 
 def get_monergism_metadata_and_log_folder(root_folder):

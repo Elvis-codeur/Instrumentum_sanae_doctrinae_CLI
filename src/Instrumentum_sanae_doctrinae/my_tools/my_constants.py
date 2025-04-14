@@ -48,6 +48,18 @@ import pathlib
 
 
 
+
+WEB_SCRAPING_NAME = "web_scraping"
+WEB_SCRAPING_ROOT_FOLDER = "web_scraping"
+
+TELEGRAM_NAME = "telegram"
+TELEGRAM_ROOT_FOLDER = "telegram"
+
+YOUTUBE_NAME = "youtube"
+YOUTUBE_ROOT_FOLDER = "youtube"
+
+
+
 LOGS_ROOT_FOLDER = "log" #: The root folder for log files 
 METADATA_ROOT_FOLDER = "metadata" #: The root folder for metadata files 
 DOWNLOAD_ROOT_FOLDER = "download" #: The root folder for metadata files 
@@ -105,9 +117,9 @@ SERMONINDEX_TEXT = "text"
 SERMONINDEX_VIDEO = "video"
 SERMONINDEX_VINTAGE_IMAGE = "vintage_image"
 
-SERMONINDEX_LOG_ROOT_FOLDER = pathlib.Path(os.path.join(LOGS_ROOT_FOLDER,SERMONINDEX_ROOT_FOLDER)).as_posix() #: The folder where all the log files related to sermonindex will be stored
-SERMONINDEX_METADATA_ROOT_FOLDER = pathlib.Path(os.path.join(METADATA_ROOT_FOLDER,SERMONINDEX_ROOT_FOLDER)).as_posix() #: The folder where all the metadata files related to **sermonindex** will be stored
-SERMONINDEX_DOWNLOAD_ROOT_FOLDER = pathlib.Path(os.path.join(DOWNLOAD_ROOT_FOLDER,SERMONINDEX_ROOT_FOLDER)).as_posix() #: The folder where all the download(pdf, mp3, mp4, .. ) files related to **sermonindex** will be stored
+SERMONINDEX_LOG_ROOT_FOLDER = pathlib.Path(os.path.join(LOGS_ROOT_FOLDER,WEB_SCRAPING_NAME,SERMONINDEX_ROOT_FOLDER)).as_posix() #: The folder where all the log files related to sermonindex will be stored
+SERMONINDEX_METADATA_ROOT_FOLDER = pathlib.Path(os.path.join(METADATA_ROOT_FOLDER,WEB_SCRAPING_NAME,SERMONINDEX_ROOT_FOLDER)).as_posix() #: The folder where all the metadata files related to **sermonindex** will be stored
+SERMONINDEX_DOWNLOAD_ROOT_FOLDER = pathlib.Path(os.path.join(DOWNLOAD_ROOT_FOLDER,WEB_SCRAPING_NAME,SERMONINDEX_ROOT_FOLDER)).as_posix() #: The folder where all the download(pdf, mp3, mp4, .. ) files related to **sermonindex** will be stored
 
 # The root folders for the logs of sermonindex 
 
@@ -160,9 +172,9 @@ SERMONINDEX_TEXT_SERMONS_ONLINE_BIBLES_DOWNLOAD_ROOT_FOLDER = pathlib.Path(os.pa
 
 MONERGISM_NAME = "monergism" #: The name of the monergism
 MONERGISM_ROOT_FOLDER = "monergism" #: The root folder for monergism
-MONERGISM_LOG_ROOT_FOLDER = pathlib.Path(os.path.join(LOGS_ROOT_FOLDER,MONERGISM_ROOT_FOLDER)).as_posix() #: The folder where all the log files related to monergism will be stored
-MONERGISM_METADATA_ROOT_FOLDER = pathlib.Path(os.path.join(METADATA_ROOT_FOLDER,MONERGISM_ROOT_FOLDER)).as_posix() #: The folder where all the metadata files related to monergism will be stored
-MONERGISM_DOWNLOAD_ROOT_FOLDER = pathlib.Path(os.path.join(DOWNLOAD_ROOT_FOLDER,MONERGISM_ROOT_FOLDER)).as_posix() #: The folder where all the metadata files related to monergism will be stored
+MONERGISM_LOG_ROOT_FOLDER = pathlib.Path(os.path.join(LOGS_ROOT_FOLDER,WEB_SCRAPING_ROOT_FOLDER,MONERGISM_ROOT_FOLDER)).as_posix() #: The folder where all the log files related to monergism will be stored
+MONERGISM_METADATA_ROOT_FOLDER = pathlib.Path(os.path.join(METADATA_ROOT_FOLDER,WEB_SCRAPING_ROOT_FOLDER,MONERGISM_ROOT_FOLDER)).as_posix() #: The folder where all the metadata files related to monergism will be stored
+MONERGISM_DOWNLOAD_ROOT_FOLDER = pathlib.Path(os.path.join(DOWNLOAD_ROOT_FOLDER,WEB_SCRAPING_ROOT_FOLDER,MONERGISM_ROOT_FOLDER)).as_posix() #: The folder where all the metadata files related to monergism will be stored
 
 
 
@@ -187,6 +199,17 @@ MONERGISM_BY_SCRIPTURE_DOWNLOAD_ROOT_FOLDER = pathlib.Path(os.path.join(MONERGIS
 MONERGISM_BY_SERIES_LOG_ROOT_FOLDER = pathlib.Path(os.path.join(MONERGISM_DOWNLOAD_ROOT_FOLDER,BY_SERIES_ROOT_FOLDER)).as_posix() #: The folder where all the **logs** of **Series** of **monergism** will be stored
 
 
+
+
+# The variables of telegram 
+
+TELEGRAM_LOG_ROOT_FOLDER = pathlib.Path(os.path.join(LOGS_ROOT_FOLDER,TELEGRAM_ROOT_FOLDER)).as_posix() #: The folder where all the log files related to monergism will be store
+TELEGRAM_METADATA_ROOT_FOLDER = pathlib.Path(os.path.join(METADATA_ROOT_FOLDER,TELEGRAM_ROOT_FOLDER)).as_posix() #: The folder where all the metadata files related to monergism will be stored
+TELEGRAM_DOWNLOAD_ROOT_FOLDER = pathlib.Path(os.path.join(DOWNLOAD_ROOT_FOLDER,TELEGRAM_ROOT_FOLDER)).as_posix() #: The folder where all the metadata files related to monergism will be stored
+
+TELEGRAM_CHANNEL_ROOT_FOLDER = "channel"
+TELEGRAM_CHANNEL_TEXT_MESSAGE_ROOT_FOLDER = "text_message"
+TELEGRAM_CHANNEL_SPEAKER_ROOT_FOLDER = "speaker"
 
 
 def get_default_json_filename(indice:int):

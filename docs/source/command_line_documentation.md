@@ -620,13 +620,13 @@ $ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work scriptu
 - Download the works of all the speakers for text format  
 
 ```console 
-$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker text all  "test_folder"
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex download speaker text all  "test_folder"
 ```
 
-- Download the works of the speaker **C.H. Spurgeon** for text format 
+- Download the works of the speaker **Leonard Ravenhill** for text format 
 
 ```console 
-$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker text "C.H. Spurgeon" "test_folder"
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex download speaker text "Leonard Ravenhill" "test_folder"
 ```
 
 ##### Christian books 
@@ -634,13 +634,13 @@ $ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker
 - Download the works of all the christian books for text format  
 
 ```console 
-$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work christian_book text all "test_folder"
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex download christian_book text all "test_folder"
 ```
 
 - Download the works of the book **Tertullian - On The Flesh Of Christ** for text format  
 
 ```console 
-$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work christian_book text "Tertullian - On The Flesh Of Christ" "test_folder"
+$ "bin/python" "cli_interface/argument_parser.py" sermonindex download christian_book text "Tertullian - On The Flesh Of Christ" "test_folder"
 ```
 
 #### Video books
@@ -661,13 +661,4 @@ $ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker
 #### Vintage images
 ##### Speakers 
 
-- Download the works all the speakers for vintage image 
-```console 
-$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker vintage_image all "test_folder"
-```
-
-- Download the works of the speaker **C.H. Spurgeon** for vintage image  
-
-```console 
-$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker vintage_image "C.H. Spurgeon" "test_folder"
-```
+There is no download for vintage images. The data scraped in the section 3 contains the url to the images. I have decided not to build a downloader for the vintage image right now 
