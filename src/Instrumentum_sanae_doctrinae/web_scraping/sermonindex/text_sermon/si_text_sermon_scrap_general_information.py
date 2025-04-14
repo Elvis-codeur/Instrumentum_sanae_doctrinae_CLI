@@ -111,17 +111,14 @@ class SI_ChristianBookScrapMainInformation_ALL(http_connexion.ParallelHttpConnex
         
         root_folder = _my_tools.process_path_according_to_cwd(root_folder)
 
-        log_filepath = os.path.join(root_folder,my_constants.LOGS_ROOT_FOLDER,
-                                       my_constants.SERMONINDEX_NAME,
+        log_filepath = os.path.join(root_folder,my_constants.SERMONINDEX_LOG_ROOT_FOLDER,
                                        material_root_folder,
                                        my_constants.ELABORATED_DATA_FOLDER,
                                        browse_by_type,
                                        my_constants.GENERAL_INFORMATION_NAME,
                                        my_constants.get_default_json_filename(0))
         
-        input_root_folder = os.path.join(root_folder,
-                                         my_constants.METADATA_ROOT_FOLDER,
-                                         my_constants.SERMONINDEX_NAME,
+        input_root_folder = os.path.join(root_folder,my_constants.SERMONINDEX_METADATA_ROOT_FOLDER,
                                          material_root_folder,
                                          my_constants.ELABORATED_DATA_FOLDER,
                                          browse_by_type)

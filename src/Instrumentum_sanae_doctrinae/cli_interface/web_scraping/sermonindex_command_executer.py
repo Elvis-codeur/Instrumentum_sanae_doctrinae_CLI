@@ -97,7 +97,7 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
                     output_folder,
                     material_folder,
                     browse_by_type,
-                    overwrite_log=True
+                    overwrite_log=overwrite_log
                 )    
             
             if target == "all":
@@ -109,11 +109,12 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
             
         if browse_by_type == my_constants.SERMONINDEX_CHRISTIAN_BOOKS_NAME:
             # The general information the books 
+            
             book_text_ob = si_text_sermon_scrap_general_information.SI_ChristianBookScrapMainInformation_ALL(
                     output_folder,
                     material_folder,
                     browse_by_type,
-                    overwrite_log=True
+                    overwrite_log=overwrite_log
                 )    
             if target == "all":
                 asyncio.run(book_text_ob.download(download_batch_size))
@@ -131,7 +132,7 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
             output_folder,
             material_folder,
             browse_by_type,
-            overwrite_log=True
+            overwrite_log=overwrite_log
             )    
         if target == "all":
             #print(ob.__dict__)
@@ -148,7 +149,7 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
             output_folder,
             material_folder,
             browse_by_type,
-            overwrite_log=True
+            overwrite_log=overwrite_log
             )
         
         if target == "all":
