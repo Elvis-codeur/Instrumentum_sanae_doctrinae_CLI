@@ -69,15 +69,24 @@ class SermonIndexScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicSc
 
         for url in self.url_informations:
             file_path = self.url_informations[url].get("json_filepath")
+            #print(url,os.path.exists(file_path))
+                        
             if not os.path.exists(file_path):
                 return False
             
+            # Here the file_content is a text 
+            # I load the file content as text first because some times, there are interruption
+            # and the json file is not well written. 
+            # Loading it cause error. So I load it as text first and then 
+            # I can try to convert it to json later 
+            file_content = await _my_tools.async_read_file(file_path)
             
-            file_content = await _my_tools.async_read_json(file_path)
+            #print(file_content)
             
-            if not file_content:
+            if file_content == "":
                 return False
             
+    
             try:
                 file_content = json.loads(file_content)
             except:
@@ -85,4 +94,6 @@ class SermonIndexScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicSc
 
             if not file_content.get("url"):
                 return False
+            
+        return True
    

@@ -224,5 +224,7 @@ class SermonIndexScrapSpeakerMainInformation_ALL(http_connexion.ParallelHttpConn
             intermdiate_folders = element.get("download_log").get("intermediate_folders"),
             material_root_folder = self.material_root_folder
         )
-        return await ob.is_data_downloaded()
+        result = await ob.is_data_downloaded()
+        print(element.get("name"),result)
+        return result
         
