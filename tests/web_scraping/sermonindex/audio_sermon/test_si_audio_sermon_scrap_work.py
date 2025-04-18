@@ -15,10 +15,40 @@ def test_audio_sermon_get_speaker_work():
         browse_by_type,
         overwrite_log=True
     )
+ 
+    
     #print(ob.log_file_content.keys())
-    asyncio.run(ob.download_from_element_key_list(["A.W. Tozer"],1))
+    asyncio.run(ob.download_from_element_key_list(["Leonard Ravenhill"],1))
     #ob.update_downloaded_and_to_download()
     #ob.write_log_file()
+    
+    
+def test_is_downloaded_scrap_work():
+    url_list = [
+            "https://www.sermonindex.net/modules/mydownloads/viewcat.php?cid=1",
+            "https://www.sermonindex.net/modules/mydownloads/viewcat.php?cid=1&min=20&orderby=titleA&show=20",
+            "https://www.sermonindex.net/modules/mydownloads/viewcat.php?cid=1&min=40&orderby=titleA&show=20",
+            "https://www.sermonindex.net/modules/mydownloads/viewcat.php?cid=1&min=60&orderby=titleA&show=20",
+            "https://www.sermonindex.net/modules/mydownloads/viewcat.php?cid=1&min=80&orderby=titleA&show=20",
+            "https://www.sermonindex.net/modules/mydownloads/viewcat.php?cid=1&min=100&orderby=titleA&show=20",
+    ]
+    
+    ob = si_audio_sermon_scrap_work.SI_AudioSermonWork(
+            name = "Leonard Ravenhill",
+            root_folder = root_folder,
+            browse_by_type ="speaker",
+            url_list = url_list,
+            intermdiate_folders = [],
+            material_root_folder = "audio_sermon"
+        )
+    
+    async def f():
+        print([i.get("connect_to_url") for i in  ob.url_informations.values()])
+        print (await ob.is_data_downloaded())
+        print([i.get("connect_to_url") for i in  ob.url_informations.values()])
+        await ob.scrap_and_write()
+        
+    asyncio.run(f())
     
 
 def test_audio_sermon_get_topic_work():
@@ -67,4 +97,4 @@ def test_audio_sermon_get_podcast_work():
 if __name__ == "__main__":
     if sys.platform == "win32":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    test_audio_sermon_get_speaker_work()
+    test_is_downloaded_scrap_work()

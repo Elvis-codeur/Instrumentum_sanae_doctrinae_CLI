@@ -35,7 +35,8 @@ class SI_AudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
         final_result = {}
 
         for current_page_url in self.url_informations:
-                
+            #print(current_page_url)
+            
             soup = self.url_informations[current_page_url].get("bs4_object")
 
             
