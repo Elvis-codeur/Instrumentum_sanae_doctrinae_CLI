@@ -217,7 +217,7 @@ class ParallelConnexionWithLogManagement():
         
         element_to_download = list(self.log_file_content["to_download"].values())
 
-        #print(self.log_file_content["to_download"].keys())
+        print(self.log_file_content["to_download"].keys(),self.log_file_content["to_download"])
         
         if download_total_number:
             # Take only the number have to be downloaded and set in the download_total_number variable
