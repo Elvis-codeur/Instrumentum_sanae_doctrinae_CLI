@@ -75,34 +75,6 @@ class SI_ChristianBookScrapGeneralInformation(SermonIndexScrapAuthorTopicScriptu
         return final_result
     
     
-    async def is_data_downloaded(self):
-
-        for url in self.url_informations:
-            file_path = self.url_informations[url].get("json_filepath")
-            #print(file_path)
-            if not os.path.exists(file_path):
-                return False
-            
-            
-            file_content = await _my_tools.async_read_file(file_path)
-            
-
-            if not file_content:
-                return False
-            
-            file_content = json.loads(file_content)
-            
-            # Check mandatory information in the json file 
-
-            if not file_content.get("url"):
-                return False
-            
-
-            if not file_content.get("data").get("author_name"):
-                return False
-            
-        return True
-    
 
 
 # Download the main information of each author, topic, etc 
@@ -211,5 +183,7 @@ class SI_ChristianBookScrapMainInformation_ALL(http_connexion.ParallelHttpConnex
             intermdiate_folders = element.get("download_log").get("intermediate_folders"),
             material_root_folder = self.material_root_folder
         )
-        return await ob.is_data_downloaded()
+        result = await ob.is_data_downloaded()
+        print(element.get("name"),result)
+        return result 
         
