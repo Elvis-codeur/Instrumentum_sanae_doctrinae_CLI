@@ -218,27 +218,31 @@ class ScrapAuthorTopicScripturePage(http_connexion.ScrapDataFromURL):
 
         await self.connect_to_all_url()
         
+        #print(self.url_informations)
+        
+        
         # The data scrapped from each url 
         # This step can contain http connections 
         url_datascraped_list = await self.scrap_url_pages()
+        #print(url_datascraped_list)
+        if url_datascraped_list:
+            
+            #raise RuntimeError("The method scrap_url_pages() is not defined by the class or return None")
         
-        if not url_datascraped_list:
-            raise RuntimeError("The method scrap_url_pages() is not defined by the class or return None")
-        
 
-        if save_html_file:
-            # Write the content of the html file get from the url
-            await self.write_html_page_content()  
+            if save_html_file:
+                # Write the content of the html file get from the url
+                await self.write_html_page_content()  
 
 
-        #print(url_datascraped_list,sep="\n\n\n")      
+            #print(url_datascraped_list,sep="\n\n\n")      
 
-        for url in url_datascraped_list:
-            self.prepare_json_data_for_saving(element_list=url_datascraped_list[url],
-                                              url=url)
+            for url in url_datascraped_list:
+                self.prepare_json_data_for_saving(element_list=url_datascraped_list[url],
+                                                url=url)
 
-        # Write the json file of the data scrapped from the html file 
-        await self.write_json_data()
-        
-        await self.main_request_session.close()
+            # Write the json file of the data scrapped from the html file 
+            await self.write_json_data()
+            
+            await self.main_request_session.close()
 

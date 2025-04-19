@@ -1,4 +1,5 @@
 
+import copy
 import datetime
 import os 
 import urllib
@@ -60,13 +61,20 @@ class ScrapDataFromURL():
         
         
          # It contains the json filepath, html filepat, etc of each url  
-        self.url_informations = {i.get("url"):{"json_filepath":None,"html_filepath":None,
-                                    "request":None,"bs4_object":None,
-                                    "is_html_file_locally_saved":False,
-                                    "is_json_file_locally_saved":False,
-                                    "json_file_content":None} for i in self.url_info_list} #: A dict for each url 
+        self.url_informations = {i.get("url"):{"json_filepath":None,
+                                               "html_filepath":None,
+                                               "connect_to_url":True,# If true, a connection is  made to the url otherwise it is not made
+                                                                     # The goal here is to avoid for exemple to connect urls which data are already downloaded  
+                                                "request":None,"bs4_object":None,
+                                                "is_html_file_locally_saved":False,
+                                                "is_json_file_locally_saved":False,
+                                                "json_file_content":None} 
+                                                    
+                                                    for i in self.url_info_list} #: A dict for each url 
 
-        
+        # A dict for the url to which no connection will be made 
+        # I set them appart to avoid any disturbance of the my code which already some pretty big 
+        self.url_informations_not_connect = {}    
     
         self.prepare_url_informations()
         
@@ -115,30 +123,51 @@ class ScrapDataFromURL():
         
         self.main_request_session = aiohttp.ClientSession()
         
+        #print(self.url_informations)
         
-        for url_dict in self.url_info_list:
-            url = url_dict.get("url")
-            #timeout = aiohttp.ClientTimeout(total=15)
-            #print(url_dict)
-            async with self.main_request_session.get(url=url) as response:
+        # I use a deepcopy here becaus the potential deletions will change
+        # The size of the dict during the iteration 
+        for url,value in copy.deepcopy(self.url_informations).items():
+            
+            
+            # This value must be True by default 
+            # It can be set to false if data of this url is already downloaded             
+            connect_to_url = value.get('connect_to_url')
+            
+            #print(url_dict,connect_to_url)
+            
+            # Connect to the url if and only if authorised 
+            if connect_to_url:
+                #print(url)
                 
-                if response.status == 404:
-                    raise my_errors.HTTP404Error(url)
-                
-                try:
-                    html = await response.text()
-                except UnicodeDecodeError:
-                    raw_data = await response.read()
-                    html = raw_data.decode("utf-8",errors="replace")
+                #timeout = aiohttp.ClientTimeout(total=15)
+                #print(url_dict)
+                async with self.main_request_session.get(url=url) as response:
+                    
+                    if response.status == 404:
+                        raise my_errors.HTTP404Error(url)
+                    
+                    try:
+                        html = await response.text()
+                    except UnicodeDecodeError:
+                        raw_data = await response.read()
+                        html = raw_data.decode("utf-8",errors="replace")
 
-                #print(response.headers)            
+                    #print(response.headers)            
+                    
+                    self.url_informations[url]["request"] = response
+                    self.url_informations[url]["html_text"] = html
+                    self.url_informations[url]["request_datetime"] = _my_tools.datetimeToGoogleFormat(datetime.datetime.now()),
+                    # Create a bs4 object with the html text of the last request 
+                    self.url_informations[url]["bs4_object"] = BeautifulSoup(html,features="html.parser") 
+            else:
+                # Add the url to which no connection is made to the list it belongs to 
+                self.url_informations_not_connect[url] = copy.deepcopy(self.url_informations[url])
                 
-                self.url_informations[url]["request"] = response
-                self.url_informations[url]["html_text"] = html
-                self.url_informations[url]["request_datetime"] = _my_tools.datetimeToGoogleFormat(datetime.datetime.now()),
-                # Create a bs4 object with the html text of the last request 
-                self.url_informations[url]["bs4_object"] = BeautifulSoup(html,features="html.parser") 
-
+                # Remove it from the list of the standard url for download; 
+                del self.url_informations[url]
+                
+                
     #print(self.url_informations)
 
     def next_page(self,**kwargs):
@@ -149,7 +178,6 @@ class ScrapDataFromURL():
         """
 
 
-
     async def scrap_url_pages(self,**kwargs):
 
         """
@@ -157,9 +185,6 @@ class ScrapDataFromURL():
         """
        
         
-    
-
-
     def anchor_object_list_to_dict_list(self,anchor_dict_list,url,version = "0.0.1",**kwargs):
         """
         :param anchor_dict_list: The list of a dict containing the text to 
@@ -230,11 +255,12 @@ class ScrapDataFromURL():
         for url in self.url_informations: 
                            
             html_text = self.url_informations[url]["html_text"]
-                
-            await _my_tools.async_write_file(self.url_informations[url]["html_filepath"],
-                                 html_text)
-            self.url_informations[url]['is_html_file_locally_saved'] = True
-            #print(url,"write html")
+            
+            if html_text:
+                await _my_tools.async_write_file(self.url_informations[url]["html_filepath"],
+                                    html_text)
+                self.url_informations[url]['is_html_file_locally_saved'] = True
+                #print(url,"write html")
 
 
 
@@ -267,13 +293,6 @@ class ScrapDataFromURL():
 
         """
     
-    
-    
-   
-            
-
-    
-
 
     def get_root_folder(self):
         return self.root_folder

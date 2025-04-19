@@ -59,8 +59,6 @@ telegram_group.add_command(telegram_command_executer.scrap_channel_text_message_
                            name="scrap_channel_date_to_date")
 
 
-
-
 if __name__ == "__main__":
     entry_point()
     

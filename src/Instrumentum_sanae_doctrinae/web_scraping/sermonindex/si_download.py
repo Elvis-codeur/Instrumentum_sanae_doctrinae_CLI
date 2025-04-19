@@ -67,9 +67,7 @@ class SI_Download_Work(download.DownloadWork):
         
         
        
-        log_filepath = os.path.join(root_folder,
-                                    my_constants.LOGS_ROOT_FOLDER,
-                                    my_constants.SERMONINDEX_NAME,
+        log_filepath = os.path.join(root_folder,my_constants.SERMONINDEX_LOG_ROOT_FOLDER,
                                     self.material_type_root_folder,
                                     my_constants.ELABORATED_DATA_FOLDER,
                                     self.browse_by_type, 
@@ -78,9 +76,7 @@ class SI_Download_Work(download.DownloadWork):
                                     my_constants.get_default_json_filename(0)
                                     )
         
-        input_root_folder = os.path.join(root_folder,
-                                         my_constants.METADATA_ROOT_FOLDER,
-                                         my_constants.SERMONINDEX_NAME,
+        input_root_folder = os.path.join(root_folder,my_constants.SERMONINDEX_METADATA_ROOT_FOLDER,
                                          self.material_type_root_folder,
                                          my_constants.ELABORATED_DATA_FOLDER,
                                          self.browse_by_type, 
@@ -88,9 +84,7 @@ class SI_Download_Work(download.DownloadWork):
                                          self.name
                                          )
         
-        download_output_root_folder = os.path.join(root_folder,
-                                         my_constants.DOWNLOAD_ROOT_FOLDER,
-                                         my_constants.SERMONINDEX_NAME,
+        download_output_root_folder = os.path.join(root_folder,my_constants.SERMONINDEX_DOWNLOAD_ROOT_FOLDER,
                                          self.material_type_root_folder,
                                          self.browse_by_type, 
                                          self.name,

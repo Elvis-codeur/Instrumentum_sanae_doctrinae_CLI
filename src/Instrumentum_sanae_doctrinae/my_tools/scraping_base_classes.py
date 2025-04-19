@@ -16,6 +16,9 @@ class ParallelConnexionWithLogManagement():
         self.input_root_folder = input_root_folder
         self.overwrite_log = overwrite_log
         
+        
+        self.log_data_initialisation_made = False
+        
         self.element_dict = {}
 
         if not input_root_folder:
@@ -75,6 +78,10 @@ class ParallelConnexionWithLogManagement():
                 # Update it in with based on things downloaded or not 
                 await self.update_to_download_list()   
         
+    
+        self.log_data_initialisation_made = True
+        
+        
     async def update_log_data(self):
         """
         Open the log file and update to download and downloaded informations 
@@ -126,6 +133,10 @@ class ParallelConnexionWithLogManagement():
         downloaded = {}
         to_download = {}
         
+        if not self.log_data_initialisation_made:
+            await self.init_log_data()
+        
+        #print(self.log_file_content)
         
         if add_not_found_404_elements:
             element_dict = {**self.log_file_content["to_download"],
@@ -205,6 +216,8 @@ class ParallelConnexionWithLogManagement():
         
         
         element_to_download = list(self.log_file_content["to_download"].values())
+
+        #print(self.log_file_content["to_download"].keys(),self.log_file_content["to_download"])
         
         if download_total_number:
             # Take only the number have to be downloaded and set in the download_total_number variable
@@ -219,12 +232,14 @@ class ParallelConnexionWithLogManagement():
         
         # This is used to show a progress bar 
         for download_batch in element_to_download_splitted:
+            
+            await self.print_download_informations(check_from_file=False)
+            
             tasks = [self.download_element_data(element) for element in download_batch]
             result = await asyncio.gather(*tasks)
            
             await self.update_downloaded_and_to_download_from_download_result(result)
            
-            await self.print_download_informations(check_from_file=False)
         
             await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
             

@@ -97,7 +97,7 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
                     output_folder,
                     material_folder,
                     browse_by_type,
-                    overwrite_log=True
+                    overwrite_log=overwrite_log
                 )    
             
             if target == "all":
@@ -109,11 +109,12 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
             
         if browse_by_type == my_constants.SERMONINDEX_CHRISTIAN_BOOKS_NAME:
             # The general information the books 
+            
             book_text_ob = si_text_sermon_scrap_general_information.SI_ChristianBookScrapMainInformation_ALL(
                     output_folder,
                     material_folder,
                     browse_by_type,
-                    overwrite_log=True
+                    overwrite_log=overwrite_log
                 )    
             if target == "all":
                 asyncio.run(book_text_ob.download(download_batch_size))
@@ -131,7 +132,7 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
             output_folder,
             material_folder,
             browse_by_type,
-            overwrite_log=True
+            overwrite_log=overwrite_log
             )    
         if target == "all":
             #print(ob.__dict__)
@@ -148,7 +149,7 @@ def sermonindex_scrap_general_information(browse_by_type:str,material_type:str,
             output_folder,
             material_folder,
             browse_by_type,
-            overwrite_log=True
+            overwrite_log=overwrite_log
             )
         
         if target == "all":
@@ -322,7 +323,7 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                         material_type,
                         output_folder,
                         browse_by_type,
-                        overwrite_log=True
+                        overwrite_log=overwrite_log
                     )
                     
                     async def  f():
@@ -369,13 +370,13 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                 speaker_list = list_ob.get_list_from_local_data()
                 
                 for speaker_name in speaker_list:
-                    #print(speaker_name)
+                    print(speaker_name)
                     ob = si_text_sermon_speaker_download.SI_Download_Speaker_ListOfTextWork(
                         speaker_name,
                         material_type,
                         output_folder,
                         browse_by_type,
-                        overwrite_log=True
+                        overwrite_log=overwrite_log
                     ) 
                     async def f():
                         await ob.init_aiohttp_session()               
@@ -391,7 +392,7 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                         material_type,
                         output_folder,
                         browse_by_type,
-                        overwrite_log=True
+                        overwrite_log=overwrite_log
                 ) 
                 async def f():
                     await ob.init_aiohttp_session()               
@@ -409,6 +410,7 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                 book_list = list_ob.get_list_from_local_data()
                 
                 for book_name in book_list:
+                    print(book_name)
                     ob = si_text_sermon_christianbook_download.SI_Download_ChristianBooks_ListOfTextWork(
                         book_name,
                         material_type,
