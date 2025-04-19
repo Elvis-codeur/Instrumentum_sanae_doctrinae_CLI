@@ -370,7 +370,7 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                 speaker_list = list_ob.get_list_from_local_data()
                 
                 for speaker_name in speaker_list:
-                    #print(speaker_name)
+                    print(speaker_name)
                     ob = si_text_sermon_speaker_download.SI_Download_Speaker_ListOfTextWork(
                         speaker_name,
                         material_type,
@@ -410,6 +410,7 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                 book_list = list_ob.get_list_from_local_data()
                 
                 for book_name in book_list:
+                    print(book_name)
                     ob = si_text_sermon_christianbook_download.SI_Download_ChristianBooks_ListOfTextWork(
                         book_name,
                         material_type,
