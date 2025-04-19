@@ -46,119 +46,122 @@ class SI_AudioSermonWork(SermonIndexScrapAuthorTopicScripturePage):
             
             if main_links_element:
                 main_links_element = main_links_element.find_all("tr",recursive = False)
-            else:
-                return []
-            
-
-            #print(*main_links_element[:2],sep="\n\n\n")
-
-            name = ""
 
 
-            result = []
-
-            compteur = 0
-            for element in main_links_element:
-            
-                a_element = element.find("a")
+                #print(*main_links_element[:2],sep="\n\n\n")
                 
-                compteur += 1
-
-                # There is some element in the main_links_element which are not a comment element
-
-                if a_element:
+                name = ""
 
 
-                    url = a_element.get("href")
-                    link_text  = a_element.get_text().strip()
+                result = []
 
-                    element_content = element.contents[-1].findAll("tr")[1:]
-
-
-                    if (len(element_content) > 1):
-
-                        add_element_to_topic = False
-                        add_element_to_scriptures = False
-
-                        topic_list = []
-                        scripture_list = []
-
-                        #print("\n\n\n",element_content[1].contents[0].contents[1:],compteur)
-                        #print("\n\n\n",element_content[1],"\n",element_content)
-
+                compteur = 0
+                for element in main_links_element:
+                
+                    a_element = element.find("a")
                     
-                        for comp in element_content[1].contents[0].contents[1:]:
-                            if "by" in comp.get_text():
-                                name = comp.get_text().split(" ")
-                                if len(name) > 1:
+                    compteur += 1
 
-                                    name = " ".join(name[1:]).strip()
+                    # There is some element in the main_links_element which are not a comment element
 
-                            if  "topic" in comp.get_text().lower():
-                                add_element_to_topic = True
+                    if a_element:
 
-                            if "scripture" in comp.get_text().lower():
-                                add_element_to_scriptures = True
-                                add_element_to_topic = False
 
-                            if comp.name == 'i' and add_element_to_topic:
-                                topic_list.append(comp.get_text().strip())
+                        url = a_element.get("href")
+                        link_text  = a_element.get_text().strip()
 
-                            if comp.name == 'i' and add_element_to_scriptures:
-                                scripture_list.append(comp.get_text().strip())
+                        element_content = element.contents[-1].findAll("tr")[1:]
+
+
+                        if (len(element_content) > 1):
+
+                            add_element_to_topic = False
+                            add_element_to_scriptures = False
+
+                            topic_list = []
+                            scripture_list = []
+
+                            #print("\n\n\n",element_content[1].contents[0].contents[1:],compteur)
+                            #print("\n\n\n",element_content[1],"\n",element_content)
 
                         
-                        link_description = "".join(element_content[2].find("td").find_all(string = True,recursive = False))
+                            for comp in element_content[1].contents[0].contents[1:]:
+                                if "by" in comp.get_text():
+                                    name = comp.get_text().split(" ")
+                                    if len(name) > 1:
+
+                                        name = " ".join(name[1:]).strip()
+
+                                if  "topic" in comp.get_text().lower():
+                                    add_element_to_topic = True
+
+                                if "scripture" in comp.get_text().lower():
+                                    add_element_to_scriptures = True
+                                    add_element_to_topic = False
+
+                                if comp.name == 'i' and add_element_to_topic:
+                                    topic_list.append(comp.get_text().strip())
+
+                                if comp.name == 'i' and add_element_to_scriptures:
+                                    scripture_list.append(comp.get_text().strip())
+
+                            
+                            link_description = "".join(element_content[2].find("td").find_all(string = True,recursive = False))
 
 
-                        download_number = element_content[3].get_text().split("\xa0")
-                        if len(download_number) >= 1:
-                            download_number = download_number[0]
+                            download_number = element_content[3].get_text().split("\xa0")
+                            if len(download_number) >= 1:
+                                download_number = download_number[0]
 
 
-                        element_comment_a = element_content[-1].find("a")
+                            element_comment_a = element_content[-1].find("a")
 
-                        element_comment_url = urllib.parse.urljoin(url,element_comment_a.get("href"))
-                        
-                        comment_number = int(element_comment_a.get_text().split("(")[1][:-1])
-                        
-                        comments = []
+                            element_comment_url = urllib.parse.urljoin(url,element_comment_a.get("href"))
+                            
+                            comment_number = int(element_comment_a.get_text().split("(")[1][:-1])
+                            
+                            comments = []
 
-                        if comment_number > 0:
-                            #print(self.url_informations[current_page_url].keys())
-                            comments = await self.get_element_comments(element_comment_url,
-                                                                 link_text,
-                                                                 os.path.dirname(
-                                                                     self.url_informations[current_page_url].get("html_filepath")))
+                            if comment_number > 0:
+                                #print(self.url_informations[current_page_url].keys())
+                                comments = await self.get_element_comments(element_comment_url,
+                                                                    link_text,
+                                                                    os.path.dirname(
+                                                                        self.url_informations[current_page_url].get("html_filepath")))
 
 
-                        # Take the number of download
+                            # Take the number of download
 
-                        download_number_element = element.find("td",{"colspan":"2","class":"bg3","align":"right"}) 
+                            download_number_element = element.find("td",{"colspan":"2","class":"bg3","align":"right"}) 
 
-                        download_number = download_number_element.get_text()
+                            download_number = download_number_element.get_text()
 
-                        download_number = download_number.split("\xa0")
-                        if len(download_number) > 1:
-                            download_number = download_number[0]
-                        else:
-                            download_number = -1
+                            download_number = download_number.split("\xa0")
+                            if len(download_number) > 1:
+                                download_number = download_number[0]
+                            else:
+                                download_number = -1
 
-                        result.append({
-                            "url":url,
-                            "name":name,
-                            "downlaod_number":download_number,
-                            "topics":topic_list,
-                            "scriptures":scripture_list,
-                            "link_text":link_text,
-                            "link_description":link_description.strip(),
-                            "comments_url":element_comment_url,
-                            "comments":comments,
-                            "comments_number": comment_number
-                        })
+                            result.append({
+                                "url":url,
+                                "name":name,
+                                "downlaod_number":download_number,
+                                "topics":topic_list,
+                                "scriptures":scripture_list,
+                                "link_text":link_text,
+                                "link_description":link_description.strip(),
+                                "comments_url":element_comment_url,
+                                "comments":comments,
+                                "comments_number": comment_number
+                            })
 
-            final_result[current_page_url] = result
+                final_result[current_page_url] = result
 
+            else:
+                final_result[current_page_url] = []
+            
+
+            
         return final_result
 
 
