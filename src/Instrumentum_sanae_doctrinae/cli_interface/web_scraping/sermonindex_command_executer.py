@@ -323,7 +323,7 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                         material_type,
                         output_folder,
                         browse_by_type,
-                        overwrite_log=True
+                        overwrite_log=overwrite_log
                     )
                     
                     async def  f():
@@ -376,7 +376,7 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                         material_type,
                         output_folder,
                         browse_by_type,
-                        overwrite_log=True
+                        overwrite_log=overwrite_log
                     ) 
                     async def f():
                         await ob.init_aiohttp_session()               
@@ -392,7 +392,7 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                         material_type,
                         output_folder,
                         browse_by_type,
-                        overwrite_log=True
+                        overwrite_log=overwrite_log
                 ) 
                 async def f():
                     await ob.init_aiohttp_session()               
