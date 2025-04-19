@@ -41,7 +41,6 @@ class SermonIndexScrapSpeakerTextSermonWork(SermonIndexScrapAuthorTopicScripture
 
             result = []
             
-            
             strong_objects =  soup.find_all("strong")
             for strong_obj in strong_objects:
                 anchor_obj = strong_obj.find("a")
@@ -59,8 +58,7 @@ class SermonIndexScrapSpeakerTextSermonWork(SermonIndexScrapAuthorTopicScripture
 
         return final_result
 
-   
-   
+
 class SI_ScrapTextSermonSpeakerWork_ALL(SI_ScrapWork_ALL):
     def __init__(self, root_folder, material_root_folder, browse_by_type,
                  overwrite_log=False, update_log=True,
