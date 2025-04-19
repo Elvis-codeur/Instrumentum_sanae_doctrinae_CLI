@@ -47,36 +47,39 @@ class SI_ScrapVintageImageWork(SermonIndexScrapAuthorTopicScripturePage):
                 "border":"0"
                 
             })
-            
-            for tr_object in table.find_all("tr",recursive = False):
+            #print(table)
+
+            if table != None:
                 
-                td_objects = tr_object.find_all("td")
-                
-                image_td_object = td_objects[0]
-                
-                description_td_object = td_objects[1]
-                
-                img_url = image_td_object.find("img").get("src")
-                
-                # img_url is actually the url of thumnail. I convert it the url of a jpg image url 
-                img_url = img_url.replace("thumbs/","")
-                
-                
-                decription_anchor_object = description_td_object.find_all("a",recursive = False)[-1]
-                
-                
-                description = "".join((i.strip() for i in description_td_object.contents 
-                                       if isinstance(i,bs4.NavigableString))).strip()
-                
-                result.append(
-                    {
-                        "img_url":img_url,
-                        "url":decription_anchor_object.get("href"),
-                        "link_text":decription_anchor_object.get_text(),
-                        "description":description,
-                    }
-                )
-                
+                for tr_object in table.find_all("tr",recursive = False):
+                    
+                    td_objects = tr_object.find_all("td")
+                    
+                    image_td_object = td_objects[0]
+                    
+                    description_td_object = td_objects[1]
+                    
+                    img_url = image_td_object.find("img").get("src")
+                    
+                    # img_url is actually the url of thumnail. I convert it the url of a jpg image url 
+                    img_url = img_url.replace("thumbs/","")
+                    
+                    
+                    decription_anchor_object = description_td_object.find_all("a",recursive = False)[-1]
+                    
+                    
+                    description = "".join((i.strip() for i in description_td_object.contents 
+                                        if isinstance(i,bs4.NavigableString))).strip()
+                    
+                    result.append(
+                        {
+                            "img_url":img_url,
+                            "url":decription_anchor_object.get("href"),
+                            "link_text":decription_anchor_object.get_text(),
+                            "description":description,
+                        }
+                    )
+                    
                 
             final_result[current_page_url] = result
 
