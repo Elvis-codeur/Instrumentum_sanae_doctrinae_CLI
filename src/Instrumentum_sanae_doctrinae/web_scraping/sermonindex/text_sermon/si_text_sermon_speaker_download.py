@@ -132,7 +132,10 @@ class SI_Download_Speaker_ListOfTextWork(SI_Download_Work):
         )
         is_downloaded = await ob.is_downloaded()
         
-        result =  is_downloaded and element.get("download_log").get("download_data") != None
-        #print(result,element,"\n\n\n")
+        result =  is_downloaded #and element.get("download_log").get("download_data") != None
+        
+      
+        #print(result,element.get("url"))
+        
         return result 
         
