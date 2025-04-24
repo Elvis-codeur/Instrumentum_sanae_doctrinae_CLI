@@ -184,6 +184,6 @@ class SI_ChristianBookScrapMainInformation_ALL(http_connexion.ParallelHttpConnex
             material_root_folder = self.material_root_folder
         )
         result = await ob.is_data_downloaded()
-        print(element.get("name"),result)
+        #print(element.get("name"),result)
         return result 
         

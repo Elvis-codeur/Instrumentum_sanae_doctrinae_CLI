@@ -94,12 +94,12 @@ class SermonIndexScrapAuthorTopicScripturePage(scrap_metadata.ScrapAuthorTopicSc
                 
                 try:
                     file_content = json.loads(file_content)
-                except:
-                    result =  False
-                    is_this_url_data_downloaded = False
-                    
 
-                if not file_content.get("url"):
+                    if not file_content.get("url"):
+                        result =  False
+                        is_this_url_data_downloaded = False
+
+                except:
                     result =  False
                     is_this_url_data_downloaded = False
                     

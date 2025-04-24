@@ -49,57 +49,65 @@ class SI_ScrapVideoSermonWork(SermonIndexScrapAuthorTopicScripturePage):
                 "border":"0"
                 
             })
+
+            print(table)
+
             
-            for tr_element in table.find_all("tr",recursie = False):
-                
-                td_element = tr_element.find_all("td")[-1]
-                
-                anchor_element = td_element.find_all("a")[1]
-                
-                b_element_list = td_element.find_all("b",recursive = False)
-                
-                description_text = ""
-                number_of_views = ""
-                
-                for b_element in b_element_list:
-                    if "description:" in b_element.get_text().lower():
-                        for next_element in b_element.next_siblings:
-                            if next_element.name == "br":
-                                break 
-                            
-                            if isinstance(next_element,bs4.NavigableString):    
-                                description_text += next_element.get_text()
+            if table:
                     
-                    if "views:" in b_element.get_text().lower():
-                        for next_element in b_element.next_siblings:
-                            if next_element.name == "br":
-                                break 
-                            
-                            if isinstance(next_element,bs4.NavigableString):    
-                                number_of_views += next_element.get_text()    
-                
-                
-                link_text = anchor_element.get_text()
-                
-                url =   anchor_element.get("href")
-                
-                
-                
-                # Now connect to that url to get the precise download url 
-                # and the youtube url if it is provided 
-                intermediate_download_content = await self.parse_sermonindex_download_intermediate_page(current_page_url,
-                                                                                                        url)
-                #print(url,link_text)
-                
-                result.append(
-                    {
-                        **intermediate_download_content,
-                        "url":url,
-                        "link_text":link_text,
-                        "description":description_text.strip(),
-                        "views":number_of_views.strip(),
-                    }
-                )  
+                for tr_element in table.find_all("tr",recursie = False):
+                    
+                    link_text = ""
+                    url = ""
+
+                    td_element = tr_element.find_all("td")[-1]
+                    
+                    anchor_element = td_element.find_all("a")[1]
+                    
+                    b_element_list = td_element.find_all("b",recursive = False)
+                    
+                    description_text = ""
+                    number_of_views = ""
+                    
+                    for b_element in b_element_list:
+                        if "description:" in b_element.get_text().lower():
+                            for next_element in b_element.next_siblings:
+                                if next_element.name == "br":
+                                    break 
+                                
+                                if isinstance(next_element,bs4.NavigableString):    
+                                    description_text += next_element.get_text()
+                        
+                        if "views:" in b_element.get_text().lower():
+                            for next_element in b_element.next_siblings:
+                                if next_element.name == "br":
+                                    break 
+                                
+                                if isinstance(next_element,bs4.NavigableString):    
+                                    number_of_views += next_element.get_text()    
+                    
+                    link_text = anchor_element.get_text()
+
+
+                    url =   anchor_element.get("href")
+                    
+                    
+                    
+                    # Now connect to that url to get the precise download url 
+                    # and the youtube url if it is provided 
+                    #intermediate_download_content = await self.parse_sermonindex_download_intermediate_page(current_page_url,url)
+                    #print(url,link_text)
+                    
+                    result.append(
+                        {
+                            #**intermediate_download_content,
+                            "url":url,
+                            "link_text":link_text,
+                            "description":description_text.strip(),
+                            "views":number_of_views.strip(),
+                        }
+                    )  
+
                         
             final_result[current_page_url] = result
 
