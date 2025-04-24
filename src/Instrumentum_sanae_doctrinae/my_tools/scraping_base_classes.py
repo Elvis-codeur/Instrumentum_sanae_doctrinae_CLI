@@ -72,7 +72,8 @@ class ParallelConnexionWithLogManagement():
         else:
             # Create the log file if it does not exists 
             if not os.path.exists(self.log_filepath):
-                await _my_tools.async_write_json(self.log_filepath,self.create_default_log_file_content())
+                self.log_file_content = self.create_default_log_file_content()
+                await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
             else:
                 # Read the log dict 
                 self.log_file_content = await _my_tools.async_read_json(self.log_filepath)
@@ -218,7 +219,7 @@ class ParallelConnexionWithLogManagement():
         # Update before the begining of downloads
         await self.update_downloaded_and_to_download_from_drive(add_not_found_404_elements = True) 
         
-        
+        print(f"downloaded = {len(self.log_file_content['downloaded'])} to_download = {len(self.log_file_content['to_download'])}")
         
         element_to_download = list(self.log_file_content["to_download"].values())
 
