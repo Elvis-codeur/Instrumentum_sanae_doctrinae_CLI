@@ -13,7 +13,7 @@ def test_audio_sermon_get_speaker_work():
         browse_by_type = my_constants.SPEAKER_NAME
         material_type = my_constants.SERMONINDEX_AUDIO
         ob =si_audio_sermon_download.SI_Download_ListOfAudioWork(
-            "A.W. Tozer",
+            "Leonard Ravenhill",
             material_type,
             root_folder,
             browse_by_type,
@@ -21,6 +21,8 @@ def test_audio_sermon_get_speaker_work():
         )
         await ob.init_aiohttp_session()
         await ob.init_log_data()
+        await ob.update_downloaded_and_to_download_from_drive(True)
+        print(len(ob.log_file_content["to_download"]))
         await ob.download(1)
         
     asyncio.run(d())

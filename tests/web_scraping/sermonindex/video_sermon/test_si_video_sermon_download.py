@@ -13,7 +13,7 @@ def test_video_sermon_download():
         browse_by_type = my_constants.SPEAKER_NAME
         material_type = my_constants.SERMONINDEX_VIDEO
         ob = si_video_sermon_download.SI_Download_ListOfVideoWork(
-            "Art Katz",
+            "Zac Poonen",
             material_type,
             root_folder,
             browse_by_type,
@@ -21,6 +21,9 @@ def test_video_sermon_download():
         )
         await ob.init_aiohttp_session()
         await ob.init_log_data()
+        await ob.update_downloaded_and_to_download_from_drive(True)
+        print(len(ob.log_file_content["to_download"]))
+        print(len(ob.log_file_content["downloaded"]))
         await ob.download(1)
         
     asyncio.run(d())

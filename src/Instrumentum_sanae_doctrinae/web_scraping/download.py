@@ -46,7 +46,7 @@ class DownloadFromUrl():
             result = {"success":0,"error":"" .join(traceback.format_exception(e))}
             return result 
             
-    async def download_internal_version(self):
+    async def download_internal_version(self,**parameters_to_add_result):
         """
        
         """
@@ -129,6 +129,7 @@ class DownloadFromUrl():
                 "download_data":{
                     "version": "0.0.1",
                     "url": self.url,
+                    "other_params":parameters_to_add_result,
                     "filepath": self.output_file_path,
                     "download_begin_time":download_begin_time,
                     "download_end_time":download_end_time,
