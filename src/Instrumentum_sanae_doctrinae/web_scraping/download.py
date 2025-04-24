@@ -355,7 +355,7 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
          
         element_to_download = list(self.log_file_content["to_download"].values())
         
-        
+        #print("len(element_to_download) = ",len(element_to_download))
        
         # Split it by size download_batch_size to download
         #  them in parralel 

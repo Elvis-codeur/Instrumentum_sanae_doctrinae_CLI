@@ -165,8 +165,8 @@ class ParallelConnexionWithLogManagement():
         self.log_file_content["to_download"] = to_download
         self.log_file_content["downloaded"] = downloaded
         
-        print(len(self.log_file_content["to_download"].keys()))
-        print(len(self.log_file_content["downloaded"].keys()))
+        #print(len(self.log_file_content["to_download"].keys()))
+        #print(len(self.log_file_content["downloaded"].keys()))
     
     
     async def update_downloaded_and_to_download_from_download_result(self,download_result_list):
