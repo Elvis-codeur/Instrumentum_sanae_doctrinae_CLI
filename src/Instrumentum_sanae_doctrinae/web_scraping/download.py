@@ -55,7 +55,7 @@ class DownloadFromUrl():
         file_size_mega_byte = 0 
         
         # Chunck size 
-        file_chunck_size_MB = 4*1024*1024 #Mega Byte # 
+        file_chunck_size_byte = 4*1024*1024 #Mega Byte # 
         
         result = {}
         download_begin_time = None 
@@ -92,15 +92,10 @@ class DownloadFromUrl():
                 
                 async with aiofile.async_open(self.output_file_path,mode = "wb") as file:
                     
-                    # Big file 
-                    if file_size_mega_byte > file_chunck_size_MB:
-                        async for chunck in response.content.iter_chunked(file_chunck_size_MB):
-                            await file.write(chunck)
-                            
-                    # Small file 
-                    else:
-                        content = await response.read()
-                        await file.write(content)
+                    async for chunck in response.content.iter_chunked(2 * 1024 * 1024):
+                        await file.write(chunck)
+                        
+                    
                 
             else:
                 
