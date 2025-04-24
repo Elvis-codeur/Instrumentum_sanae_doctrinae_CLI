@@ -46,7 +46,7 @@ class DownloadFromUrl():
             result = {"success":0,"error":"" .join(traceback.format_exception(e))}
             return result 
             
-    async def download_internal_version(self):
+    async def download_internal_version(self,**parameters_to_add_result):
         """
        
         """
@@ -55,7 +55,7 @@ class DownloadFromUrl():
         file_size_mega_byte = 0 
         
         # Chunck size 
-        file_chunck_size_MB = 4*1024*1024 #Mega Byte # 
+        file_chunck_size_byte = 4*1024*1024 #Mega Byte # 
         
         result = {}
         download_begin_time = None 
@@ -92,15 +92,10 @@ class DownloadFromUrl():
                 
                 async with aiofile.async_open(self.output_file_path,mode = "wb") as file:
                     
-                    # Big file 
-                    if file_size_mega_byte > file_chunck_size_MB:
-                        async for chunck in response.content.iter_chunked(file_chunck_size_MB):
-                            await file.write(chunck)
-                            
-                    # Small file 
-                    else:
-                        content = await response.read()
-                        await file.write(content)
+                    async for chunck in response.content.iter_chunked(2 * 1024 * 1024):
+                        await file.write(chunck)
+                        
+                    
                 
             else:
                 
@@ -129,6 +124,7 @@ class DownloadFromUrl():
                 "download_data":{
                     "version": "0.0.1",
                     "url": self.url,
+                    "other_params":parameters_to_add_result,
                     "filepath": self.output_file_path,
                     "download_begin_time":download_begin_time,
                     "download_end_time":download_end_time,
@@ -355,6 +351,7 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
          
         element_to_download = list(self.log_file_content["to_download"].values())
         
+        #print("len(element_to_download) = ",len(element_to_download))
        
         # Split it by size download_batch_size to download
         #  them in parralel 
@@ -390,7 +387,9 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
                     if url in self.log_file_content["to_download"]:
                         del self.log_file_content["to_download"][url]
                     
-                    await self.update_log_data()
+                    # I comment this because it is too costly especially when there is hundreds 
+                    # 
+                    #await self.update_log_data()
                     
                 else:
                     
@@ -405,6 +404,10 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
                         element_for_log["download_log"]["error_data"] = result.get("error")
                         self.log_file_content["to_download"][url] = element_for_log
                         # Delete the element from the to download list 
+                        
+                        if url in self.log_file_content["to_download"]:
+                            #print(url,404,"\n\n\n")
+                            del self.log_file_content["to_download"][url]
                         
             await self.update_log_data()
             

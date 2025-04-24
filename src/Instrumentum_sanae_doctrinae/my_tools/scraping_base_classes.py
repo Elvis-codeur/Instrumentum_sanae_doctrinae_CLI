@@ -1,6 +1,7 @@
 import asyncio
 import os 
 import pathlib
+import copy 
 from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools
 
 
@@ -139,19 +140,20 @@ class ParallelConnexionWithLogManagement():
         #print(self.log_file_content)
         
         if add_not_found_404_elements:
-            element_dict = {**self.log_file_content["to_download"],
-                        ** self.log_file_content["downloaded"],
-                        ** self.log_file_content["not_found_404"]}
+            element_dict = {**copy.deepcopy(self.log_file_content["to_download"]),
+                        ** copy.deepcopy(self.log_file_content["downloaded"]),
+                        ** copy.deepcopy(self.log_file_content["not_found_404"])}
         else:
-            element_dict = {**self.log_file_content["to_download"],
-                        ** self.log_file_content["downloaded"]}
+            element_dict = {**copy.deepcopy(self.log_file_content["to_download"]),
+                        **copy.deepcopy(self.log_file_content["downloaded"])}
             
 
         for key in element_dict:
             #print(element_dict.keys())
             #print(key,element_dict[key],"\n",self.element_dict[key],"\n\n\n")
             is_downloaded = await self.is_element_data_downloaded(element_dict[key])
-            #print(key,is_downloaded)
+            
+            
             if is_downloaded:
                 #print(key,True)
                 downloaded[key] = element_dict[key]
@@ -162,6 +164,9 @@ class ParallelConnexionWithLogManagement():
         
         self.log_file_content["to_download"] = to_download
         self.log_file_content["downloaded"] = downloaded
+        
+        #print(len(self.log_file_content["to_download"].keys()))
+        #print(len(self.log_file_content["downloaded"].keys()))
     
     
     async def update_downloaded_and_to_download_from_download_result(self,download_result_list):

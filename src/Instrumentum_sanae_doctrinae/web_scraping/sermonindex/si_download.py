@@ -36,11 +36,16 @@ class SI_DownloadFromUrl(download.DownloadFromUrl):
         files = pathlib.Path(self.output_folder).rglob("*")
         files = [file for file in files if file.is_file()]
         
+        
         for file in files:
             file_basename = os.path.basename(file)
+            #print(file_basename)
             if file_basename.startswith(self.output_file_name):
                 #print(file_basename,self.output_file_name)
+                #print(True)
                 return True 
+            
+        #print(self.output_file_name)
         
         return False 
     

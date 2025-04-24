@@ -15,16 +15,17 @@ def test_text_sermon_speaker_download():
         browse_by_type = my_constants.SPEAKER_NAME
         material_type = my_constants.SERMONINDEX_TEXT
         ob = si_text_sermon_speaker_download.SI_Download_Speaker_ListOfTextWork(
-            "C.H. Spurgeon",
+            "A Collection of Hymns",
             material_type,
             root_folder,
             browse_by_type,
-            overwrite_log=True
+            overwrite_log=False
         )
         await ob.init_aiohttp_session()
         await ob.init_log_data()
-        print(ob.__dict__)
-        await ob.download(1)
+        await ob.update_downloaded_and_to_download_from_drive(add_not_found_404_elements=True)
+        #print(len(ob.log_file_content["downloaded"].keys()))
+        await ob.download(10)
     
     asyncio.run(d())
     
@@ -44,7 +45,8 @@ def test_text_sermon_christiabook_download():
         )
         await ob.init_aiohttp_session()
         await ob.init_log_data()
-        #print(ob.__dict__)
+        await ob.update_downloaded_and_to_download_from_drive(True)
+        #print(len(ob.log_file_content["downloaded"].keys()),"EElvis")
         await ob.download(1)
         await ob.close_aiohttp_session()
     
