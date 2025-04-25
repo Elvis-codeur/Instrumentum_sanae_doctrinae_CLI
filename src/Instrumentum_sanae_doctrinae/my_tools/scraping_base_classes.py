@@ -66,6 +66,7 @@ class ParallelConnexionWithLogManagement():
         """
         Open the log file and update to download and downloaded informations 
         """
+        print(self.log_filepath)
         if self.overwrite_log:
             self.log_file_content = self.create_default_log_file_content()
             await _my_tools.async_write_json(self.log_filepath,self.log_file_content)

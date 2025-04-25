@@ -7,6 +7,7 @@ from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.text_sermon import si
 
 
 root_folder ='/home/elvis/Documents/ForGod/Scraping General/test_folder' 
+root_folder = "/media/elvis/Seagate Desktop Drive/Sanae_Doctrinae_Vault"
 
 def test_text_sermon_speaker_download():
     
@@ -24,7 +25,7 @@ def test_text_sermon_speaker_download():
         await ob.init_aiohttp_session()
         await ob.init_log_data()
         await ob.update_downloaded_and_to_download_from_drive(add_not_found_404_elements=True)
-        #print(len(ob.log_file_content["downloaded"].keys()))
+        #print("Elvis",len(ob.log_file_content["to_download"].keys()))
         await ob.download(10)
     
     asyncio.run(d())
@@ -55,4 +56,4 @@ def test_text_sermon_christiabook_download():
 
     
 if __name__ == "__main__":
-    test_text_sermon_christiabook_download()
+    test_text_sermon_speaker_download()
