@@ -95,8 +95,6 @@ class DownloadFromUrl():
                     async for chunck in response.content.iter_chunked(2 * 1024 * 1024):
                         await file.write(chunck)
                         
-                    
-                
             else:
                 
                 # Read body as binary       
