@@ -29,15 +29,16 @@ class SI_DownloadFromUrl(download.DownloadFromUrl):
         return f"{self.__class__.__name__}({str(self.__dict__)})"
         
     
-    async def is_downloaded(self):
+    async def is_downloaded(self,files_list = None):
         
         # Check if there is a file with the same name as the name given to the object
         
-        files = pathlib.Path(self.output_folder).rglob("*")
-        files = [file for file in files if file.is_file()]
-        
-        
-        for file in files:
+        if not files_list:
+            files_list = pathlib.Path(self.output_folder).rglob("*")
+            files_list = [file for file in files_list if file.is_file()]
+            
+            
+        for file in files_list:
             file_basename = os.path.basename(file)
             #print(file_basename)
             if file_basename.startswith(self.output_file_name):

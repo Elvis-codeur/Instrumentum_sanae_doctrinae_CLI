@@ -410,6 +410,7 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
                             del self.log_file_content["to_download"][url]
                         
             await self.update_log_data()
+            await self.print_download_informations()
             
             
     async def update_to_download_list(self):
