@@ -19,12 +19,6 @@ class DownloadFromUrl():
         self.output_file_path = output_file_path
         self.aiohttp_session = aiohttp_session
         
-    async def download(self):
-        pass 
-        
-    async def is_downloaded(self):
-        pass 
-    
     
     def prepare_the_output_file_path(self,content_type):
             
@@ -387,8 +381,8 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
                     if url in self.log_file_content["to_download"]:
                         del self.log_file_content["to_download"][url]
                     
-                    # I comment this because it is too costly especially when there is hundreds 
-                    # 
+                    # I comment this because it is too costly in time especially when there is hundreds 
+                    # It is more constly on HDD drives 
                     #await self.update_log_data()
                     
                 else:
