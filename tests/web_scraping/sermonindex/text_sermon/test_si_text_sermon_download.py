@@ -48,8 +48,8 @@ def test_text_sermon_christiabook_download():
         await ob.init_log_data()
         await ob.update_downloaded_and_to_download_from_drive(True)
         await ob.print_download_informations()
-        await ob.download(50)
-        
+        #await ob.download(50)
+        print("Elvis")
         ob.write_log_file()
         await ob.close_aiohttp_session()
     
@@ -58,4 +58,4 @@ def test_text_sermon_christiabook_download():
 
     
 if __name__ == "__main__":
-    test_text_sermon_speaker_download()
+    test_text_sermon_christiabook_download()

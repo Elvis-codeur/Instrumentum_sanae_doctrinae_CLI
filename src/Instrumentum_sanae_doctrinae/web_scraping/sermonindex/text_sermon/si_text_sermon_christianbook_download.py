@@ -44,14 +44,13 @@ class SI_Download_ChristianBooks_ListOfTextWork(SI_Download_Work):
         # I take my data from the subfolder MAIN_INFORMATION_ROOT_FOLDER and no more from 
         # WORK_INFORMATION_ROOT_FOLDER
         
-        folder_path = os.path.join(input_root_folder,my_constants.MAIN_INFORMATION_ROOT_FOLDER)
+        folder_path = pathlib.Path(os.path.join(input_root_folder,my_constants.WORK_INFORMATION_ROOT_FOLDER)).resolve()
         
+        #print(folder_path)
         
         #print(folder_path)
         # List to store paths to all JSON files
         json_files = [i for i in pathlib.Path(folder_path).rglob("*.json") if i.is_file()]
-
-        #print(folder_path,json_files)
         
         #print("kaka",json_files,input_root_folder)
         

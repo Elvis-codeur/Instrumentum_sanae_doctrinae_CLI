@@ -73,29 +73,29 @@ class SI_Download_Work(download.DownloadWork):
         
         
        
-        log_filepath = os.path.join(root_folder,my_constants.SERMONINDEX_LOG_ROOT_FOLDER,
+        log_filepath = pathlib.Path(os.path.join(root_folder,my_constants.SERMONINDEX_LOG_ROOT_FOLDER,
                                     self.material_type_root_folder,
                                     my_constants.ELABORATED_DATA_FOLDER,
                                     self.browse_by_type, 
                                     my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_DOWNLOAD_FOLDER,
                                     self.name,
                                     my_constants.get_default_json_filename(0)
-                                    )
+                                    )).resolve().as_posix()
         
-        input_root_folder = os.path.join(root_folder,my_constants.SERMONINDEX_METADATA_ROOT_FOLDER,
+        input_root_folder = pathlib.Path(os.path.join(root_folder,my_constants.SERMONINDEX_METADATA_ROOT_FOLDER,
                                          self.material_type_root_folder,
                                          my_constants.ELABORATED_DATA_FOLDER,
                                          self.browse_by_type, 
                                          my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
                                          self.name
-                                         )
+                                         )).resolve().as_posix()
         
-        download_output_root_folder = os.path.join(root_folder,my_constants.SERMONINDEX_DOWNLOAD_ROOT_FOLDER,
+        download_output_root_folder = pathlib.Path(os.path.join(root_folder,my_constants.SERMONINDEX_DOWNLOAD_ROOT_FOLDER,
                                          self.material_type_root_folder,
                                          self.browse_by_type, 
                                          self.name,
                                          my_constants.DOWNLOAD_ROOT_FOLDER,                             
-                                         )
+                                         )).resolve().as_posix()
         
         return locals()
         
@@ -111,6 +111,7 @@ class SI_Download_Work(download.DownloadWork):
         # The folder where the works of the author are 
         folder_path = os.path.join(input_root_folder,my_constants.WORK_INFORMATION_ROOT_FOLDER)
         
+        #print(folder_path)
         
         #print(folder_path)
         # List to store paths to all JSON files
