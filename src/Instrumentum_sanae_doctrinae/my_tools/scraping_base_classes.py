@@ -36,6 +36,7 @@ class ParallelConnexionWithLogManagement():
 
 
         # Add download log the element each element 
+        #print(input_data)
         for file_path in input_data:
             
             file_path_from_root_folder = _my_tools.get_uncommon_part_of_two_path(
@@ -66,7 +67,7 @@ class ParallelConnexionWithLogManagement():
         """
         Open the log file and update to download and downloaded informations 
         """
-        print(self.log_filepath)
+        #print(self.log_filepath)
         if self.overwrite_log:
             self.log_file_content = self.create_default_log_file_content()
             await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
@@ -149,8 +150,9 @@ class ParallelConnexionWithLogManagement():
             element_dict = {**copy.deepcopy(self.log_file_content["to_download"]),
                         **copy.deepcopy(self.log_file_content["downloaded"])}
             
-
+        #print(element_dict)
         for key in element_dict:
+            
             #print(element_dict.keys())
             #print(key,element_dict[key],"\n",self.element_dict[key],"\n\n\n")
             is_downloaded = await self.is_element_data_downloaded(element_dict[key])

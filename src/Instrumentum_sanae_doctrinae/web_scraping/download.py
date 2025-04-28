@@ -302,15 +302,19 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
         
         # Get the path of log file, input file and download output folder 
         file_path_dict = self.prepare_log_metadata_input_files_path(root_folder)
+        
         log_filepath = file_path_dict.get("log_filepath")
         input_root_folder = file_path_dict.get("input_root_folder")
         download_output_root_folder = file_path_dict.get("download_output_root_folder")
+        
+        
+        
         self.download_output_root_folder = download_output_root_folder
         
         
         
         input_files = self.get_input_json_files(input_root_folder)
-        
+        #print(input_files)
         input_data = {}
         
         # Prepare the json files as input data 
@@ -404,6 +408,7 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
                             del self.log_file_content["to_download"][url]
                         
             await self.update_log_data()
+            await self.print_download_informations()
             
             
     async def update_to_download_list(self):
