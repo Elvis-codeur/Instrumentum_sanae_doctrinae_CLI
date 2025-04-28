@@ -59,7 +59,7 @@ def remove_forbiden_char_in_text(text):
     return text
 
 
-def replace_forbiden_char_in_text(text):
+def replace_forbiden_char_in_text(text:str):
     """
     This functin replace :
 
@@ -78,9 +78,17 @@ def replace_forbiden_char_in_text(text):
     if not text:
         return ""
     
-    return text.replace("<","_a_").replace(">","_b_").replace(":","_c_")\
+    result = text.replace("<","_a_").replace(">","_b_").replace(":","_c_")\
                 .replace('"',"_d_").replace("|","_e_").replace("?","_f_")\
-                .replace("*","_g_").replace("/","_h_").replace("\\","_i_").replace("...","_k_")
+                .replace("*","_g_").replace("/","_h_").replace("\\","_i_")\
+                .replace("...","_k_")
+    
+    # Solve the bug caused by the dot . at the end
+    #  of Del Fehsenfeld Jr. name for text sermon
+    if result[-1] == ".":
+        result = result[:-1]
+
+    return result 
 
 
 def remove_consecutive_spaces(text):

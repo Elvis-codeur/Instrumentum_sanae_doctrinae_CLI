@@ -356,7 +356,9 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
         element_to_download_splitted = _my_tools.sample_list(element_to_download,
                                                       download_batch_size)
 
-        
+        print("Download to Begin",end=" ")
+        await self.print_download_informations()
+
         # This is used to show a progress bar 
         for download_batch in element_to_download_splitted:
             tasks = [self.download_element_data(element) for element in download_batch]
