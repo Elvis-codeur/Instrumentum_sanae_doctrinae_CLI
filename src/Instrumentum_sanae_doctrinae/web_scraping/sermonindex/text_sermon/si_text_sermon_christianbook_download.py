@@ -44,7 +44,7 @@ class SI_Download_ChristianBooks_ListOfTextWork(SI_Download_Work):
         # I take my data from the subfolder MAIN_INFORMATION_ROOT_FOLDER and no more from 
         # WORK_INFORMATION_ROOT_FOLDER
         
-        folder_path = pathlib.Path(os.path.join(input_root_folder,my_constants.WORK_INFORMATION_ROOT_FOLDER)).resolve()
+        folder_path = pathlib.Path(os.path.join(input_root_folder,my_constants.MAIN_INFORMATION_ROOT_FOLDER)).resolve()
         
         #print(folder_path)
         
