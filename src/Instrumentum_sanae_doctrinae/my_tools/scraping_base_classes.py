@@ -1,4 +1,5 @@
 import asyncio
+import json
 import os 
 import pathlib
 import copy 
@@ -72,13 +73,26 @@ class ParallelConnexionWithLogManagement():
         else:
             # Create the log file if it does not exists 
             if not os.path.exists(self.log_filepath):
-                await _my_tools.async_write_json(self.log_filepath,self.create_default_log_file_content())
+                self.log_file_content = self.create_default_log_file_content()
+                await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
             else:
                 # Read the log dict 
-                self.log_file_content = await _my_tools.async_read_json(self.log_filepath)
-                # Update it in with based on things downloaded or not 
-                await self.update_to_download_list()   
-        
+                file_content = await _my_tools.async_read_file(self.log_filepath)
+                
+                if file_content:
+                    file_content = json.loads(file_content)
+                    if file_content.keys():
+                        self.log_file_content = file_content
+                        # Update it in with based on things downloaded or not 
+                        await self.update_to_download_list()   
+                    else:
+                        self.log_file_content = self.create_default_log_file_content()
+                        await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
+                else:
+                    self.log_file_content = self.create_default_log_file_content()
+                    await _my_tools.async_write_json(self.log_filepath,self.log_file_content)
+                    
+                    
     
         self.log_data_initialisation_made = True
         
