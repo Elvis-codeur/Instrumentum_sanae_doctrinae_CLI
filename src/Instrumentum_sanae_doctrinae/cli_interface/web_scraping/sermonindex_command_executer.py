@@ -1,6 +1,7 @@
 
 
 import asyncio
+import os
 
 from Instrumentum_sanae_doctrinae.cli_interface.cli_tools import parse_argument
 from Instrumentum_sanae_doctrinae.my_tools import general_tools
@@ -204,19 +205,20 @@ def sermonindex_scrap_work(browse_by_type:str,material_type:str,
                 asyncio.run(ob.download_from_element_key_list([target_name],1))
                 ob.write_log_file()
         else:
-            ob = si_text_sermon_christianbook_scrap_work.SI_ScrapTextSermonChristianBookWork_ALL(
-                    root_folder=output_folder,
-                    material_root_folder=material_folder,
-                    browse_by_type = browse_by_type,
-                    overwrite_log=overwrite_log
-            )
+            print("Scraping of works is not required for christian books.")
+            # ob = si_text_sermon_christianbook_scrap_work.SI_ScrapTextSermonChristianBookWork_ALL(
+            #         root_folder=output_folder,
+            #         material_root_folder=material_folder,
+            #         browse_by_type = browse_by_type,
+            #         overwrite_log=overwrite_log
+            # )
             
-            if target == "all":
-                asyncio.run(ob.download(download_batch_size=download_batch_size))
-                ob.write_log_file()
-            else:
-                asyncio.run(ob.download_from_element_key_list([target_name],1))
-                ob.write_log_file()
+            # if target == "all":
+            #     asyncio.run(ob.download(download_batch_size=download_batch_size))
+            #     ob.write_log_file()
+            # else:
+            #     asyncio.run(ob.download_from_element_key_list([target_name],1))
+            #     ob.write_log_file()
             
            
     
@@ -270,12 +272,12 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
             list_ob = si_scrap_get_speaker_list.GetAudioSermonSpeakerList(root_folder=output_folder)
             
             speaker_list = list_ob.get_list_from_local_data()
-            
+            num_speaker = len(speaker_list)
             
             if target == "all":
                 # Make the download for each spaker
-                for speaker_name in speaker_list:
-                    print(f"Download - audio - speaker = {speaker_name}")
+                for indice,speaker_name in enumerate(speaker_list):
+                    print(f"Download - audio - speaker = {speaker_name} {indice}/{num_speaker}")
                     ob =si_audio_sermon_download.SI_Download_ListOfAudioWork(
                         speaker_name,
                         material_type,
@@ -313,16 +315,16 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                 asyncio.run(f())
                 
         elif browse_by_type == my_constants.TOPIC_NAME:
-            list_ob = si_audio_sermon_scrap_get_list.GetAudioSermonTopicList(root_folder=output_folder)
+            list_ob = si_audio_sermon_scrap_get_list.GetAudioSermonTopicList(root_folder=output_folder,
+                                                                             browse_by_type=my_constants.SPEAKER_NAME)
             
-            speaker_list = list_ob.get_list_from_local_data()
-            
-            
+            topic_list = list_ob.get_list_from_local_data()
+            num_topic = len(topic_list)
             if target == "all":
                 # Make the download for each spaker
-                print(f"Download - audio - topic = {speaker_name}")
-
-                for speaker_name in speaker_list:
+                for indice,speaker_name in enumerate(topic_list):
+                    print(f"Download - audio - topic = {speaker_name} {indice}/{num_topic}")
+                    
                     ob =si_audio_sermon_download.SI_Download_ListOfAudioWork(
                         speaker_name,
                         material_type,
@@ -375,9 +377,9 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                 list_ob = si_scrap_get_speaker_list.GetTextSermonSpeakerList(root_folder=output_folder,
                                                                      material_type=material_type)
                 speaker_list = list_ob.get_list_from_local_data()
-                
-                for speaker_name in speaker_list:
-                    print(f"Download - text - speaker = {speaker_name}")
+                num_speaker = len(speaker_list)
+                for indice,speaker_name in enumerate(speaker_list):
+                    print(f"Download - text - speaker = {speaker_name} {indice}/{num_speaker}")
                     ob = si_text_sermon_speaker_download.SI_Download_Speaker_ListOfTextWork(
                         speaker_name,
                         material_type,
@@ -419,29 +421,30 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
             if target == "all":
                 list_ob = si_text_sermon_scrap_get_list.GetTextSermonsChristianBook(root_folder=output_folder)
                 book_list = list_ob.get_list_from_local_data()
+                num_book = len(book_list)
                 
-                for book_name in book_list:
-                    print(f"Download - text - book = {book_name}")
+                for indice,book_name in enumerate(book_list):
+                    print(f"Download - text - book = {book_name} {indice}/{num_book}")
 
-                    if not ("Del Fehsenfeld Jr." in book_name):
-
+            
+                    ob = si_text_sermon_christianbook_download.SI_Download_ChristianBooks_ListOfTextWork(
+                        general_tools.remove_forbiden_char_in_text(book_name),
+                        material_type,
+                        output_folder,
+                        browse_by_type,
+                        overwrite_log=overwrite_log
+                    )
+                    async def f():
+                        print(ob.download_output_root_folder,os.path.exists(ob.download_output_root_folder))
+                        await ob.init_aiohttp_session()
+                        await ob.init_log_data()
+                        #print(ob.__dict__)
+                        await ob.download(download_batch_size=download_batch_size)
+                        ob.write_log_file()
+                        await ob.close_aiohttp_session()
                         
-                        ob = si_text_sermon_christianbook_download.SI_Download_ChristianBooks_ListOfTextWork(
-                            general_tools.remove_forbiden_char_in_text(book_name),
-                            material_type,
-                            output_folder,
-                            browse_by_type,
-                            overwrite_log=overwrite_log
-                        )
-                        async def f():
-                            await ob.init_aiohttp_session()
-                            await ob.init_log_data()
-                            #print(ob.__dict__)
-                            await ob.download(download_batch_size=download_batch_size)
-                            ob.write_log_file()
-                            await ob.close_aiohttp_session()
-                            
-                        asyncio.run(f())
+                    asyncio.run(f())
+                    
                 
                 
             else:
@@ -472,10 +475,10 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
         if target == "all":
             list_ob = si_scrap_get_speaker_list.GetVideoSermonSpeakerList(root_folder=output_folder)
             speaker_list = list_ob.get_list_from_local_data()
-            
-            for speaker_name in speaker_list:
+            num_speaker = len(speaker_list)
+            for indice,speaker_name in enumerate(speaker_list):
                 
-                print(f"Download - video - speaker = {speaker_name}")
+                print(f"Download - video - speaker = {speaker_name} {indice}/{num_speaker}")
                
                 ob = si_video_sermon_download.SI_Download_ListOfVideoWork(
                     speaker_name,

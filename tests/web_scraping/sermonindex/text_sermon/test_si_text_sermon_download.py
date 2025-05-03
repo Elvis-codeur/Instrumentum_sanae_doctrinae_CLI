@@ -43,15 +43,18 @@ def test_text_sermon_christiabook_download():
             browse_by_type,
             overwrite_log=False
         )
+        print(ob.__dict__.keys())
+        print(ob.__dict__["download_output_root_folder"])
+        
         #print(ob.__dict__)
-        await ob.init_aiohttp_session()
-        await ob.init_log_data()
-        await ob.update_downloaded_and_to_download_from_drive(True)
-        await ob.print_download_informations()
+        # await ob.init_aiohttp_session()
+        # await ob.init_log_data()
+        # await ob.update_downloaded_and_to_download_from_drive(True)
+        # await ob.print_download_informations()
         #await ob.download(50)
-        print("Elvis")
-        ob.write_log_file()
-        await ob.close_aiohttp_session()
+        #print("Elvis")
+        #ob.write_log_file()
+        #await ob.close_aiohttp_session()
     
     asyncio.run(d())
 
