@@ -42,7 +42,7 @@ class SI_Download_Speaker_ListOfTextWork(SI_Download_Work):
         json_files = [i for i in pathlib.Path(folder_path).rglob("*.json") if i.is_file()]
 
         #print(json_files)
-        print("kaka",json_files,input_root_folder)
+        #print("kaka",json_files,input_root_folder)
         
         for file in json_files:
             filename = file.as_posix()
