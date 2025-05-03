@@ -435,7 +435,7 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                         overwrite_log=overwrite_log
                     )
                     async def f():
-                        print(ob.download_output_root_folder,os.path.exists(ob.download_output_root_folder))
+                        #print(ob.download_output_root_folder,os.path.exists(ob.download_output_root_folder))
                         await ob.init_aiohttp_session()
                         await ob.init_log_data()
                         #print(ob.__dict__)
