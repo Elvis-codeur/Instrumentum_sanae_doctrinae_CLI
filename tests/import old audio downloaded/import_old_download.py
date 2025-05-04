@@ -5,7 +5,11 @@ import shutil
 
 from Instrumentum_sanae_doctrinae.my_tools import general_tools
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.audio_sermon.si_audio_sermon_download import SI_Download_ListOfAudioWork
-from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.audio_sermon.si_audio_sermon_scrap_get_list import GetAudioSermonTopicList
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.audio_sermon.si_audio_sermon_scrap_get_list import GetAudioSermonScriptureList, GetAudioSermonTopicList
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_get_speaker_list import GetAudioSermonSpeakerList
+
+import argparse
+
 
 
 def get_old_log_root_folder(root_folder,browse_by):
@@ -113,20 +117,15 @@ class SI_ImportOldDownload(SI_Download_ListOfAudioWork):
                     break
         
                 
-        
-        
-        
-        
-        
-if __name__ =="__main__":
-    new_root_folder ='/media/elvis/Seagate Desktop Drive/Sanae_Doctrinae_Vault' 
-    old_root_folder = "/media/elvis/Seagate Desktop Drive/Github_project_for_God/Sermon_index_scrapping"
-    
+def import_topic_audio_files():
+
     list_ob = GetAudioSermonTopicList(root_folder=new_root_folder,)
     topic_list = list_ob.get_list_from_local_data()
+
+    list_len = len(topic_list)
     
-    for topic in topic_list:
-        ob = SI_ImportOldDownload(topic,"audio",new_root_folder,old_root_folder,"topic",False)
+    for indice,element in enumerate(topic_list):
+        ob = SI_ImportOldDownload(element,"audio",new_root_folder,old_root_folder,"topic",False)
         async def f():    
             await ob.init_log_data()
             ob.import_old_log_data()
@@ -134,6 +133,75 @@ if __name__ =="__main__":
             ob.write_log_file()
             
         asyncio.run(f())
-        print(topic)
-        
+        print(f"{element} {indice} / {list_len}")
+
+
+             
+def import_scripture_audio_files():
+
+    list_ob = GetAudioSermonScriptureList(root_folder=new_root_folder,)
+    topic_list = list_ob.get_list_from_local_data()
+
+    list_len = len(topic_list)
+    
+    for indice,element in enumerate(topic_list):
+        ob = SI_ImportOldDownload(element,"audio",new_root_folder,old_root_folder,"scripture",False)
+        async def f():    
+            await ob.init_log_data()
+            ob.import_old_log_data()
+            await ob.update_downloaded_and_to_download_from_drive(True)
+            ob.write_log_file()
+            
+        asyncio.run(f())
+        print(f"{element} {indice} / {list_len}")
+
+
+
+
+            
+def import_speaker_audio_files():
+
+    list_ob = GetAudioSermonSpeakerList(root_folder=new_root_folder,)
+    topic_list = list_ob.get_list_from_local_data()
+
+    list_len = len(topic_list)
+    
+    for indice,element in enumerate(topic_list):
+        ob = SI_ImportOldDownload(element,"audio",new_root_folder,old_root_folder,"speaker",False)
+        async def f():    
+            await ob.init_log_data()
+            ob.import_old_log_data()
+            await ob.update_downloaded_and_to_download_from_drive(True)
+            ob.write_log_file()
+            
+        asyncio.run(f())
+        print(f"{element} {indice} / {list_len}")
+
+
+
+
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Script multi-fonction.")
+    parser.add_argument(
+        "action",
+        choices=["speaker", "topic", "scripture"],
+        help="Action à exécuter"
+    )
+
+    args = parser.parse_args()
+
+    if args.action == "speaker":
+        import_speaker_audio_files()
+    elif args.action == "topic":
+        import_topic_audio_files()
+    elif args.action == "scripture":
+        import_scripture_audio_files()
+
+if __name__ == "__main__":
+    new_root_folder ='/media/elvis/Seagate Desktop Drive/Sanae_Doctrinae_Vault' 
+    old_root_folder = "/media/elvis/Seagate Desktop Drive/Github_project_for_God/Sermon_index_scrapping"
+    
+    main()
                 
