@@ -52,7 +52,7 @@ class SI_Download_ChristianBooks_ListOfTextWork(SI_Download_Work):
         # List to store paths to all JSON files
         json_files = [i for i in pathlib.Path(folder_path).rglob("*.json") if i.is_file()]
         
-        #print("kaka",json_files,input_root_folder)
+        print("kaka",json_files,input_root_folder)
         
         for file in json_files:
             filename = file.as_posix()

@@ -422,27 +422,24 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                 
                 for book_name in book_list:
                     print(f"Download - text - book = {book_name}")
-
-                    if not ("Del Fehsenfeld Jr." in book_name):
-
+                    
+                    ob = si_text_sermon_christianbook_download.SI_Download_ChristianBooks_ListOfTextWork(
+                        book_name,
+                        material_type,
+                        output_folder,
+                        browse_by_type,
+                        overwrite_log=overwrite_log
+                    )
+                    async def f():
+                        await ob.init_aiohttp_session()
+                        await ob.init_log_data()
+                        #print(ob.__dict__)
+                        await ob.download(download_batch_size=download_batch_size)
+                        ob.write_log_file()
+                        await ob.close_aiohttp_session()
                         
-                        ob = si_text_sermon_christianbook_download.SI_Download_ChristianBooks_ListOfTextWork(
-                            general_tools.remove_forbiden_char_in_text(book_name),
-                            material_type,
-                            output_folder,
-                            browse_by_type,
-                            overwrite_log=overwrite_log
-                        )
-                        async def f():
-                            await ob.init_aiohttp_session()
-                            await ob.init_log_data()
-                            #print(ob.__dict__)
-                            await ob.download(download_batch_size=download_batch_size)
-                            ob.write_log_file()
-                            await ob.close_aiohttp_session()
-                            
-                        asyncio.run(f())
-                
+                    asyncio.run(f())
+            
                 
             else:
                 print(f"Download - text - book = {target_name}")
