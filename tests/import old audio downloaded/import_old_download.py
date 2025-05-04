@@ -1,9 +1,11 @@
 import asyncio
 import os 
 import pathlib
+import shutil
 
 from Instrumentum_sanae_doctrinae.my_tools import general_tools
-from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_download import SI_Download_Work
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.audio_sermon.si_audio_sermon_download import SI_Download_ListOfAudioWork
+from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.audio_sermon.si_audio_sermon_scrap_get_list import GetAudioSermonTopicList
 
 
 def get_old_log_root_folder(root_folder,browse_by):
@@ -19,21 +21,27 @@ def get_name_of_all_elements(root_folder,browse_by):
     return result
     
 
-def convert_old_topic_download_log_to_new_log(data,old_root_folder):
+def convert_old_download_log_to_new_log(data):
+    
+    file_path = data.get("output_filepath").replace("\\","/")
+    
+    
     result = {}
     result["link_text"] = data["link_text"]
     result["url"] = data["url"]
-    result["output_folder"] = pathlib.Path(data["output_filepath"]).as_posix()
+    # It will be set later 
+    #result["output_folder"] = pathlib.Path(file_path).parent.parent.as_posix()
     
     result["download_log"] = {}
     
-    #print(os.path.join(old_root_folder,data.get("output_filepath")))
+    
+    #print(file_path,os.path.exists(file_path))
     
     result["download_log"]["download_data"] = {
         "version":"0.0.1",
         "url":data["url"],
         "other_params":{},
-        "filepath": os.path.join(old_root_folder,pathlib.Path(data.get("output_filepath")).as_posix()),
+        "filepath": file_path,
         "download_begin_time": data.get("download_log").get("time_begin"),
         "download_end_time": data.get("download_log").get("time_end"),
         "request_header":data.get("download_log").get("first_level_request_header"),
@@ -47,7 +55,8 @@ def convert_old_topic_download_log_to_new_log(data,old_root_folder):
 
 
 
-class SI_ImportOldDownload(SI_Download_Work):
+
+class SI_ImportOldDownload(SI_Download_ListOfAudioWork):
     def __init__(self, name,material_type, new_root_folder,old_root_folder, browse_by_type,
                  overwrite_log=False, update_log=True):
         super().__init__(name,material_type, new_root_folder, browse_by_type,
@@ -67,16 +76,43 @@ class SI_ImportOldDownload(SI_Download_Work):
         for key in self.element_dict.keys():
             for old_element in self.old_log_filecontent["downloaded"]:
                 if old_element.get("url") == key:
-                    self.log_file_content["downloaded"][key] = convert_old_topic_download_log_to_new_log(old_element,self.old_root_folder)
                     
-                    # Je modifie certaines données du dictionnaire nouvellement crée 
-                    self.log_file_content["downloaded"][key]["link_text"] = self.element_dict[key].get("link_text")
-                    self.log_file_content["downloaded"][key]["metadata"] = self.element_dict[key].get("metadata") 
                     
+                    old_data_converted_to_new_standard = convert_old_download_log_to_new_log(old_element)
+                    
+                    # La partie principale 
+                    old_relative_filepath = old_data_converted_to_new_standard["download_log"]["download_data"]["filepath"]
+                    
+                    old_file_path = os.path.join(self.old_root_folder,old_relative_filepath)
+                    
+                    new_file_path = os.path.join(self.element_dict[key]["output_folder"],"MP3" + "/" + pathlib.Path(old_file_path).name)
+                    
+                    if os.path.exists(old_file_path):
+                        # Create the folder of our new file 
+                        if not os.path.exists(os.path.dirname(new_file_path)):
+                            os.makedirs(os.path.dirname(new_file_path))
+                        
+                        shutil.copyfile(old_file_path,new_file_path)
+                        
+                        
+                        # Créeer les données pour
+                        self.log_file_content["downloaded"][key] = old_data_converted_to_new_standard
+                         
+                        # Je modifie certaines données du dictionnaire nouvellement crée 
+                        self.log_file_content["downloaded"][key]["link_text"] = self.element_dict[key].get("link_text")
+                        self.log_file_content["downloaded"][key]["metadata"] = self.element_dict[key].get("metadata")
+                        self.log_file_content["downloaded"][key]["output_folder"] = self.element_dict[key].get("output_folder")
+                    
+                                            
+                        self.log_file_content["downloaded"][key]["download_log"]["download_data"]["filepath"] = new_file_path
+                        
+                        # Supprimer l'élément de la liste des éléments à télécharge 
+                        if key in self.log_file_content["to_download"].keys():
+                            self.log_file_content["to_download"][key] 
+                                    
                     break
         
                 
-        
         
         
         
@@ -86,14 +122,18 @@ if __name__ =="__main__":
     new_root_folder ='/media/elvis/Seagate Desktop Drive/Sanae_Doctrinae_Vault' 
     old_root_folder = "/media/elvis/Seagate Desktop Drive/Github_project_for_God/Sermon_index_scrapping"
     
+    list_ob = GetAudioSermonTopicList(root_folder=new_root_folder,)
+    topic_list = list_ob.get_list_from_local_data()
     
-    ob = SI_ImportOldDownload("1 Corinthians","audio",new_root_folder,old_root_folder,"topic",False)
-    
-    async def f():    
-        await ob.init_log_data()
-        ob.import_old_log_data()
-        ob.write_log_file()
-        
-    
-    asyncio.run(f())
+    for topic in topic_list:
+        ob = SI_ImportOldDownload(topic,"audio",new_root_folder,old_root_folder,"topic",False)
+        async def f():    
+            await ob.init_log_data()
+            ob.import_old_log_data()
+            await ob.update_downloaded_and_to_download_from_drive(True)
+            ob.write_log_file()
             
+        asyncio.run(f())
+        print(topic)
+        
+                

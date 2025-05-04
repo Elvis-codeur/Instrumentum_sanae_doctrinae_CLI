@@ -49,7 +49,7 @@ class GetAudioSermonList(scrap_metadata.GetAnyBrowseByListFromManyPages):
         
 
 class GetAudioSermonTopicList(GetAudioSermonList):
-    def __init__(self, root_folder, browse_by_type,
+    def __init__(self, root_folder, browse_by_type = my_constants.TOPIC_NAME,
                  url = "https://www.sermonindex.net/modules/mydownloads/scr_index.php?act=topicsList"):
         
         super().__init__(root_folder, url, browse_by_type)
@@ -72,7 +72,7 @@ class GetAudioSermonTopicList(GetAudioSermonList):
 
 
 class GetAudioSermonPodcastList(GetAudioSermonList):
-    def __init__(self, root_folder, browse_by_type,
+    def __init__(self, root_folder, browse_by_type = my_constants.PODCAST_NAME,
                  url = "https://www.sermonindex.net/podcast.php"):
         super().__init__(root_folder, url, browse_by_type)
 
@@ -100,7 +100,7 @@ class GetAudioSermonPodcastList(GetAudioSermonList):
 
 
 class GetAudioSermonScriptureList(GetAudioSermonList):
-    def __init__(self, root_folder, browse_by_type,
+    def __init__(self, root_folder, browse_by_type = my_constants.SCRIPTURE_NAME,
                  url = "https://www.sermonindex.net/modules/mydownloads/scr_index.php?act=booksList"):
         super().__init__(root_folder, url,browse_by_type)
 
