@@ -361,7 +361,7 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                         name,
                         material_type,
                         output_folder,
-                        intermediate_folders
+                        intermediate_folders,
                         browse_by_type,
                         overwrite_log=overwrite_log
                     )
