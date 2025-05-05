@@ -74,8 +74,8 @@ class SI_ImportOldDownload(SI_Download_ListOfAudioWork):
         
         if not os.path.exists(self.old_log_filepath):
             self.ne_rien_faire = True
-        
-        self.old_log_filecontent = general_tools.read_json(self.old_log_filepath)
+        else:
+            self.old_log_filecontent = general_tools.read_json(self.old_log_filepath)
         
     def import_old_log_data(self):
         
@@ -173,8 +173,12 @@ def import_speaker_audio_files():
     list_len = len(topic_list)
     
     for indice,element in enumerate(topic_list):
-        
-        ob = SI_ImportOldDownload(element.get("name"),"audio",
+        name = element.get("name")
+
+        if name[-1] == ".":
+            name = name[:-1]
+
+        ob = SI_ImportOldDownload(name,"audio",
                                   new_root_folder,old_root_folder,
                                   element.get("intermediate_folders"),
                                   "speaker",False)
@@ -185,7 +189,7 @@ def import_speaker_audio_files():
             ob.write_log_file()
             
         asyncio.run(f())
-        print(f"{element.get("name")} {indice} / {list_len}")
+        print(f"{element.get('name')} {indice} / {list_len}")
 
 
 
