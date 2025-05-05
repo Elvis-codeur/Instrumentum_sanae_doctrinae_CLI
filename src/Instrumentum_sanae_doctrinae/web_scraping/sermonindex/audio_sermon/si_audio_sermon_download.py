@@ -15,9 +15,9 @@ class SI_DownloadAudio(SI_DownloadFromUrl):
     
     
 class SI_Download_ListOfAudioWork(SI_Download_Work):
-    def __init__(self, name,material_type, root_folder, browse_by_type,
+    def __init__(self, name,material_type, root_folder,intermediate_folders, browse_by_type,
                  overwrite_log=False, update_log=True):
-        super().__init__(name,material_type, root_folder, browse_by_type,
+        super().__init__(name,material_type, root_folder,intermediate_folders, browse_by_type,
                          overwrite_log, update_log)
         
         

@@ -274,11 +274,14 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
             
             if target == "all":
                 # Make the download for each spaker
-                for speaker_name in speaker_list:
+                for element in speaker_list:
+                    name,intermediate_folders = element.get("name"),element.get("intermediate_folders")
+                    
                     ob =si_audio_sermon_download.SI_Download_ListOfAudioWork(
-                        speaker_name,
+                        name,
                         material_type,
                         output_folder,
+                        intermediate_folders,
                         browse_by_type,
                         overwrite_log=True
                     )
@@ -317,11 +320,14 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
             
             if target == "all":
                 # Make the download for each spaker
-                for speaker_name in speaker_list:
+                for element in speaker_list:
+                    name,intermediate_folders = element.get("name"),element.get("intermediate_folders")
+                    
                     ob =si_audio_sermon_download.SI_Download_ListOfAudioWork(
-                        speaker_name,
+                        name,
                         material_type,
                         output_folder,
+                        intermediate_folders,
                         browse_by_type,
                         overwrite_log=overwrite_log
                     )
@@ -369,12 +375,14 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
                                                                      material_type=material_type)
                 speaker_list = list_ob.get_list_from_local_data()
                 
-                for speaker_name in speaker_list:
-                    print(speaker_name)
+                for element in speaker_list:
+                    name,intermediate_folders = element.get("name"),element.get("intermediate_folders")
+                    
                     ob = si_text_sermon_speaker_download.SI_Download_Speaker_ListOfTextWork(
-                        speaker_name,
+                        name,
                         material_type,
                         output_folder,
+                        intermediate_folders,
                         browse_by_type,
                         overwrite_log=overwrite_log
                     ) 
@@ -454,12 +462,14 @@ def sermonindex_donwload(browse_by_type:str,material_type:str,
             list_ob = si_scrap_get_speaker_list.GetVideoSermonSpeakerList(root_folder=output_folder)
             speaker_list = list_ob.get_list_from_local_data()
             
-            for speaker in speaker_list:
+            for element in speaker_list:
+                name,intermediate_folders = element.get("name"),element.get("intermediate_folders")
                
                 ob = si_video_sermon_download.SI_Download_ListOfVideoWork(
-                    speaker,
+                    name,
                     material_type,
                     output_folder,
+                    intermediate_folders,
                     browse_by_type,
                     overwrite_log=True
                 )
