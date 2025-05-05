@@ -61,27 +61,31 @@ def convert_old_download_log_to_new_log(data):
 
 
 class SI_ImportOldDownload(SI_Download_ListOfAudioWork):
-    def __init__(self, name,material_type, new_root_folder,old_root_folder, browse_by_type,
+    def __init__(self, name,material_type, new_root_folder,old_root_folder,intermediate_folders, browse_by_type,
                  overwrite_log=False, update_log=True):
-        super().__init__(name,material_type, new_root_folder, browse_by_type,
+        super().__init__(name,material_type, new_root_folder,intermediate_folders, browse_by_type,
                          overwrite_log, update_log)
         
         self.old_root_folder = old_root_folder
         
         self.old_log_filepath = get_old_log_file_path(old_root_folder,self.browse_by_type,self.name)
         
+        self.ne_rien_faire = False
+        
         if not os.path.exists(self.old_log_filepath):
-            raise ValueError(f"Le fichier de l'ancien log {self.old_log_filepath} n'existe pas")
+            self.ne_rien_faire = True
         
         self.old_log_filecontent = general_tools.read_json(self.old_log_filepath)
         
     def import_old_log_data(self):
         
+        if self.ne_rien_faire:
+            return 
+        
         for key in self.element_dict.keys():
             for old_element in self.old_log_filecontent["downloaded"]:
                 if old_element.get("url") == key:
-                    
-                    
+                
                     old_data_converted_to_new_standard = convert_old_download_log_to_new_log(old_element)
                     
                     # La partie principale 
@@ -96,7 +100,9 @@ class SI_ImportOldDownload(SI_Download_ListOfAudioWork):
                         if not os.path.exists(os.path.dirname(new_file_path)):
                             os.makedirs(os.path.dirname(new_file_path))
                         
-                        shutil.copyfile(old_file_path,new_file_path)
+                        # Make the copy only if the file does not exists 
+                        if not os.path.exists(new_file_path):
+                            shutil.copyfile(old_file_path,new_file_path)
                         
                         
                         # Créeer les données pour
@@ -167,7 +173,11 @@ def import_speaker_audio_files():
     list_len = len(topic_list)
     
     for indice,element in enumerate(topic_list):
-        ob = SI_ImportOldDownload(element,"audio",new_root_folder,old_root_folder,"speaker",False)
+        
+        ob = SI_ImportOldDownload(element.get("name"),"audio",
+                                  new_root_folder,old_root_folder,
+                                  element.get("intermediate_folders"),
+                                  "speaker",False)
         async def f():    
             await ob.init_log_data()
             ob.import_old_log_data()
@@ -175,7 +185,7 @@ def import_speaker_audio_files():
             ob.write_log_file()
             
         asyncio.run(f())
-        print(f"{element} {indice} / {list_len}")
+        print(f"{element.get("name")} {indice} / {list_len}")
 
 
 
@@ -204,4 +214,5 @@ if __name__ == "__main__":
     old_root_folder = "/media/elvis/Seagate Desktop Drive/Github_project_for_God/Sermon_index_scrapping"
     
     main()
+    
                 
