@@ -424,7 +424,9 @@ class GetSpeakerList():
         
         for file_path in filepath_list:
             file_content = _my_tools.read_json(file_path)
-            result += [i.get("name") for i in file_content.get("data")]   
+            intermediate_folders = file_path.as_posix().split("/")
+            intermediate_folders = intermediate_folders[intermediate_folders.index(my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_LISTING_FOLDER,)+1:-1]
+            result += [{"name":i.get("name"),"intermediate_folders":intermediate_folders} for i in file_content.get("data")]   
             
         return result     
         
