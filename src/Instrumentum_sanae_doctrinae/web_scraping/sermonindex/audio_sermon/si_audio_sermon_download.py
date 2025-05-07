@@ -1,6 +1,7 @@
 
 
 
+import os
 from Instrumentum_sanae_doctrinae.my_tools import general_tools
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_download import SI_Download_Work, SI_DownloadFromUrl
 
@@ -14,9 +15,9 @@ class SI_DownloadAudio(SI_DownloadFromUrl):
     
     
 class SI_Download_ListOfAudioWork(SI_Download_Work):
-    def __init__(self, name,material_type, root_folder, browse_by_type,
+    def __init__(self, name,material_type, root_folder,intermediate_folders, browse_by_type,
                  overwrite_log=False, update_log=True):
-        super().__init__(name,material_type, root_folder, browse_by_type,
+        super().__init__(name,material_type, root_folder,intermediate_folders, browse_by_type,
                          overwrite_log, update_log)
         
         
@@ -43,7 +44,8 @@ class SI_Download_ListOfAudioWork(SI_Download_Work):
       
 
     async def is_element_data_downloaded(self,element):
-        #print(element)
+        if type(element) == str:
+            print(element)
         ob = SI_DownloadAudio(
             url = element.get("url"),
             output_folder = element.get('output_folder'),
@@ -54,6 +56,6 @@ class SI_Download_ListOfAudioWork(SI_Download_Work):
         is_downloaded = await ob.is_downloaded()
         
         result =  is_downloaded #and element.get("download_log").get("download_data") != None
-        #print(result,element,"\n\n\n")
+        #print(result,element.get("link_text"))
         return result 
         

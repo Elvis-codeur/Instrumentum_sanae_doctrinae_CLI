@@ -89,8 +89,6 @@ class DownloadFromUrl():
                     async for chunck in response.content.iter_chunked(2 * 1024 * 1024):
                         await file.write(chunck)
                         
-                    
-                
             else:
                 
                 # Read body as binary       
@@ -293,7 +291,7 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
     def __init__(self,name,root_folder,browse_by_type, overwrite_log=False, update_log=True):
         
         # The name of the author, topic, scripture, etc 
-        self.name = name 
+        self.name = name
         self.browse_by_type = browse_by_type
         self.root_folder = root_folder
         
@@ -319,7 +317,13 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
         
         # Prepare the json files as input data 
         for filepath in input_files:
-            file_content = _my_tools.read_json(filepath)
+            try:
+                file_content = _my_tools.read_json(filepath)
+            except Exception as e :
+                print(filepath)
+                raise e 
+            
+            
             input_data[str(filepath)] = file_content
             
         super().__init__(log_filepath = log_filepath,

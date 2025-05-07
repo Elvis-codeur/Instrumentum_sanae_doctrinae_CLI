@@ -29,11 +29,11 @@ def test_video_sermon_scrap_all_speaker_main_info_sermoindex():
         overwrite_log=True
     )    
     #print(ob.__dict__)
-    asyncio.run(ob.download(2))
+    asyncio.run(ob.download_from_element_key_list(["Joshua Daniel"],1))
     ob.write_log_file()
     
 
 if __name__ == '__main__':
     if sys.platform == 'win32':
-	    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     test_video_sermon_scrap_all_speaker_main_info_sermoindex()

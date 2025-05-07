@@ -53,7 +53,7 @@ class SI_DownloadFromUrl(download.DownloadFromUrl):
                                                
 
 class SI_Download_Work(download.DownloadWork):
-    def __init__(self,name,material_type, root_folder, browse_by_type, overwrite_log=False, update_log=True):
+    def __init__(self,name,material_type, root_folder,intermediate_folders, browse_by_type, overwrite_log=False, update_log=True):
         
         self.material_type = material_type
         if self.material_type == my_constants.SERMONINDEX_AUDIO:
@@ -65,7 +65,8 @@ class SI_Download_Work(download.DownloadWork):
         elif self.material_type == my_constants.SERMONINDEX_VINTAGE_IMAGE:
                     self.material_type_root_folder = my_constants.SERMONINDEX_VINTAGE_IMAGE_ROOT_FOLDER
                     
-
+        self.intermediate_folders = intermediate_folders
+        
         super().__init__(name,root_folder, browse_by_type, overwrite_log, update_log)
         
        
@@ -78,6 +79,7 @@ class SI_Download_Work(download.DownloadWork):
                                     my_constants.ELABORATED_DATA_FOLDER,
                                     self.browse_by_type, 
                                     my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_DOWNLOAD_FOLDER,
+                                    *self.intermediate_folders,
                                     self.name,
                                     my_constants.get_default_json_filename(0)
                                     )).resolve().as_posix()
@@ -87,12 +89,14 @@ class SI_Download_Work(download.DownloadWork):
                                          my_constants.ELABORATED_DATA_FOLDER,
                                          self.browse_by_type, 
                                          my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
+                                         *self.intermediate_folders,
                                          self.name
                                          )).resolve().as_posix()
         
         download_output_root_folder = pathlib.Path(os.path.join(root_folder,my_constants.SERMONINDEX_DOWNLOAD_ROOT_FOLDER,
                                          self.material_type_root_folder,
                                          self.browse_by_type, 
+                                         *self.intermediate_folders,
                                          self.name,
                                          my_constants.DOWNLOAD_ROOT_FOLDER,                             
                                          )).resolve().as_posix()
