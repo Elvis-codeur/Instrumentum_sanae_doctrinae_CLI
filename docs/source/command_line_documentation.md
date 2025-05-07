@@ -373,7 +373,7 @@ This method scrap general information of
 
 - For the text format 
     - speakers 
-    - christian books 
+    - There is no need for scraping works for text books. The download can follow the scraping of general information directly
 
 - For the video format 
     - speakers 
@@ -389,7 +389,7 @@ This method scrap general information of
     - For audio format: 
         The possible values are :  **speaker**, **topic**, **scripture** 
     - For text format
-        The possible values are : **speaker** or **christian_book**
+        The possible values are : **speaker**
     - For video format
         The possible values are : **speaker** 
     - For vinttage image: 
@@ -469,20 +469,6 @@ $ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker
 
 ```console 
 $ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work speaker text "C.H. Spurgeon" "test_folder"
-```
-
-##### Christian books 
-
-- Scrap the works of all the christian books for text format  
-
-```console 
-$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work christian_book text all "test_folder"
-```
-
-- Scrap the works of the book **Tertullian - On The Flesh Of Christ** for text format  
-
-```console 
-$ "bin/python" "cli_interface/argument_parser.py" sermonindex scrap_work christian_book text "Tertullian - On The Flesh Of Christ" "test_folder"
 ```
 
 #### Video books

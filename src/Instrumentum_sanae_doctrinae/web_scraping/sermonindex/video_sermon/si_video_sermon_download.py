@@ -101,6 +101,7 @@ class SI_DownloadVideo(SI_DownloadFromUrl):
             self.prepare_the_output_file_path(content_type)
             
             if response.status  == 404:
+                print(parameters_to_add_result.get("download_url"))
                 result = {"success":0,"status_code":404}
                 return result 
             
@@ -349,6 +350,6 @@ class SI_Download_ListOfVideoWork(SI_Download_Work):
         is_downloaded = await ob.is_downloaded()
         
         result =  is_downloaded #and element.get("download_log").get("download_data") != None
-        #print(result,element,"\n\n\n")
+        #print(element,result,"\n\n\n")
         return result 
         

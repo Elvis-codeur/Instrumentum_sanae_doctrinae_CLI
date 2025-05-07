@@ -34,7 +34,7 @@ class SI_Download_Speaker_ListOfTextWork(SI_Download_Work):
         input_json_files = []
 
         # The folder where the works of the author are 
-        folder_path = os.path.join(input_root_folder,my_constants.WORK_INFORMATION_ROOT_FOLDER)
+        folder_path = os.path.join(input_root_folder.strip(),my_constants.WORK_INFORMATION_ROOT_FOLDER)
         
         
         #print(folder_path)
@@ -50,7 +50,9 @@ class SI_Download_Speaker_ListOfTextWork(SI_Download_Work):
                 input_json_files.append(file)
                 
 
-        #print(input_root_folder,input_json_files)
+        #print(folder_path == input_root_folder,input_json_files)
+        
+        
         return input_json_files
     
     def prepare_input_data(self,**kwargs):

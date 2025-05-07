@@ -1,12 +1,7 @@
-
-
-import asyncio
-import time 
 # This class works for the audio sermons 
 from bs4 import NavigableString
 
-from Instrumentum_sanae_doctrinae.web_scraping import http_connexion
-from Instrumentum_sanae_doctrinae.my_tools import general_tools as _my_tools, my_constants
+from Instrumentum_sanae_doctrinae.my_tools import general_tools as my_constants
 
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_metadata import SermonIndexScrapAuthorTopicScripturePage
 from Instrumentum_sanae_doctrinae.web_scraping.sermonindex.si_scrap_work import SI_ScrapWork_ALL

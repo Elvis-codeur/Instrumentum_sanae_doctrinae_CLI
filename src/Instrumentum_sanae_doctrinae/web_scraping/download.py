@@ -19,12 +19,6 @@ class DownloadFromUrl():
         self.output_file_path = output_file_path
         self.aiohttp_session = aiohttp_session
         
-    async def download(self):
-        pass 
-        
-    async def is_downloaded(self):
-        pass 
-    
     
     def prepare_the_output_file_path(self,content_type):
             
@@ -306,15 +300,19 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
         
         # Get the path of log file, input file and download output folder 
         file_path_dict = self.prepare_log_metadata_input_files_path(root_folder)
+        
         log_filepath = file_path_dict.get("log_filepath")
         input_root_folder = file_path_dict.get("input_root_folder")
         download_output_root_folder = file_path_dict.get("download_output_root_folder")
+        
+        
+        
         self.download_output_root_folder = download_output_root_folder
         
         
         
         input_files = self.get_input_json_files(input_root_folder)
-        
+        #print(input_files)
         input_data = {}
         
         # Prepare the json files as input data 
@@ -362,7 +360,9 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
         element_to_download_splitted = _my_tools.sample_list(element_to_download,
                                                       download_batch_size)
 
-        
+        print("Download to Begin",end=" ")
+        await self.print_download_informations()
+
         # This is used to show a progress bar 
         for download_batch in element_to_download_splitted:
             tasks = [self.download_element_data(element) for element in download_batch]
@@ -391,8 +391,8 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
                     if url in self.log_file_content["to_download"]:
                         del self.log_file_content["to_download"][url]
                     
-                    # I comment this because it is too costly especially when there is hundreds 
-                    # 
+                    # I comment this because it is too costly in time especially when there is hundreds 
+                    # It is more constly on HDD drives 
                     #await self.update_log_data()
                     
                 else:
@@ -414,6 +414,7 @@ class DownloadWork(http_connexion.ParallelHttpConnexionWithLogManagement):
                             del self.log_file_content["to_download"][url]
                         
             await self.update_log_data()
+            await self.print_download_informations()
             
             
     async def update_to_download_list(self):

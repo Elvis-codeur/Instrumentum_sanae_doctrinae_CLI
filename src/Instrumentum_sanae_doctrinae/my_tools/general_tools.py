@@ -5,23 +5,6 @@ import shutil
 import string
 import json 
 import aiofiles
-import re
-import urllib.parse
-
-url_pattern = re.compile(
-    r'https?://(?:www\.)?[-\w@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-\w()@:%_\+.~#?&//=]*)'
-)
-
-hashtag_pattern = re.compile(r'#\w+')
-
-youtube_url_pattern = re.compile(
-    r'''(?xi)
-    (https?://(?:www\.)?               # http(s) and optional www
-    (?:youtube\.com|youtu\.be)         # youtube.com or youtu.be
-    /(?:[\w\-\?=&#./]+))               # everything after the domain
-    '''
-)
-
 
 
 def datetimeToGoogleFormat(date:datetime.datetime):
@@ -76,7 +59,7 @@ def remove_forbiden_char_in_text(text):
     return text
 
 
-def replace_forbiden_char_in_text(text):
+def replace_forbiden_char_in_text(text:str):
     """
     This functin replace :
 
@@ -95,9 +78,17 @@ def replace_forbiden_char_in_text(text):
     if not text:
         return ""
     
-    return text.replace("<","_a_").replace(">","_b_").replace(":","_c_")\
+    result = text.replace("<","_a_").replace(">","_b_").replace(":","_c_")\
                 .replace('"',"_d_").replace("|","_e_").replace("?","_f_")\
-                .replace("*","_g_").replace("/","_h_").replace("\\","_i_").replace("...","_k_")
+                .replace("*","_g_").replace("/","_h_").replace("\\","_i_")\
+                .replace("...","_k_")
+    
+    # Solve the bug caused by the dot . at the end
+    #  of Del Fehsenfeld Jr. name for text sermon
+    if result[-1] == ".":
+        result = result[:-1]
+
+    return result 
 
 
 def remove_consecutive_spaces(text):
@@ -307,55 +298,8 @@ def process_path_according_to_cwd(folder_path):
     """
     This method verify if the output folder is child of the current working directory and folder path accordingly
     """
-    #result,_ = get_uncommon_part_of_two_path(folder_path,os.getcwd())
+    result = folder_path
 
-    return folder_path
+    return result
 
 
-def get_url_list_in_text(text):
-    return url_pattern.findall(text)
-
-def get_hashtag_list_in_text(text):
-    return hashtag_pattern.findall(text)
-
-def get_youtube_url_list_in_text(text):
-    return youtube_url_pattern.findall(text)
-
-class YouTubeURL:
-    def __init__(self, url):
-        #print("URL = ",url)
-        self.url = url
-        self.parsed = urllib.parse.urlparse(url)
-        self.query = urllib.parse.parse_qs(self.parsed.query)
-
-    def get_video_id(self):
-        """Returns the video ID if present"""
-        return self.query.get('v', [None])[0]
-
-    def get_playlist_id(self):
-        """Returns the playlist ID if present"""
-        return self.query.get('list', [None])[0]
-    
-    def is_youtube_video(self):
-        return any([self.query.get("v", [None])[0],self.query.get("index",[None])[0]])
-    
-    def is_playlist(self):
-        return self.query.get('list', [None])[0] != None and not self.is_youtube_video()
-
-    def get_channel_id(self):
-        """Returns the channel or user from the path if present"""
-        parts = self.parsed.path.strip('/').split('/')
-        if parts and parts[0] in ('channel', 'user', 'c'):
-            return parts[1] if len(parts) > 1 else None
-        return None
-
-    
-    def get_full_info(self):
-        return {
-            'video_id': self.get_video_id(),
-            'playlist_id': self.get_playlist_id(),
-            'channel': self.get_channel_id(),
-            'hostname': self.parsed.hostname,
-            'path': self.parsed.path,
-            'query': self.query
-        }

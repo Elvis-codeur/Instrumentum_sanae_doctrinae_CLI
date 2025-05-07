@@ -29,15 +29,16 @@ class SI_DownloadFromUrl(download.DownloadFromUrl):
         return f"{self.__class__.__name__}({str(self.__dict__)})"
         
     
-    async def is_downloaded(self):
+    async def is_downloaded(self,files_list = None):
         
         # Check if there is a file with the same name as the name given to the object
         
-        files = pathlib.Path(self.output_folder).rglob("*")
-        files = [file for file in files if file.is_file()]
-        
-        
-        for file in files:
+        if not files_list:
+            files_list = pathlib.Path(self.output_folder).rglob("*")
+            files_list = [file for file in files_list if file.is_file()]
+            
+            
+        for file in files_list:
             file_basename = os.path.basename(file)
             #print(file_basename)
             if file_basename.startswith(self.output_file_name):
@@ -73,7 +74,7 @@ class SI_Download_Work(download.DownloadWork):
         
         
        
-        log_filepath = os.path.join(root_folder,my_constants.SERMONINDEX_LOG_ROOT_FOLDER,
+        log_filepath = pathlib.Path(os.path.join(root_folder,my_constants.SERMONINDEX_LOG_ROOT_FOLDER,
                                     self.material_type_root_folder,
                                     my_constants.ELABORATED_DATA_FOLDER,
                                     self.browse_by_type, 
@@ -81,24 +82,24 @@ class SI_Download_Work(download.DownloadWork):
                                     *self.intermediate_folders,
                                     self.name,
                                     my_constants.get_default_json_filename(0)
-                                    )
+                                    )).resolve().as_posix()
         
-        input_root_folder = os.path.join(root_folder,my_constants.SERMONINDEX_METADATA_ROOT_FOLDER,
+        input_root_folder = pathlib.Path(os.path.join(root_folder,my_constants.SERMONINDEX_METADATA_ROOT_FOLDER,
                                          self.material_type_root_folder,
                                          my_constants.ELABORATED_DATA_FOLDER,
                                          self.browse_by_type, 
                                          my_constants.SPEAKER_TOPIC_OR_SCRIPTURE_WORK_FOLDER,
                                          *self.intermediate_folders,
                                          self.name
-                                         )
+                                         )).resolve().as_posix()
         
-        download_output_root_folder = os.path.join(root_folder,my_constants.SERMONINDEX_DOWNLOAD_ROOT_FOLDER,
+        download_output_root_folder = pathlib.Path(os.path.join(root_folder,my_constants.SERMONINDEX_DOWNLOAD_ROOT_FOLDER,
                                          self.material_type_root_folder,
                                          self.browse_by_type, 
                                          *self.intermediate_folders,
                                          self.name,
                                          my_constants.DOWNLOAD_ROOT_FOLDER,                             
-                                         )
+                                         )).resolve().as_posix()
         
         return locals()
         
@@ -114,6 +115,7 @@ class SI_Download_Work(download.DownloadWork):
         # The folder where the works of the author are 
         folder_path = os.path.join(input_root_folder,my_constants.WORK_INFORMATION_ROOT_FOLDER)
         
+        #print(folder_path)
         
         #print(folder_path)
         # List to store paths to all JSON files

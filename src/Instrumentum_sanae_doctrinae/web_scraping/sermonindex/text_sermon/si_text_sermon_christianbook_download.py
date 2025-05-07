@@ -23,6 +23,9 @@ class SI_Download_ChristianBooks_ListOfTextWork(SI_Download_Work):
                          overwrite_log, update_log)
         
         
+        # THe list of all the files in the download folder 
+        self.downloaded_files_list = list(pathlib.Path(self.download_output_root_folder).rglob("*"))
+        
     
     
     
@@ -41,14 +44,13 @@ class SI_Download_ChristianBooks_ListOfTextWork(SI_Download_Work):
         # I take my data from the subfolder MAIN_INFORMATION_ROOT_FOLDER and no more from 
         # WORK_INFORMATION_ROOT_FOLDER
         
-        folder_path = os.path.join(input_root_folder,my_constants.MAIN_INFORMATION_ROOT_FOLDER)
+        folder_path = pathlib.Path(os.path.join(input_root_folder,my_constants.MAIN_INFORMATION_ROOT_FOLDER)).resolve()
         
+        #print(folder_path)
         
         #print(folder_path)
         # List to store paths to all JSON files
         json_files = [i for i in pathlib.Path(folder_path).rglob("*.json") if i.is_file()]
-
-        #print(folder_path,json_files)
         
         #print("kaka",json_files,input_root_folder)
         
@@ -149,7 +151,7 @@ class SI_Download_ChristianBooks_ListOfTextWork(SI_Download_Work):
                 general_tools.remove_consecutive_spaces(element.get("link_text"))),
             aiohttp_session= self.aiohttp_session
         )
-        is_downloaded = await ob.is_downloaded()
+        is_downloaded = await ob.is_downloaded(self.downloaded_files_list)
         
         result =  is_downloaded #and element.get("download_log").get("download_data") != None
         #print(result,element,"\n\n\n")
