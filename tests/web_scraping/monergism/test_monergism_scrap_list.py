@@ -28,5 +28,5 @@ if __name__ == "__main__":
 	    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
      
     test_get_topic_list()
-    #test_get_speakers_list()
-    #test_get_scripture_list()
+    test_get_speakers_list()
+    test_get_scripture_list()

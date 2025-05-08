@@ -114,7 +114,7 @@ class ScrapDataFromURL():
             await self.main_request_session.close()
             
             
-
+    
     async def connect_to_all_url(self,**kwargs):
         """
         Connect to an html page whose url has been given 

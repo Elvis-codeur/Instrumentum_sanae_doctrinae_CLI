@@ -257,6 +257,16 @@ async def async_write_json(filename,data,encoding = "utf-8",mode = "w",create_pa
 
 
 def get_important_information_from_request_response(request_response):
+    if not request_response:
+        result = {
+        "request_header":{},
+            "request_status_code": 200,
+            "request_cookies":[],
+            "request_history":[],
+        }
+        
+        return result 
+    
     request_history = [
                             {
                                 'status_code': r.status,
