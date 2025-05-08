@@ -1,5 +1,6 @@
 import asyncio
-import os 
+import os
+import re 
 
 
 
@@ -54,8 +55,14 @@ class GetTopicOrAuthorOrScriptureList(scrap_metadata.GetAnyBrowseByListFromManyP
         final_result = []
 
         for url in self.url_informations:
+            print(url)
             # Get the links (<a> </a>) which leads to the authors main page. 
-            links = self.url_informations[url]["bs4_object"].find("div",{"id","region-content"}).findAll("a")#"section",{"id","block-views-36de325f9945b74b1c08af31b5376c02"}).find_all("a",{"class":None})
+            #print(self.url_informations[url]["bs4_object"].find("div",attrs = {"class":}))
+            #print(type(self.url_informations[url]["bs4_object"]))
+            
+            
+            links = self.url_informations[url]["bs4_object"].find_all("a")
+            
             links = [i for i in links if i.attrs.get("href")]
     
             authors_links = [i for i in links if self.useful_link_validation_function(i)]

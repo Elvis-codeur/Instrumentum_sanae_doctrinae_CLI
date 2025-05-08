@@ -5,9 +5,8 @@ import os
 from Instrumentum_sanae_doctrinae.web_scraping.monergism import mn_scrap_get_list
 
 
-root_folder = os.path.join(os.getcwd(),'test_folder')
+root_folder = "/home/elvis/Documents/ForGod/Scraping General/test_folder"
 
-print(root_folder)
 
 def test_get_topic_list():
     ob = mn_scrap_get_list.GetTopicList(root_folder)
@@ -29,5 +28,5 @@ if __name__ == "__main__":
 	    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
      
     test_get_topic_list()
-    test_get_speakers_list()
-    test_get_scripture_list()
+    #test_get_speakers_list()
+    #test_get_scripture_list()
